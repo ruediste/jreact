@@ -1,0 +1,23 @@
+{
+  "name": "jreact-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --open",
+    "start": "astro dev --open",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.42.10",
+    "@mermaid-js/layout-elk": "^1.0.2",
+    "astro": "^7.3.6",
+    "astro-mermaid": "^2.2.0",
+    "mermaid": "^12.3.0",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/mdx": "^8.1.3"
+  }
+}

@@ -1,0 +1,218 @@
+---
+title: Architecture
+description: JReact architecture, fibers, hooks, layout, and painting.
+---
+
+import CodeSnippet from '@components/CodeSnippet.astro';
+
+JReact is a synchronous Java component runtime with a Taffy-based layout engine ([Taffy4J](https://github.com/taffytaffy/taffy)) and a Swing/Java2D host.
+
+Readers are expected to have a good understanding of React, as JReact borrows many concepts such as components, hooks, and reconciliation from it.
+
+# Nodes and Components
+The UI is rendered by JReact components. They define a context for hooks and style rules, as well as a render function that creates a partial `Node`-tree. 
+
+After rendering a component, the returned nodes are reconciled. For this purpose, each node has an identifier, based on the node type and a key. The key can be specified explicitly, or created automatically by a counter held in the render context (parent node, or the capture context when capturing nodes). During reconciliation, the identifiers of the nodes of the old tree and new tree are compared. When a match is found, the new node receives the old node for reconciliation.
+
+For `ComponentNode`s, all state, such as the hook slots, are stored in the `Fiber`. This allows for an easy transferral of the state from the old component to the new.
+
+Only `VisibleNode`s are taking part in layout and painting. They are sent to taffy for layout. Then their `paint()` method is used to paint their contents. 
+
+To describe how these architectural pieces work together, their specific responsibilities and lifespans can be broken down as follows:
+
+* **Nodes** handle an individual primitive's content, styles, geometry, and callbacks, and are recreated fresh on every root render.
+* **Components** provide a render function that composes primitives and other components, getting invoked on every render while they remain present.
+* **Fibers** retain hook slots, surviving across renders until their component is eventually removed.
+* **JReactRoot** owns the root fiber, dirty fibers, current node tree, effect queue, and invalidation callback, lasting until the host (typically a `JReactPanel`) closes it.
+* **JReactPanel** hosts the root itself, surviving until the owning Swing UI disposes of it.
+
+During execution of the component render functions nodes can be created. Unlike React, nodes are not captured as values and passed to their parent. Instead, the current parent node is implicitly tracked by the runtime and created nodes are automatically added as its children. This alleviates the lack of an optimized DSL such as JSX.
+
+# Nodes and Render Context
+The `Ui` class manages the thread-local render context and supplies the imperative
+Java DSL used for declarative rendering.
+
+The thread-local context tracks:
+
+- The owning `RenderRoot`.
+- The active `Fiber`, whose cursors determine hook and child identity.
+- The current component's style rule declarations and enclosing declaration chain.
+- The current node container, which receives all nodes being instantiated.
+
+# Identity: Why Both Type and Key?
+
+`type` answers **which node implementation?**; `key` answers **which instance
+of that node?**
+
+```java
+// Keyed: items keep stable identity across reorders.
+new MyList(items.map(i -> new ItemNode(i.id, i)));
+
+// Unkeyed: items follow creation order; inserting or removing a node
+// shifts the nodes that follow it.
+new MyList(items.map(i -> new ItemNode(null, i)));
+```
+
+Keys only need to be unique among siblings of the same type under the same parent,
+not globally. When a null key is provided, sibling node creation order identifies the
+instance instead.
+
+## Identity Consequences
+
+- The same type and key under the same parent retains state after reordering.
+- Changing type, key, or parent starts a different node lifetime.
+- Removing and later reintroducing a component creates fresh hook state.
+- Unkeyed node follow node creation order
+- Inserting or removing a node of a node list can shift un-keyed components
+  that follow it. Put variable-length lists in their own component boundary and
+  use stable keys for their items.
+
+# The Refresh Process
+There are multiple triggers to schedule a refresh:
+- if a state of a component changes, its fiber is marked dirty
+- if user input changes the hovered node, the keyboard focus or presses the mouse button
+
+`JReactPanel` calls `JReactRoot.refresh` with the viewport and current interaction
+keys. The root prepares the tree without calling back into the panel:
+
+1. Rerender the components of dirty fibers and publish the node tree.
+1. Reconcile nodes with the previous tree and apply interaction state.
+1. Resolve styles and calculate layout.
+1. Run `useLayoutEffect` callbacks after layout and before painting.
+1. Commit paint state and return the prepared tree, node index, valid focus key,
+   and dirty region.
+
+The panel then synchronizes native Swing components and requests repainting of
+the dirty region. After painting, it calls `paintCompleted` to run passive
+`useEffect` callbacks. Reconciliation, style resolution, layout, and layout
+effects belong to the root, not the Swing host.
+
+Both effect types clean up before replacement setup and on component unmount.
+State updates from effects invalidate the root and schedule another refresh;
+they do not start a reentrant render.
+
+# Hover and Active Pseudo Classes
+JReact supports the hover and active pseudo classes. The `JReactRoot` keeps track of the hovered nodes. 
+
+When the mouse moves, a hit test is performed and the hovered nodes are marked. When the hovered nodes change, a refresh is triggered.
+
+When rendering, during reconciliation the hovered nodes are tracked and the hover state is used in the subsequent application of the style rules. After layout, the hit testing is repeated. If the hovered nodes change, application of the style rules and layout is repeated once, to make sure new nodes receive the hover state immediately, but avoiding infinite loops due to layout changes caused by the hover state.
+
+If the mouse is pressed and a node is hovered and not disabled, the node is considered active.
+
+# Input Focus
+A single focusable node in the UI can have the input focus. The focused node is also tracked through reconciliation.
+
+# Thread Ownership
+A `JReactRoot` belongs to the thread that created it. Rendering, viewport changes,
+disposal, and changed-value state assignments must occur on that thread.
+`JReactPanel` requires Swing's event dispatch thread (EDT), so a mounted UI's
+component bodies, effects, and event callbacks normally execute there.
+
+The thread-local context is for associating static DSL calls with a component, not for
+making roots thread-safe. Background work must hand results back to the EDT with
+`SwingUtilities.invokeLater` before changing mounted state. Component bodies and hooks
+must not block the EDT with network or disk operations.
+
+# Scoped Styles and Selectors
+
+`Style` records explicitly
+set properties in a typed map. Defaults are supplied by accessors rather than
+inserted into every declaration, so absent inline properties do not erase rule
+values. Dimensions use logical pixels; auto width/height and normal line height
+use internal `Double.NaN` sentinels. Numeric setters validate their supported
+ranges. There is no CSS text parser or automatic property inheritance.
+
+`Styles` associates each
+component with a `Declaration` whose anchor is the primitive parent at component
+entry. The declaration is shared by the component's emitted nodes, and nested
+component contexts extend the enclosing declaration chain. Consequently, rules
+may be declared before or after the nodes they style: resolution happens later.
+
+`SCOPED` rules are eligible only for nodes rendered directly by the
+declaring component itself — the last declaration in a node's enclosing chain.
+They do not reach output emitted by nested components merely because that output
+appears under the same anchor. `TRANSITIVE` rules are eligible on every node
+carrying an enclosing component declaration, including nodes produced by nested
+components. Scope determines eligibility; it does not change selector matching.
+
+`Selector` matches node
+types, IDs, named classes, pseudo-classes, compounds, and ancestor relationships.
+For `left.child(right)` or `left.descendant(right)`, the target matches `right`
+and its parent or an ancestor must match `left`. Scope restricts eligible targets;
+it does not change the selector's ancestor matching or specificity.
+
+For each eligible target, resolution orders matching rules by:
+
+1. ID count, then class/pseudo-class count, then primitive-type count.
+2. Nearest declaring component for equal specificity.
+3. Later rule declaration within that component.
+4. Inline properties, which always override rule properties.
+
+Each resolution pass builds a replacement resolved `Style`. In the Swing host,
+pseudo-class flags are restored from interaction state before resolving again.
+Changing hover or focus can therefore change styling and layout without rerunning
+component bodies when the root is otherwise clean.
+
+# Layout and Painting
+
+`LayoutEngine` consumes the styled node tree through the `VisibleNode`
+interface implemented by `Node`
+It builds a native Taffy tree through the Taffy4J bindings and computes flex and
+grid layout with the CSS box model: margins,
+padding, borders, sizing, positioning, wrapping, alignment, and gaps. The rendered tree keeps
+its children in `Node` and exposes them read-only to the engine.
+
+Each `VisibleNode` reports its paint bounding box, in which it paints on the screen. 
+During reconciliation and style updates, the nodes signal if they need repainting. Also, if the layout of a node changes, the union of the old and new paint bounding box is invalidated. 
+
+During painting, nodes which do not intersect the repaint area are skipped. Note child nodes can extend outside
+of the paint bounding box of their parent. Thus all nodes are visited during painting.
+
+# Native Editors
+
+`InputNode` and `SelectNode` nodes become `JTextField` and `JComboBox` panel children,
+respectively. The editor map follows node keys, retaining an editor when its node
+identity and kind remain compatible and removing it on unmount. Each refresh
+synchronizes the controlled value, options, enabled state, font, bounds, and
+accessible name. A synchronization guard prevents programmatic value updates
+from recursively firing application change callbacks.
+
+Native editors provide caret, clipboard, selection, input-method, and popup
+behavior rather than reproducing it on the canvas. They paint above the canvas,
+so applications must not overlap them with painted siblings. Painted controls do
+not yet provide a complete screen-reader accessibility tree.
+
+Effects that update state schedule another refresh; they do not trigger a
+reentrant root render in this sequence. A synchronous event-handler refresh can
+process the update before the already queued callback executes.
+
+# Avoiding Rerender
+Each component can have properties. If the properties of a component do not change,
+it is not rerendered. When a state changes, only the containing component is marked dirty.
+Dirty components are rerendered ancestor-first. This prevents children from being rerendered, only to receive new properties 
+afterwards and requiring a second render pass.
+
+# Writing Components
+There are two ways to express a component: methods and classes. Both methods rely on Byte Buddy and an agent loaded at runtime for bytecode manipulation.
+
+Technically, components can also be created by passing properties, inline style and a render function (as Runnable) to a framework function, but this is not convenient for UI implementation.
+
+## Method Components
+Method components are methods written in UpperCamel. Using bytecode manipulation, the execution of the
+method is suppressed and a corresponding component is created. Only when that component is rendered, the method body is actually executed. The method arguments represent the component properties.
+
+Implementation approaches:
+- Simple: use a thread local to enable/suppress method body execution, use reflection to trigger rendering
+- Advanced: change the original method name, generate a new method body that uses dynamic invoke and a dynamically created class to invoke the original method, similar to how lambdas work under the hood.
+
+## Class Components
+Class components work by sub-classing `Component` and implementing `render()`. Component properties are represented by fields. To use the component, an anonymous sub-class is instantiated, setting the fields in an initializer: 
+
+```java
+new Button("Ok"){{variant=ButtonVariant.SECONDARY; disabled=true; }};
+```
+
+Implementation approaches:
+- Simple: use reflection to extract property values
+- Advanced: generate an `equals()`-method comparing all fields

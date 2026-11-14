@@ -1,0 +1,15 @@
+/target/
+**/target/
+/upstream/
+/.settings/
+/.classpath
+/.project
+/bin/
+/mount/
+/mount2/
+/*.db
+
+# JReact Starlight docs
+/jreact/doc/node_modules/
+/jreact/doc/.astro/
+/jreact/doc/dist/
