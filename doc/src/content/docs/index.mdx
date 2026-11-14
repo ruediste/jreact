@@ -30,7 +30,7 @@ On top of the core JReact framework, JReact UI provides a helpers, a theming con
 - **utility**: un-opinionated utilities and basic theme concepts
 - **theme**: theming concepts semantic design tokens
 - **primitives**: unstyled components
-- **components**: combines the other three modules to provide styled components, with configurable theming
+- **components**: combines the other three modules to provide styled components, with adjustable theming
 
 Concepts of the original frameworks are mapped to the components as follows
 - Tailwind CSS: mapped to `utility`
@@ -41,8 +41,12 @@ Concepts of the original frameworks are mapped to the components as follows
 - Radix UI
   - primitives: mapped to `primitives` (https://www.radix-ui.com/primitives/docs/overview/introduction)
   - themes: mapped to `theme`
-  - color palettes: https://github.com/radix-ui/website/blob/main/components/generate-radix-colors.tsx
-
+  - color palettes: mapped to `theme` (https://github.com/radix-ui/website/blob/main/components/generate-radix-colors.tsx)
+- shadcn/ui: mapped to `components` (https://ui.shadcn.com/docs)
+  - components contain default styling
+  - for complete customization, copy&pasting the component and modifying it as needed
+  - source code of components available from the documentation
+  - mix and match default components and custom components as needed
 
 
 
