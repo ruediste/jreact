@@ -47,13 +47,13 @@ public class Selectors {
         }
 
         default Self parent() {
-            return _helper().selectorChained(
-                    selector -> node -> node.parent == null ? new Selector.Result(false) : selector.match(node.parent));
+            return _helper().selectorChained(selector -> node -> new Selector.Result(
+                    node.parentElement().map(parent -> selector.match(parent).matches()).orElse(false)));
         }
 
         default Self ancestor() {
             return _helper().selectorChained(selector -> node -> new Selector.Result(
-                    node.ancestors().anyMatch(ancestor -> selector.match(ancestor).matches())));
+                    node.ancestorElements().anyMatch(ancestor -> selector.match(ancestor).matches())));
         }
     }
 }

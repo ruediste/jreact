@@ -61,9 +61,9 @@ public final class TextLayout {
         if (StyleProperties.DISPLAY.get(node.style) == Display.NONE) {
             return;
         }
-        Layout layout = node.getLayout();
+        Layout layout = node.layout;
         Font font = StyleProperties.font(node.style);
-        float contentWidth = Math.max(0, node.getLayout().contentSize.width);
+        float contentWidth = Math.max(0, node.layout.contentSize.width);
         List<String> lines = wrap(node.text, font, contentWidth);
         float lineHeight = lineHeight(node.style, font);
         LineMetrics metrics = font.getLineMetrics("Hg", RENDER_CONTEXT);

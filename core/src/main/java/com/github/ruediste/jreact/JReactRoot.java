@@ -14,8 +14,8 @@ import com.github.ruediste.jreact.events.KeyboardEvent;
 import com.github.ruediste.jreact.nodes.ComponentNode;
 import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
-import com.github.ruediste.jreact.style.Styles;
 
 public final class JReactRoot {
 
@@ -115,7 +115,7 @@ public final class JReactRoot {
             }
 
             applyInteractionState();
-            Styles.resolve(rootNode());
+            resolveStyles(rootNode());
             com.github.ruediste.jreact.layout.LayoutEngine.layout(rootNode(), viewportWidth, viewportHeight);
 
             if (pointerInside) {
@@ -123,7 +123,7 @@ public final class JReactRoot {
                 if (!hoverRef.equalsPath(hit)) {
                     hoverRef.setPath(hit);
                     applyInteractionState();
-                    Styles.resolve(rootNode());
+                    resolveStyles(rootNode());
                     com.github.ruediste.jreact.layout.LayoutEngine.layout(rootNode(), viewportWidth,
                             viewportHeight);
                 }
@@ -140,6 +140,19 @@ public final class JReactRoot {
         } finally {
             JReactContext.restoreContext(previousContext);
         }
+    }
+
+    public static void resolveStyles(Node node) {
+        if (node instanceof ElementNode element) {
+            Style style = new Style();
+            element.applyLayoutDefaults(style);
+            element.styleRules.stream()
+                    .filter(rule -> rule.selector().match(element).matches())
+                    .forEach(rule -> style.putAll(rule.style()));
+            style.putAll(element.inline);
+            element.style = style;
+        }
+        node.children().forEach(JReactRoot::resolveStyles);
     }
 
     public RefreshResult refresh(float viewportWidth, float viewportHeight) {
@@ -199,7 +212,8 @@ public final class JReactRoot {
     }
 
     private static void afterLayoutTree(Node node) {
-        node.afterLayout();
+        if (node instanceof ElementNode element)
+            element.afterLayout();
         for (Node child : node.children())
             afterLayoutTree(child);
     }
@@ -311,8 +325,8 @@ public final class JReactRoot {
         }
         if (hit != null)
             return hit;
-        if (node instanceof ElementNode && node.bounds.contains(x, y))
-            return node;
+        if (node instanceof ElementNode element && element.bounds.contains(x, y))
+            return element;
         return null;
     }
 
@@ -323,9 +337,11 @@ public final class JReactRoot {
 
     private void applyInteractionState(Node node, List<Node> path) {
         path.add(node);
-        node.hover = hoverRef.contains(node);
-        node.active = activeRef.contains(node);
-        node.focus = focusRef.equalsPath(path);
+        if (node instanceof ElementNode element) {
+            element.hover = hoverRef.contains(node);
+            element.active = activeRef.contains(node);
+            element.focus = focusRef.equalsPath(path);
+        }
         for (Node child : node.children())
             applyInteractionState(child, path);
         path.remove(path.size() - 1);
@@ -338,19 +354,23 @@ public final class JReactRoot {
             path.add(node);
         java.util.Collections.reverse(path);
         for (int index = 0; index < path.size() - 1; index++) {
-            path.get(index).dispatchCapture(event);
+            if (path.get(index) instanceof ElementNode element)
+                element.dispatchCapture(event);
             if (event.isStopPropagation())
                 return;
         }
         Node targetNode = path.getLast();
-        targetNode.dispatchCapture(event);
+        if (targetNode instanceof ElementNode element)
+            element.dispatchCapture(event);
         if (event.isStopPropagation())
             return;
-        targetNode.dispatchBubble(event);
+        if (targetNode instanceof ElementNode element)
+            element.dispatchBubble(event);
         if (event.isStopPropagation())
             return;
         for (int index = path.size() - 2; index >= 0; index--) {
-            path.get(index).dispatchBubble(event);
+            if (path.get(index) instanceof ElementNode element)
+                element.dispatchBubble(event);
             if (event.isStopPropagation())
                 return;
         }

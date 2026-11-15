@@ -1,49 +1,18 @@
 package com.github.ruediste.jreact.nodes;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import com.antepod.taffy.tree.Layout;
-import com.github.ruediste.jreact.EventListener;
-import com.github.ruediste.jreact.JReactEvent;
-import com.github.ruediste.jreact.style.Style;
-import com.github.ruediste.jreact.style.StyleRule;
-
 public class Node {
+
+    private List<Node> children = new ArrayList<>();
 
     public Node parent;
     public int depth;
     public Object key;
-
-    public String id;
-    public List<String> classNames = new ArrayList<>();
-
-    public final Style inline = new Style();
-    public final List<StyleRule> styleRules = new ArrayList<>();
-    public Style style = new Style();
-
-    public boolean hover;
-    public boolean active;
-    public boolean focus;
-    public boolean disabled;
-    public boolean focusable;
-    public String accessibleName;
-
-    public final Rectangle2D.Double bounds = new Rectangle2D.Double();
-
-    private final Map<Class<? extends JReactEvent>, List<EventListener<?>>> captureListeners = new HashMap<>();
-    private final Map<Class<? extends JReactEvent>, List<EventListener<?>>> bubbleListeners = new HashMap<>();
-    private Layout layout = Layout.zero();
-
-    public final List<Line> lines = new ArrayList<>();
-
-    private List<Node> children = new ArrayList<>();
 
     public Node() {
     }
@@ -73,6 +42,17 @@ public class Node {
         return Collections.unmodifiableList(children);
     }
 
+    public List<ElementNode> elementChildren() {
+        List<ElementNode> result = new ArrayList<>();
+        for (Node child : children) {
+            if (child instanceof ElementNode element)
+                result.add(element);
+            else
+                result.addAll(child.elementChildren());
+        }
+        return result;
+    }
+
     public Node add(Node child) {
         Objects.requireNonNull(child);
         if (child == this)
@@ -88,14 +68,6 @@ public class Node {
      * to be executed. Invoked on each render
      */
     public void afterRender() {
-
-    }
-
-    /**
-     * Called after the node has been laid out, allowing for any logic which
-     * depends on the final bounds to be executed. Invoked on each render.
-     */
-    public void afterLayout() {
 
     }
 
@@ -142,41 +114,6 @@ public class Node {
         for (Node child : replacement)
             add(child);
         return this;
-    }
-
-    public Layout getLayout() {
-        return layout;
-    }
-
-    public void setLayout(Layout layout) {
-        this.layout = Objects.requireNonNull(layout);
-    }
-
-    public void applyLayoutDefaults() {
-    }
-
-    public <T extends JReactEvent> Node on(Class<T> eventType, EventListener<T> listener) {
-        bubbleListeners.computeIfAbsent(Objects.requireNonNull(eventType), ignored -> new ArrayList<>())
-                .add(Objects.requireNonNull(listener));
-        return this;
-    }
-
-    public <T extends JReactEvent> Node capture(Class<T> eventType, EventListener<T> listener) {
-        captureListeners.computeIfAbsent(Objects.requireNonNull(eventType), ignored -> new ArrayList<>())
-                .add(Objects.requireNonNull(listener));
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void dispatchCapture(JReactEvent event) {
-        for (EventListener<?> listener : captureListeners.getOrDefault(event.getClass(), List.of()))
-            ((EventListener<JReactEvent>) listener).handle(event);
-    }
-
-    @SuppressWarnings("unchecked")
-    public void dispatchBubble(JReactEvent event) {
-        for (EventListener<?> listener : bubbleListeners.getOrDefault(event.getClass(), List.of()))
-            ((EventListener<JReactEvent>) listener).handle(event);
     }
 
     public record Identity(Object type, Object key) {

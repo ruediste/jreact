@@ -1,6 +1,6 @@
 package com.github.ruediste.jreacttest;
 
-import static com.github.ruediste.jreact.CoreComponents.text;
+import static com.github.ruediste.jreact.CoreElements.text;
 
 public final class MethodComponentFixture {
     private MethodComponentFixture() {

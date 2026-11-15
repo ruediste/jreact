@@ -11,20 +11,20 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.util.function.Consumer;
 
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.style.StyleProperties;
 
 public final class PaintUtils {
     private PaintUtils() {
     }
 
-    public static Shape shape(Node node) {
+    public static Shape shape(ElementNode node) {
         double radius = StyleProperties.RADIUS.get(node.style);
         return new RoundRectangle2D.Double(node.bounds.x, node.bounds.y, node.bounds.width, node.bounds.height,
                 radius * 2, radius * 2);
     }
 
-    public static void paintBorder(Node node, Graphics2D graphics, Shape outer) {
+    public static void paintBorder(ElementNode node, Graphics2D graphics, Shape outer) {
         StyleProperties.Border border = StyleProperties.BORDER_DECORATION.get(node.style);
         if (border == null)
             return;
@@ -64,7 +64,7 @@ public final class PaintUtils {
         graphics.fill(path);
     }
 
-    public static void shadow(Node node, Graphics2D graphics, StyleProperties.Shadow shadow,
+    public static void shadow(ElementNode node, Graphics2D graphics, StyleProperties.Shadow shadow,
             Consumer<Graphics2D> draw) {
         int radius = (int) Math.ceil(shadow.blur());
         int padding = radius * 2 + 2;

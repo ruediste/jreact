@@ -1,9 +1,9 @@
 package com.github.ruediste.jreact.storybook;
 
-import static com.github.ruediste.jreact.CoreComponents.div;
-import static com.github.ruediste.jreact.CoreComponents.text;
-import static com.github.ruediste.jreact.CoreComponents.viewportHeight;
-import static com.github.ruediste.jreact.CoreComponents.viewportWidth;
+import static com.github.ruediste.jreact.CoreElements.div;
+import static com.github.ruediste.jreact.CoreElements.text;
+import static com.github.ruediste.jreact.CoreElements.viewportHeight;
+import static com.github.ruediste.jreact.CoreElements.viewportWidth;
 
 import java.awt.Color;
 import java.awt.event.WindowAdapter;

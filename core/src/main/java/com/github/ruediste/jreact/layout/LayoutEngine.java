@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.antepod.taffy.geometry.Size;
@@ -27,11 +28,11 @@ public final class LayoutEngine {
             return;
 
         Map<Node, NodeId> nodeIds = new HashMap<>();
-        Map<NodeId, Node> nodesById = new HashMap<>();
+        Map<NodeId, ElementNode> nodesById = new HashMap<>();
 
         try (TaffyTree<Node> tree = new TaffyTree<>()) {
             List<NodeId> topLevel = new ArrayList<>();
-            for (Node child : visibleChildren(root))
+            for (ElementNode child : root.elementChildren())
                 topLevel.add(build(tree, child, nodeIds, nodesById));
 
             com.antepod.taffy.style.Style rootStyle = com.antepod.taffy.style.Style.builder()
@@ -51,27 +52,16 @@ public final class LayoutEngine {
         commitText(root);
     }
 
-    private static List<Node> visibleChildren(Node node) {
-        List<Node> result = new ArrayList<>();
-        for (Node child : node.children()) {
-            if (child instanceof ElementNode)
-                result.add(child);
-            else
-                result.addAll(visibleChildren(child));
-        }
-        return result;
-    }
-
-    private static NodeId build(TaffyTree<Node> tree, Node node, Map<Node, NodeId> nodeIds,
-            Map<NodeId, Node> nodesById) {
-        List<Node> children = visibleChildren(node);
+    private static NodeId build(TaffyTree<Node> tree, ElementNode node, Map<Node, NodeId> nodeIds,
+            Map<NodeId, ElementNode> nodesById) {
+        List<ElementNode> children = node.elementChildren();
         NodeId id;
         if (children.isEmpty()) {
             id = tree.newLeafWithContext(com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node.style),
                     node);
         } else {
             List<NodeId> childIds = new ArrayList<>();
-            for (Node child : children)
+            for (ElementNode child : children)
                 childIds.add(build(tree, child, nodeIds, nodesById));
             id = tree.newWithChildren(com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node.style),
                     childIds);
@@ -82,13 +72,13 @@ public final class LayoutEngine {
     }
 
     private static void assignLayouts(TaffyTree<Node> tree, NodeId id, float offsetX, float offsetY,
-            Map<NodeId, Node> nodesById) {
-        Node node = nodesById.get(id);
+            Map<NodeId, ElementNode> nodesById) {
+        ElementNode node = nodesById.get(id);
         Layout layout = tree.layout(id);
         float nodeX = offsetX;
         float nodeY = offsetY;
         if (node != null) {
-            node.setLayout(layout);
+            node.layout = Objects.requireNonNull(layout);
             node.bounds.setRect(offsetX + layout.location.x, offsetY + layout.location.y,
                     layout.size.width, layout.size.height);
             nodeX = (float) node.bounds.x;

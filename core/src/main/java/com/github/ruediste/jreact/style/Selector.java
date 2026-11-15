@@ -1,10 +1,10 @@
 package com.github.ruediste.jreact.style;
 
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.nodes.ElementNode;
 
 @FunctionalInterface
 public interface Selector {
-    public Result match(Node node);
+    public Result match(ElementNode node);
 
     // in the future, a parameter `Consumer<StyleRule> register` wil be added to
     // trigger targeted style rule evaluation when a relevant state changes on the

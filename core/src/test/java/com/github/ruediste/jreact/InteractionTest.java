@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreElements.div;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.events.KeyboardEvent;
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.nodes.ElementNode;
 
 class InteractionTest {
 
@@ -17,7 +17,7 @@ class InteractionTest {
     void hoverActiveFocusAndEventsWork() {
         JReactRoot root = new JReactRoot(() -> div().width(100).height(100));
         root.refresh(200, 200);
-        Node node = root.rootNode().children().get(0);
+        ElementNode node = (ElementNode) root.rootNode().children().get(0);
         int[] clicks = { 0 };
         int[] keys = { 0 };
         node.on(ClickEvent.class, event -> clicks[0]++);

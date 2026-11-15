@@ -1,10 +1,10 @@
 package com.github.ruediste.jreact.storybook;
 
-import static com.github.ruediste.jreact.CoreComponents.div;
-import static com.github.ruediste.jreact.CoreComponents.input;
-import static com.github.ruediste.jreact.CoreComponents.select;
-import static com.github.ruediste.jreact.CoreComponents.span;
-import static com.github.ruediste.jreact.CoreComponents.text;
+import static com.github.ruediste.jreact.CoreElements.div;
+import static com.github.ruediste.jreact.CoreElements.input;
+import static com.github.ruediste.jreact.CoreElements.select;
+import static com.github.ruediste.jreact.CoreElements.span;
+import static com.github.ruediste.jreact.CoreElements.text;
 
 import java.awt.Color;
 import java.util.List;

@@ -8,9 +8,9 @@ import javax.swing.Icon;
 
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.nodes.DivNode;
+import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.nodes.IconNode;
 import com.github.ruediste.jreact.nodes.InputNode;
-import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.nodes.SelectNode;
 import com.github.ruediste.jreact.nodes.SpanNode;
 import com.github.ruediste.jreact.nodes.TextNode;
@@ -19,19 +19,26 @@ import com.github.ruediste.jreact.style.StyleProperties.Property;
 import com.github.ruediste.jreact.style.Styles.LayoutStyleApi;
 import com.github.ruediste.jreact.style.Styles.StyleApiHelper;
 
-public final class CoreComponents {
+public final class CoreElements {
 
-    private CoreComponents() {
+    private CoreElements() {
     }
 
-    static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api> {
+    static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api>,
+            NodeAccessApiHelper<Api> {
 
         public Api api;
-        public Node node;
+        public ElementNode node;
 
-        public NodeApiHelper(Node node) {
+        public NodeApiHelper(ElementNode node) {
             this.node = node;
 
+        }
+
+        @Override
+        public Api apply(Consumer<ElementNode> updater) {
+            updater.accept(node);
+            return api;
         }
 
         @Override
@@ -54,6 +61,39 @@ public final class CoreComponents {
 
     }
 
+    public interface NodeAccessApiHelper<Api> {
+        Api apply(Consumer<ElementNode> updater);
+    }
+
+    public interface ElementNodeCoreApi<Self, Helper extends NodeAccessApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self key(Object key) {
+            return _helper().apply(n -> n.key = key);
+        }
+
+        default Self id(String id) {
+            return _helper().apply(n -> n.id = id);
+        }
+
+        default Self classNames(String... classNames) {
+            Objects.requireNonNull(classNames);
+            return _helper().apply(n -> {
+                n.classNames.clear();
+                for (String className : classNames)
+                    n.classNames.add(Objects.requireNonNull(className));
+            });
+        }
+
+        default Self className(String className) {
+            Objects.requireNonNull(className);
+            return _helper().apply(n -> n.classNames.add(className));
+        }
+
+        default Self accessibleName(String accessibleName) {
+            return _helper().apply(n -> n.accessibleName = accessibleName);
+        }
+    }
+
     public interface EventApiHelper<Api> {
         <T extends JReactEvent> Api on(Class<T> eventClass, EventListener<T> listener);
     }
@@ -64,7 +104,8 @@ public final class CoreComponents {
         }
     }
 
-    public static interface VisualStyleApiBase<Self> extends LayoutStyleApi<Self, NodeApiHelper<Self>>,
+    public static interface VisualStyleApiBase<Self> extends ElementNodeCoreApi<Self, NodeApiHelper<Self>>,
+            LayoutStyleApi<Self, NodeApiHelper<Self>>,
             com.github.ruediste.jreact.style.Styles.VisualStyleApi<Self, NodeApiHelper<Self>>,
             EventApi<Self, NodeApiHelper<Self>> {
     }
@@ -102,25 +143,25 @@ public final class CoreComponents {
         }
     }
 
-    static <T> T api(Node node) {
+    static <T> T api(ElementNode node) {
         var api = new NodeApi<T>();
         return api(node, api);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static <T> T api(Node node, NodeApi<? extends T> api) {
+    static <T> T api(ElementNode node, NodeApi<? extends T> api) {
         var builder = new NodeApiHelper<T>(node);
         api.builder = (NodeApiHelper) builder;
         builder.api = (T) api;
         return (T) api;
     }
 
-    private static <T> T addNode(Node node) {
+    private static <T> T addNode(ElementNode node) {
         JReactContext.addNode(node);
         return api(node);
     }
 
-    private static <T> T addNode(Node node, NodeApi<? extends T> api) {
+    private static <T> T addNode(ElementNode node, NodeApi<? extends T> api) {
         JReactContext.addNode(node);
         return api(node, api);
     }
@@ -151,12 +192,6 @@ public final class CoreComponents {
     }
 
     public interface InputApi extends VisualStyleApiBase<InputApi> {
-        default InputApi accessibleName(String accessibleName) {
-            var helper = _helper();
-            helper.node.accessibleName = accessibleName;
-            return helper.api;
-        }
-
         default InputApi disabled(boolean disabled) {
             var helper = _helper();
             helper.node.disabled = disabled;

@@ -27,8 +27,7 @@ import com.antepod.taffy.style.Overflow;
 import com.antepod.taffy.style.Position;
 import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
-import com.github.ruediste.jreact.CoreComponents;
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.style.StyleProperties.Border;
 import com.github.ruediste.jreact.style.StyleProperties.Property;
 import com.github.ruediste.jreact.style.StyleProperties.Shadow;
@@ -37,7 +36,7 @@ import com.github.ruediste.jreact.style.StyleProperties.Shadow;
  * Declares component-scoped style rules and resolves the node-tree cascade.
  *
  * <p>
- * Declarations belong to the active {@link CoreComponents} component context.
+ * Declarations belong to the active {@link CoreElements} component context.
  * Direct-child
  * scope applies a rule to every node rendered by the declaring component
  * itself,
@@ -55,18 +54,6 @@ import com.github.ruediste.jreact.style.StyleProperties.Shadow;
  * declarations.
  */
 public final class Styles {
-
-    public static void resolve(Node node) {
-
-        Style style = new Style();
-        node.styleRules.stream()
-                .filter(rule -> rule.selector().match(node).matches())
-                .forEach(rule -> style.putAll(rule.style()));
-        style.putAll(node.inline);
-        node.style = style;
-        node.applyLayoutDefaults();
-        node.children().forEach(Styles::resolve);
-    }
 
     public interface StyleApiHelper<Api> {
         <T> Api putStyle(Property<T> property, T value);
