@@ -2,10 +2,14 @@ package com.github.ruediste.jreact.nodes;
 
 import java.awt.Graphics2D;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.swing.Icon;
 
-public class IconNode extends VisualNode {
+import com.antepod.taffy.geometry.Size;
+import com.antepod.taffy.style.AvailableSpace;
+
+public class IconNode extends ElementNode {
 
     public Icon icon;
 
@@ -16,6 +20,11 @@ public class IconNode extends VisualNode {
     public IconNode(Object key, Icon icon) {
         super(key);
         this.icon = Objects.requireNonNull(icon);
+    }
+
+    @Override
+    public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
+        return new Size<>((float) icon.getIconWidth(), (float) icon.getIconHeight());
     }
 
     @Override

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.antepod.taffy.tree.Layout;
@@ -37,13 +36,14 @@ public class Node {
     public String accessibleName;
 
     public final Rectangle2D.Double bounds = new Rectangle2D.Double();
-    public final List<Line> lines = new ArrayList<>();
 
     private final Map<Class<? extends JReactEvent>, List<EventListener<?>>> captureListeners = new HashMap<>();
     private final Map<Class<? extends JReactEvent>, List<EventListener<?>>> bubbleListeners = new HashMap<>();
+    private Layout layout = Layout.zero();
+
+    public final List<Line> lines = new ArrayList<>();
 
     private List<Node> children = new ArrayList<>();
-    private Layout layout = Layout.zero();
 
     public Node() {
     }
@@ -83,11 +83,48 @@ public class Node {
         return this;
     }
 
-    public void reconcile(Optional<Node> oldNode) {
+    /**
+     * Called after the node has been rendered, allowing for any post-render logic
+     * to be executed. Invoked on each render
+     */
+    public void afterRender() {
 
     }
 
-    public void afterRender() {
+    /**
+     * Called after the node has been laid out, allowing for any logic which
+     * depends on the final bounds to be executed. Invoked on each render.
+     */
+    public void afterLayout() {
+
+    }
+
+    /**
+     * Called after the node has been created, allowing for any initialization logic
+     * to be executed. Invoked once after the node is added to the render tree.
+     * Unlike afterRender, this is not
+     * called if another node is reconciled into this node.
+     */
+    public void created() {
+    }
+
+    /**
+     * Called when the node is reconciled with a new node, allowing for any update
+     * logic
+     * to be executed. Invoked when the node is replaced by another node in the
+     * render tree.
+     */
+    public void reconcile(Node oldNode) {
+
+    }
+
+    /**
+     * Called when the node is no longer part of the render tree. Note that a node
+     * is reconciled into another node, this
+     * method will not be called for the old node. It only called when there is no
+     * replacement for this node in the render tree.
+     */
+    public void dispose() {
 
     }
 

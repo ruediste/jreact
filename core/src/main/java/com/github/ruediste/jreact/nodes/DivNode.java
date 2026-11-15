@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact.nodes;
 
-public class DivNode extends VisualNode {
+public class DivNode extends ElementNode {
 
     public DivNode() {
     }

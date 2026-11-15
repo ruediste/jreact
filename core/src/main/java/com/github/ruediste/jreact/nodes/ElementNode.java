@@ -7,18 +7,33 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
+import java.util.Optional;
 
+import com.antepod.taffy.geometry.Size;
+import com.antepod.taffy.style.AvailableSpace;
 import com.antepod.taffy.style.Display;
 import com.github.ruediste.jreact.PaintUtils;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class VisualNode extends Node {
+public class ElementNode extends Node {
 
-    public VisualNode() {
+    public ElementNode() {
     }
 
-    public VisualNode(Object key) {
+    public ElementNode(Object key) {
         super(key);
+    }
+
+    /**
+     * Computes the intrinsic size of this node for the layout engine. Called
+     * during layout for nodes without children.
+     *
+     * @param knownDimensions dimensions already fixed by the layout, if any
+     * @param availableSpace  space available to the node
+     * @return the intrinsic size of the node's content
+     */
+    public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
+        return Size.zeroFloat();
     }
 
     public Rectangle2D.Double paintBounds() {

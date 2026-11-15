@@ -45,8 +45,13 @@ final class Reconciler {
     }
 
     private static void reconcileNode(Context context, Node newNode, Optional<Node> oldNode) {
-        oldNode.ifPresent(o -> context.root.replaceNode(o, newNode));
-        newNode.reconcile(oldNode);
+        if (oldNode.isPresent()) {
+            Node old = oldNode.get();
+            context.root.replaceNode(old, newNode);
+            newNode.reconcile(old);
+        } else {
+            newNode.created();
+        }
 
         if (newNode instanceof ComponentNode newComponent) {
             var oldComponent = oldNode.map(ComponentNode.class::cast);
@@ -111,6 +116,7 @@ final class Reconciler {
 
     private static void disposeNode(JReactRoot root, Node node) {
         root.invalidateNode(node);
+        node.dispose();
         if (node instanceof ComponentNode component) {
             Fiber fiber = component.fiber;
             if (fiber != null)

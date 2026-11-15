@@ -44,7 +44,7 @@ class EffectTest {
             if (show.get().get())
                 new Child(dependency.get().get());
         });
-        root.setInvalidationCallback(() -> invalidations[0]++);
+        root.invalidationCallback = () -> invalidations[0]++;
 
         root.refresh();
         assertEquals(List.of("layout0"), log);

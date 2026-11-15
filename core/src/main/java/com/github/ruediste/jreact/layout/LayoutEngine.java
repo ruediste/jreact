@@ -13,10 +13,9 @@ import com.antepod.taffy.tree.Layout;
 import com.antepod.taffy.tree.NodeId;
 import com.antepod.taffy.tree.TaffyTree;
 import com.github.ruediste.jreact.TextLayout;
-import com.github.ruediste.jreact.nodes.IconNode;
+import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.nodes.TextNode;
-import com.github.ruediste.jreact.nodes.VisualNode;
 
 public final class LayoutEngine {
 
@@ -55,7 +54,7 @@ public final class LayoutEngine {
     private static List<Node> visibleChildren(Node node) {
         List<Node> result = new ArrayList<>();
         for (Node child : node.children()) {
-            if (child instanceof VisualNode)
+            if (child instanceof ElementNode)
                 result.add(child);
             else
                 result.addAll(visibleChildren(child));
@@ -103,13 +102,8 @@ public final class LayoutEngine {
             Size<AvailableSpace> availableSpace, NodeId id, Optional<Node> context,
             com.antepod.taffy.style.Style style) {
         Node node = context.orElse(null);
-        if (node instanceof TextNode text) {
-            AvailableSpace knownWidth = AvailableSpace.fromOptional(knownDimensions.width.orElse(null));
-            return TextLayout.measure(text.text, text.style, knownWidth, availableSpace.width,
-                    knownDimensions.width.orElse(0f));
-        }
-        if (node instanceof IconNode icon)
-            return new Size<>((float) icon.icon.getIconWidth(), (float) icon.icon.getIconHeight());
+        if (node instanceof ElementNode element)
+            return element.measure(knownDimensions, availableSpace);
         return Size.zeroFloat();
     }
 

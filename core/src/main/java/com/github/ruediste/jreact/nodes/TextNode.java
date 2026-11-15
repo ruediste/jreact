@@ -2,10 +2,14 @@ package com.github.ruediste.jreact.nodes;
 
 import java.awt.Graphics2D;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.antepod.taffy.geometry.Size;
+import com.antepod.taffy.style.AvailableSpace;
+import com.github.ruediste.jreact.TextLayout;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class TextNode extends VisualNode {
+public class TextNode extends ElementNode {
 
     public String text;
 
@@ -16,6 +20,13 @@ public class TextNode extends VisualNode {
     public TextNode(Object key, String text) {
         super(key);
         this.text = Objects.requireNonNull(text);
+    }
+
+    @Override
+    public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
+        AvailableSpace knownWidth = AvailableSpace.fromOptional(knownDimensions.width.orElse(null));
+        return TextLayout.measure(text, style, knownWidth, availableSpace.width,
+                knownDimensions.width.orElse(0f));
     }
 
     @Override

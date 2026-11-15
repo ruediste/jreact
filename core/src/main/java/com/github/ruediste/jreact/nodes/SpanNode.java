@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact.nodes;
 
-public class SpanNode extends VisualNode {
+public class SpanNode extends ElementNode {
 
     public SpanNode() {
     }

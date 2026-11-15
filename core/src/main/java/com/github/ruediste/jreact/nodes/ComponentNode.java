@@ -1,7 +1,6 @@
 package com.github.ruediste.jreact.nodes;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.github.ruediste.jreact.Fiber;
 
@@ -20,8 +19,14 @@ public abstract class ComponentNode extends Node {
     }
 
     @Override
-    public void reconcile(Optional<Node> oldNode) {
-        fiber = oldNode.map(o -> ((ComponentNode) o).fiber).orElseGet(Fiber::new);
+    public void created() {
+        fiber = new Fiber();
+        fiber.component = this;
+    }
+
+    @Override
+    public void reconcile(Node oldNode) {
+        fiber = ((ComponentNode) oldNode).fiber;
         fiber.component = this;
     }
 

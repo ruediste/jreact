@@ -1,18 +1,19 @@
 package com.github.ruediste.jreact;
 
+import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import com.antepod.taffy.style.Display;
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.events.KeyboardEvent;
 import com.github.ruediste.jreact.nodes.ComponentNode;
+import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.nodes.Node;
-import com.github.ruediste.jreact.nodes.VisualNode;
 import com.github.ruediste.jreact.style.StyleProperties;
 import com.github.ruediste.jreact.style.Styles;
 
@@ -29,8 +30,13 @@ public final class JReactRoot {
     private float viewportWidth;
     private float viewportHeight;
     private boolean rendering;
-    private Runnable invalidationCallback = () -> {
+    public Runnable invalidationCallback = () -> {
     };
+    public Consumer<Component> onComponentAdded = c -> {
+    };
+    public Consumer<Component> onComponentRemoved = c -> {
+    };
+
     private final NodeReference hoverRef = createReference();
     private final NodeReference activeRef = createReference();
     private final NodeReference focusRef = createReference();
@@ -57,7 +63,7 @@ public final class JReactRoot {
             }
 
         };
-        rootComponent.reconcile(Optional.empty());
+        rootComponent.created();
         this.rootFiber = rootComponent.fiber;
         this.markDirty(rootFiber);
     }
@@ -88,11 +94,6 @@ public final class JReactRoot {
 
     public boolean needsRender() {
         return !dirtyFibers.isEmpty();
-    }
-
-    public void setInvalidationCallback(Runnable callback) {
-        invalidationCallback = callback == null ? () -> {
-        } : callback;
     }
 
     public void render() {
@@ -128,6 +129,8 @@ public final class JReactRoot {
                 }
             }
 
+            afterLayoutTree(rootNode());
+
             runEffects(layoutEffects);
 
             Node focused = focusRef.target();
@@ -156,15 +159,18 @@ public final class JReactRoot {
 
     public void close() {
         validateThread();
-        Reconciler.disposeTree(this, rootNode());
+        JReactContext.Context previousContext = JReactContext.installContext(context);
+        try {
+            Reconciler.disposeTree(this, rootNode());
+        } finally {
+            JReactContext.restoreContext(previousContext);
+        }
 
         layoutEffects.clear();
         effects.clear();
         dirtyFibers.clear();
         for (NodeReference reference : nodeReferences)
             reference.clear();
-        invalidationCallback = () -> {
-        };
     }
 
     private void renderComponents() {
@@ -190,6 +196,12 @@ public final class JReactRoot {
         while (dirtyFibers.size() <= depth)
             dirtyFibers.add(new HashSet<>());
         dirtyFibers.get(depth).add(fiber);
+    }
+
+    private static void afterLayoutTree(Node node) {
+        node.afterLayout();
+        for (Node child : node.children())
+            afterLayoutTree(child);
     }
 
     private static void runEffects(List<Hooks.Effect> queue) {
@@ -289,7 +301,7 @@ public final class JReactRoot {
     private static Node hitTest(Node node, double x, double y) {
         if (node == null)
             return null;
-        if (node instanceof VisualNode visual && StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
+        if (node instanceof ElementNode visual && StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
             return null;
         Node hit = null;
         for (Node child : node.children()) {
@@ -299,7 +311,7 @@ public final class JReactRoot {
         }
         if (hit != null)
             return hit;
-        if (node instanceof VisualNode && node.bounds.contains(x, y))
+        if (node instanceof ElementNode && node.bounds.contains(x, y))
             return node;
         return null;
     }
