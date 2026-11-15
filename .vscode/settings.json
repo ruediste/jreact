@@ -1,11 +1,14 @@
 {
   "cSpell.words": [
     "addrs",
+    "antepod",
+    "bytebuddy",
     "ciphertext",
     "dafny",
     "forall",
     "hmac",
     "IPFS",
+    "jreact",
     "Kademlia",
     "keypair",
     "libp2p",
@@ -22,6 +25,7 @@
     "persistors",
     "rawtypes",
     "Repr",
+    "RETRANSFORMATION",
     "ruediste",
     "Stringifier",
     "unallocate",
@@ -175,5 +179,10 @@
     "iex": false,
     "javap": true,
     "set": true
+  },
+  "[java]": {
+    "editor.detectIndentation": false,
+    "editor.indentSize": 4,
+    "editor.insertSpaces": true
   }
 }

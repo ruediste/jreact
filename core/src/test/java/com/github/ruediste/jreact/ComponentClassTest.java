@@ -1,7 +1,7 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.div;
-import static com.github.ruediste.jreact.Ui.text;
+import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreComponents.text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

@@ -3,8 +3,7 @@ package com.github.ruediste.jreact.nodes;
 import java.awt.Graphics2D;
 import java.util.Objects;
 
-import com.github.ruediste.jreact.Style;
-import com.github.ruediste.jreact.StyleProperties;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 public class TextNode extends VisualNode {
 
@@ -21,8 +20,8 @@ public class TextNode extends VisualNode {
 
     @Override
     protected void paintContent(Graphics2D graphics) {
-        graphics.setFont(style.font());
-        Style.Shadow shadow = style.get(StyleProperties.TEXT_SHADOW, null);
+        graphics.setFont(StyleProperties.font(style));
+        StyleProperties.Shadow shadow = StyleProperties.TEXT_SHADOW.get(style);
         for (Line line : lines) {
             float x = (float) bounds.x + line.x();
             float y = (float) bounds.y + line.baseline();
@@ -30,7 +29,7 @@ public class TextNode extends VisualNode {
                 graphics.setColor(shadow.color());
                 graphics.drawString(line.text(), x + (float) shadow.offsetX(), y + (float) shadow.offsetY());
             }
-            graphics.setColor(style.color());
+            graphics.setColor(StyleProperties.COLOR.get(style));
             graphics.drawString(line.text(), x, y);
         }
     }

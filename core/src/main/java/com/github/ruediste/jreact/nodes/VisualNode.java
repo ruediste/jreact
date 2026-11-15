@@ -10,8 +10,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.antepod.taffy.style.Display;
 import com.github.ruediste.jreact.PaintUtils;
-import com.github.ruediste.jreact.Style;
-import com.github.ruediste.jreact.StyleProperties;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 public class VisualNode extends Node {
 
@@ -27,24 +26,24 @@ public class VisualNode extends Node {
     }
 
     public void paint(Graphics2D graphics, Rectangle clip) {
-        if (style.display() == Display.NONE)
+        if (StyleProperties.DISPLAY.get(style) == Display.NONE)
             return;
         if (clip != null && !bounds.intersects(clip))
             return;
 
         Composite previousComposite = graphics.getComposite();
-        double opacity = style.number(StyleProperties.OPACITY, 1);
+        double opacity = StyleProperties.OPACITY.get(style);
         if (opacity < 1) {
             float alpha = (float) Math.max(0, Math.min(1, opacity));
             graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
         }
         try {
             Shape shape = PaintUtils.shape(this);
-            Style.Shadow shadow = style.get(StyleProperties.BOX_SHADOW, null);
+            StyleProperties.Shadow shadow = StyleProperties.BOX_SHADOW.get(style);
             if (shadow != null)
                 PaintUtils.shadow(this, graphics, shadow, layer -> layer.fill(shape));
 
-            Color background = style.get(StyleProperties.BACKGROUND, null);
+            Color background = StyleProperties.BACKGROUND.get(style);
             if (background != null) {
                 graphics.setColor(background);
                 graphics.fill(shape);

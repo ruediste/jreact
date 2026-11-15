@@ -1,10 +1,10 @@
 package com.github.ruediste.jreact.storybook;
 
-import static com.github.ruediste.jreact.Ui.div;
-import static com.github.ruediste.jreact.Ui.input;
-import static com.github.ruediste.jreact.Ui.select;
-import static com.github.ruediste.jreact.Ui.span;
-import static com.github.ruediste.jreact.Ui.text;
+import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreComponents.input;
+import static com.github.ruediste.jreact.CoreComponents.select;
+import static com.github.ruediste.jreact.CoreComponents.span;
+import static com.github.ruediste.jreact.CoreComponents.text;
 
 import java.awt.Color;
 import java.util.List;
@@ -13,10 +13,10 @@ import com.antepod.taffy.style.Display;
 import com.antepod.taffy.style.FlexDirection;
 import com.github.ruediste.jreact.Hooks;
 import com.github.ruediste.jreact.State;
-import com.github.ruediste.jreact.Styles;
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.nodes.DivNode;
 import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.style.Styles;
 
 public final class StorybookStories {
     private StorybookStories() {

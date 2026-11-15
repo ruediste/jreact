@@ -25,7 +25,7 @@ class HooksStateTest {
     void stateSlotsAreStableAndWritesAreValidated() throws Exception {
         JReactRoot root = new JReactRoot(() -> {
         });
-        Ui.Context previous = Ui.installContext(root.context());
+        JReactContext.Context previous = JReactContext.installContext(root.context());
         try {
             Fiber fiber = installFiber(root, new Fiber());
 
@@ -65,7 +65,7 @@ class HooksStateTest {
             disposedState.set("y");
             assertEquals("x", disposedState.get());
         } finally {
-            Ui.restoreContext(previous);
+            JReactContext.restoreContext(previous);
         }
     }
 
@@ -73,7 +73,7 @@ class HooksStateTest {
     void memoAndCleanupFollowHookOrder() {
         JReactRoot root = new JReactRoot(() -> {
         });
-        Ui.Context previous = Ui.installContext(root.context());
+        JReactContext.Context previous = JReactContext.installContext(root.context());
         try {
             Fiber fiber = installFiber(root, new Fiber());
             int[] calls = { 0 };
@@ -99,7 +99,7 @@ class HooksStateTest {
             cleanupFiber.dispose();
             assertEquals(2, cleanups[0]);
         } finally {
-            Ui.restoreContext(previous);
+            JReactContext.restoreContext(previous);
         }
     }
 }

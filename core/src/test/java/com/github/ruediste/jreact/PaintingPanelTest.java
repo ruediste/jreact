@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.input;
+import static com.github.ruediste.jreact.CoreComponents.input;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

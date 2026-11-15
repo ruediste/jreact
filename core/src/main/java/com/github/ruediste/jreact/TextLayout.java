@@ -10,10 +10,12 @@ import com.antepod.taffy.geometry.Size;
 import com.antepod.taffy.style.AvailableSpace;
 import com.antepod.taffy.style.Direction;
 import com.antepod.taffy.style.Display;
-import com.antepod.taffy.tree.Layout;
 import com.antepod.taffy.style.TextAlign;
+import com.antepod.taffy.tree.Layout;
 import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.style.Style;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 /**
  * Measures and wraps text for textual nodes.
@@ -21,7 +23,8 @@ import com.github.ruediste.jreact.nodes.TextNode;
  * <p>
  * Nodes participate in layout through the measurement callback of the layout
  * engine: {@link #measure} reports the content-box size for a given available
- * width. For painted text, {@link #commit} records the final wrapped lines after
+ * width. For painted text, {@link #commit} records the final wrapped lines
+ * after
  * layout has allocated a content width; those lines are consumed by
  * {@link TextNode} when painting. Nodes backed by Swing components use the same
  * measurement but do not consume the wrapped lines.
@@ -34,7 +37,7 @@ public final class TextLayout {
 
     public static Size<java.lang.Float> measure(String text, Style style, AvailableSpace knownWidth,
             AvailableSpace availableWidth, float minimumWidth) {
-        Font font = style.font();
+        Font font = StyleProperties.font(style);
         float natural = naturalWidth(text, font);
         float width;
         if (knownWidth.isDefinite()) {
@@ -55,19 +58,19 @@ public final class TextLayout {
 
     public static void commit(TextNode node) {
         node.lines.clear();
-        if (node.style.display() == Display.NONE) {
+        if (StyleProperties.DISPLAY.get(node.style) == Display.NONE) {
             return;
         }
         Layout layout = node.getLayout();
-        Font font = node.style.font();
+        Font font = StyleProperties.font(node.style);
         float contentWidth = Math.max(0, node.getLayout().contentSize.width);
         List<String> lines = wrap(node.text, font, contentWidth);
         float lineHeight = lineHeight(node.style, font);
         LineMetrics metrics = font.getLineMetrics("Hg", RENDER_CONTEXT);
         float baseline = layout.border.top + layout.padding.top
                 + (lineHeight - metrics.getHeight()) / 2 + metrics.getAscent();
-        TextAlign align = node.style.textAlign();
-        boolean rtl = node.style.layoutDirection() == Direction.RTL;
+        TextAlign align = StyleProperties.TEXT_ALIGN.get(node.style);
+        boolean rtl = StyleProperties.WRITING_MODE.get(node.style) == Direction.RTL;
         for (String line : lines) {
             float offset = switch (align) {
                 case LEGACY_LEFT -> 0;
@@ -82,7 +85,7 @@ public final class TextLayout {
     }
 
     private static float lineHeight(Style style, Font font) {
-        double configured = style.lineHeight();
+        double configured = StyleProperties.LINE_HEIGHT.get(style);
         return Double.isNaN(configured) ? font.getLineMetrics("Hg", RENDER_CONTEXT).getHeight()
                 : (float) configured;
     }

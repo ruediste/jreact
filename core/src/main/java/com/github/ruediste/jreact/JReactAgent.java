@@ -80,7 +80,7 @@ public final class JReactAgent {
                 ALLOW_BODY.remove();
                 return false;
             }
-            Ui.addNode(new ComponentNodeImpl(method, self, arguments));
+            JReactContext.addNode(new ComponentNodeImpl(method, self, arguments));
             return true;
         }
     }

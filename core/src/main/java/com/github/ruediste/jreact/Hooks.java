@@ -22,7 +22,7 @@ public final class Hooks {
     @SuppressWarnings("unchecked")
     public static <T> State<T> useState(T initialValue) {
         Fiber fiber = fiber();
-        JReactRoot root = Ui.context().root;
+        JReactRoot root = JReactContext.root();
         return (State<T>) fiber.use(State.class,
                 () -> new State<Object>(initialValue, () -> {
                     root.markDirty(fiber);
@@ -76,7 +76,7 @@ public final class Hooks {
     private static void useEffect(EffectSetup setup, boolean layout, Object[] dependencies) {
         Objects.requireNonNull(setup);
         Objects.requireNonNull(dependencies);
-        JReactRoot root = Ui.context().root;
+        JReactRoot root = JReactContext.root();
         Effect hook;
         if (layout)
             hook = use(LayoutEffect.class, LayoutEffect::new);
@@ -90,7 +90,7 @@ public final class Hooks {
     }
 
     static Fiber fiber() {
-        Fiber fiber = Ui.context().fiber;
+        Fiber fiber = JReactContext.context().fiber;
         if (fiber == null)
             throw new IllegalStateException("No active component fiber");
         return fiber;

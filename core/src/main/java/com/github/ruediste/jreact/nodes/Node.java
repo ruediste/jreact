@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.antepod.taffy.tree.Layout;
 import com.github.ruediste.jreact.EventListener;
 import com.github.ruediste.jreact.JReactEvent;
-import com.github.ruediste.jreact.Style;
-import com.github.ruediste.jreact.Styles;
+import com.github.ruediste.jreact.style.Style;
+import com.github.ruediste.jreact.style.StyleRule;
 
 public class Node {
 
@@ -21,10 +22,13 @@ public class Node {
     public int depth;
     public Object key;
 
+    public String id;
+    public List<String> classNames = new ArrayList<>();
+
     public final Style inline = new Style();
     public Style style = new Style();
 
-    public final List<Styles.NodeStyleRules> declarations = new ArrayList<>();
+    public final List<StyleRule> styleRules = new ArrayList<>();
 
     public boolean hover;
     public boolean active;
@@ -104,11 +108,6 @@ public class Node {
         return this;
     }
 
-    public Node addDeclaration(Styles.NodeStyleRules declaration) {
-        declarations.add(Objects.requireNonNull(declaration));
-        return this;
-    }
-
     public Layout getLayout() {
         return layout;
     }
@@ -154,5 +153,12 @@ public class Node {
         public Line {
             Objects.requireNonNull(text);
         }
+    }
+
+    public Stream<Node> ancestors() {
+        Stream.Builder<Node> builder = Stream.builder();
+        for (Node ancestor = parent; ancestor != null; ancestor = ancestor.parent)
+            builder.add(ancestor);
+        return builder.build();
     }
 }

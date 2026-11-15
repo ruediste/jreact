@@ -33,6 +33,7 @@ import com.github.ruediste.jreact.nodes.InputNode;
 import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.nodes.SelectNode;
 import com.github.ruediste.jreact.nodes.VisualNode;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 public final class JReactPanel extends JPanel {
 
@@ -238,7 +239,6 @@ public final class JReactPanel extends JPanel {
         return field;
     }
 
-    @SuppressWarnings("unchecked")
     private JComboBox<String> createSelect() {
         JComboBox<String> select = new JComboBox<>();
         select.addActionListener(event -> selectChanged(select));
@@ -293,15 +293,15 @@ public final class JReactPanel extends JPanel {
 
         editor.setBounds((int) Math.round(node.bounds.x), (int) Math.round(node.bounds.y),
                 (int) Math.round(node.bounds.width), (int) Math.round(node.bounds.height));
-        editor.setFont(node.style.font());
-        editor.setForeground(node.style.color());
+        editor.setFont(StyleProperties.font(node.style));
+        editor.setForeground(StyleProperties.COLOR.get(node.style));
         editor.setEnabled(!node.disabled);
         editor.getAccessibleContext().setAccessibleName(node.accessibleName);
     }
 
     private static void paintTree(Node node, Graphics2D graphics, Rectangle clip) {
         if (node instanceof VisualNode visual) {
-            if (visual.style.display() == Display.NONE)
+            if (StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
                 return;
             visual.paint(graphics, clip);
         }

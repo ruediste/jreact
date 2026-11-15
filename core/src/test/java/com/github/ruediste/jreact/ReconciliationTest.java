@@ -1,7 +1,7 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.div;
-import static com.github.ruediste.jreact.Ui.text;
+import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreComponents.text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -24,11 +24,9 @@ class ReconciliationTest {
         AtomicReference<State<Boolean>> show = new AtomicReference<>();
 
         class Child extends Component {
-            String property;
 
-            Child(String property) {
-                this.property = property;
-            }
+            @SuppressWarnings("unused")
+            String value;
 
             @Override
             public void render() {
@@ -43,7 +41,11 @@ class ReconciliationTest {
             show.set(Hooks.useState(true));
             div(() -> {
                 if (show.get().get())
-                    new Child(property.get().get());
+                    new Child() {
+                        {
+                            value = property.get().get();
+                        }
+                    };
             });
         });
 

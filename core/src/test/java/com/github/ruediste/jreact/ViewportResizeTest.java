@@ -1,8 +1,8 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.div;
-import static com.github.ruediste.jreact.Ui.viewportHeight;
-import static com.github.ruediste.jreact.Ui.viewportWidth;
+import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreComponents.viewportHeight;
+import static com.github.ruediste.jreact.CoreComponents.viewportWidth;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

@@ -75,26 +75,21 @@ final class Reconciler {
 
     private static void renderBody(ComponentNode component) {
 
-        Ui.Context context = Ui.context();
+        JReactContext.Context context = JReactContext.context();
         var fiber = component.fiber;
 
         Fiber previousFiber = context.fiber;
         Consumer<Node> previousCallback = context.onNodeCreated;
-        Styles.NodeStyleRules previousRules = context.styleRules;
         int previousKeyCounter = context.keyCounter;
         List<Node> produced = new ArrayList<>();
 
         context.fiber = fiber;
         context.onNodeCreated = produced::add;
-        context.styleRules = new Styles.NodeStyleRules();
-        context.declarationChain.add(context.styleRules);
         context.keyCounter = 0;
         fiber.beginRender();
         try {
             component.render();
         } finally {
-            context.declarationChain.removeLast();
-            context.styleRules = previousRules;
             context.keyCounter = previousKeyCounter;
             context.fiber = previousFiber;
             context.onNodeCreated = previousCallback;

@@ -13,10 +13,12 @@ import com.github.ruediste.jreact.events.KeyboardEvent;
 import com.github.ruediste.jreact.nodes.ComponentNode;
 import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.nodes.VisualNode;
+import com.github.ruediste.jreact.style.StyleProperties;
+import com.github.ruediste.jreact.style.Styles;
 
 public final class JReactRoot {
 
-    private final Ui.Context context = new Ui.Context(this);
+    private final JReactContext.Context context = new JReactContext.Context(this);
     private final Thread ownerThread = Thread.currentThread();
     private final Fiber rootFiber;
     private final List<Hooks.Effect> layoutEffects = new ArrayList<>();
@@ -76,7 +78,7 @@ public final class JReactRoot {
             reference.invalidateAt(node);
     }
 
-    Ui.Context context() {
+    JReactContext.Context context() {
         return context;
     }
 
@@ -102,7 +104,7 @@ public final class JReactRoot {
         if (rendering)
             throw new IllegalStateException("A render is already in progress");
 
-        Ui.Context previousContext = Ui.installContext(context);
+        JReactContext.Context previousContext = JReactContext.installContext(context);
         try {
             beginRender();
             try {
@@ -133,7 +135,7 @@ public final class JReactRoot {
                     focused == null ? null : focused.key,
                     new Rectangle2D.Double(0, 0, viewportWidth, viewportHeight));
         } finally {
-            Ui.restoreContext(previousContext);
+            JReactContext.restoreContext(previousContext);
         }
     }
 
@@ -144,11 +146,11 @@ public final class JReactRoot {
 
     public void paintCompleted() {
         validateThread();
-        Ui.Context previousContext = Ui.installContext(context);
+        JReactContext.Context previousContext = JReactContext.installContext(context);
         try {
             runEffects(effects);
         } finally {
-            Ui.restoreContext(previousContext);
+            JReactContext.restoreContext(previousContext);
         }
     }
 
@@ -287,7 +289,7 @@ public final class JReactRoot {
     private static Node hitTest(Node node, double x, double y) {
         if (node == null)
             return null;
-        if (node instanceof VisualNode visual && visual.style.display() == Display.NONE)
+        if (node instanceof VisualNode visual && StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
             return null;
         Node hit = null;
         for (Node child : node.children()) {

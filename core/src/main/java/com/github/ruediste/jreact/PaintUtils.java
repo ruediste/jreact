@@ -12,19 +12,20 @@ import java.awt.image.Kernel;
 import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 public final class PaintUtils {
     private PaintUtils() {
     }
 
     public static Shape shape(Node node) {
-        double radius = node.style.number(StyleProperties.RADIUS, 0);
+        double radius = StyleProperties.RADIUS.get(node.style);
         return new RoundRectangle2D.Double(node.bounds.x, node.bounds.y, node.bounds.width, node.bounds.height,
                 radius * 2, radius * 2);
     }
 
     public static void paintBorder(Node node, Graphics2D graphics, Shape outer) {
-        Style.Border border = node.style.get(StyleProperties.BORDER_DECORATION, null);
+        StyleProperties.Border border = StyleProperties.BORDER_DECORATION.get(node.style);
         if (border == null)
             return;
         java.awt.geom.Rectangle2D.Double bounds = node.bounds;
@@ -33,7 +34,8 @@ public final class PaintUtils {
         double innerRight = Math.max(innerLeft, right - border.right().width());
         double innerTop = Math.min(bottom, top + border.top().width());
         double innerBottom = Math.max(innerTop, bottom - border.bottom().width());
-        double radius = Math.max(0, node.style.number(StyleProperties.RADIUS, 0)
+        double radius = Math.max(0, StyleProperties.RADIUS.get(node.style)
+
                 - Math.max(Math.max(border.left().width(), border.right().width()),
                         Math.max(border.top().width(), border.bottom().width())));
         Area ring = new Area(outer);
@@ -62,7 +64,8 @@ public final class PaintUtils {
         graphics.fill(path);
     }
 
-    public static void shadow(Node node, Graphics2D graphics, Style.Shadow shadow, Consumer<Graphics2D> draw) {
+    public static void shadow(Node node, Graphics2D graphics, StyleProperties.Shadow shadow,
+            Consumer<Graphics2D> draw) {
         int radius = (int) Math.ceil(shadow.blur());
         int padding = radius * 2 + 2;
         int width = Math.max(1, (int) Math.ceil(node.bounds.width) + padding * 2);

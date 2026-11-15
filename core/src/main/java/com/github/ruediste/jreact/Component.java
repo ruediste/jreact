@@ -11,7 +11,7 @@ public abstract class Component {
     public Object key;
 
     protected Component() {
-        Ui.addNode(new ComponentNodeImpl(getClass()));
+        JReactContext.addNode(new ComponentNodeImpl(getClass()));
     }
 
     public abstract void render();

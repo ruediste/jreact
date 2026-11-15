@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.div;
+import static com.github.ruediste.jreact.CoreComponents.div;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +15,7 @@ class InteractionTest {
 
     @Test
     void hoverActiveFocusAndEventsWork() {
-        JReactRoot root = new JReactRoot(() -> div(s -> s.width(100).height(100)));
+        JReactRoot root = new JReactRoot(() -> div().width(100).height(100));
         root.refresh(200, 200);
         Node node = root.rootNode().children().get(0);
         int[] clicks = { 0 };

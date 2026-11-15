@@ -22,3 +22,6 @@ Use https://kordamp.org/ikonli/ for icons
 
 ## Styling
 Likely remove the style rules. Extend inline styling with selectors/predicates, to replicate Tailwind CSS functionality.
+
+## Swing Integration
+Move creation/update/destruction of Swing Components to the individual node class.

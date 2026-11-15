@@ -1,7 +1,7 @@
 package com.github.ruediste.jreact;
 
-import static com.github.ruediste.jreact.Ui.div;
-import static com.github.ruediste.jreact.Ui.text;
+import static com.github.ruediste.jreact.CoreComponents.div;
+import static com.github.ruediste.jreact.CoreComponents.text;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import com.antepod.taffy.style.FlexDirection;
 import com.github.ruediste.jreact.nodes.DivNode;
 import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.style.StyleProperties;
+import com.github.ruediste.jreact.style.Styles;
 
 class StylesLayoutTest {
 
