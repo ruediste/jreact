@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import javax.swing.Icon;
 
+import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.nodes.DivNode;
 import com.github.ruediste.jreact.nodes.IconNode;
 import com.github.ruediste.jreact.nodes.InputNode;
@@ -23,7 +24,7 @@ public final class CoreComponents {
     private CoreComponents() {
     }
 
-    static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api> {
+    static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api> {
 
         public Api api;
         public Node node;
@@ -45,10 +46,27 @@ public final class CoreComponents {
             return api;
         }
 
+        @Override
+        public <T extends JReactEvent> Api on(Class<T> eventClass, EventListener<T> listener) {
+            node.on(eventClass, listener);
+            return api;
+        }
+
+    }
+
+    public interface EventApiHelper<Api> {
+        <T extends JReactEvent> Api on(Class<T> eventClass, EventListener<T> listener);
+    }
+
+    public interface EventApi<Self, Helper extends EventApiHelper<Self>> extends ApiHelperProvider<Helper> {
+        default Self onClick(EventListener<ClickEvent> onClick) {
+            return _helper().on(ClickEvent.class, onClick);
+        }
     }
 
     public static interface VisualStyleApiBase<Self> extends LayoutStyleApi<Self, NodeApiHelper<Self>>,
-            com.github.ruediste.jreact.style.Styles.VisualStyleApi<Self, NodeApiHelper<Self>> {
+            com.github.ruediste.jreact.style.Styles.VisualStyleApi<Self, NodeApiHelper<Self>>,
+            EventApi<Self, NodeApiHelper<Self>> {
     }
 
     public static interface VisualStyleApi extends VisualStyleApiBase<VisualStyleApi> {

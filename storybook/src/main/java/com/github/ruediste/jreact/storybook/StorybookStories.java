@@ -50,7 +50,9 @@ public final class StorybookStories {
             div()
                     .padding(10)
                     .radius(8)
-                    .backgroundColor(new Color(59, 130, 246)).children(
+                    .backgroundColor(new Color(59, 130, 246))
+                    .onClick(e -> count.set(count.get() + 1))
+                    .children(
                             () -> text("Clicked " + count.get() + " times").color(Color.WHITE));
             div().width(12);
             div().padding(10).radius(8).backgroundColor(new Color(229, 231, 235))
@@ -110,6 +112,7 @@ public final class StorybookStories {
         String[] tasks = { "Design data model", "Wire refresh pipeline", "Paint the tree", "Write tests" };
         for (String task : tasks) {
             div().padding(12).margin(0, 0, 8, 0).radius(8).backgroundColor(Color.WHITE)
+                    .onClick(e -> completed.update(x -> x + 1))
                     .children(() -> text(task));
         }
         text(completed.get() + " interactions").color(new Color(75, 85, 99));

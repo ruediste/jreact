@@ -60,7 +60,9 @@ public final class Storybook {
                         div().padding(10)
                                 .radius(8)
                                 .margin(0, 0, 6, 0)
-                                .backgroundColor(active ? new Color(59, 130, 246) : new Color(31, 41, 55)).children(
+                                .backgroundColor(active ? new Color(59, 130, 246) : new Color(31, 41, 55))
+                                .onClick(e -> selected.set(story))
+                                .children(
                                         () -> text(story)
                                                 .color(active ? Color.WHITE : new Color(209, 213, 219)));
                     }
