@@ -48,8 +48,6 @@ public class ElementNode extends Node {
     private final Map<Class<? extends JReactEvent>, List<EventListener<?>>> bubbleListeners = new HashMap<>();
     public Layout layout = Layout.zero();
 
-    public final List<Line> lines = new ArrayList<>();
-
     public <T extends JReactEvent> ElementNode on(Class<T> eventType, EventListener<T> listener) {
         bubbleListeners.computeIfAbsent(Objects.requireNonNull(eventType), ignored -> new ArrayList<>())
                 .add(Objects.requireNonNull(listener));

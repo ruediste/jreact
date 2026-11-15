@@ -1,6 +1,8 @@
 package com.github.ruediste.jreact.nodes;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -12,6 +14,8 @@ import com.github.ruediste.jreact.style.StyleProperties;
 public class TextNode extends ElementNode {
 
     public String text;
+
+    public final List<Line> lines = new ArrayList<>();
 
     public TextNode(String text) {
         this(null, text);
