@@ -13,10 +13,6 @@ import com.antepod.taffy.style.Display;
 import com.antepod.taffy.style.FlexDirection;
 import com.github.ruediste.jreact.Hooks;
 import com.github.ruediste.jreact.State;
-import com.github.ruediste.jreact.events.ClickEvent;
-import com.github.ruediste.jreact.nodes.DivNode;
-import com.github.ruediste.jreact.nodes.TextNode;
-import com.github.ruediste.jreact.style.Styles;
 
 public final class StorybookStories {
     private StorybookStories() {
@@ -36,13 +32,13 @@ public final class StorybookStories {
     }
 
     private static void Overview() {
-        div(s -> s.padding(20).borderRadius(12).backgroundColor(Color.WHITE)
-                .flexDirection(FlexDirection.COLUMN), () -> {
+        div().padding(20).radius(12).backgroundColor(Color.WHITE)
+                .flexDirection(FlexDirection.COLUMN).children(() -> {
                     text("Primitives compose into a synchronous Java UI.");
-                    div(s -> s.height(12));
+                    div().height(12);
                     span(() -> {
                         text("Div, ");
-                        span(s -> s.fontWeight(true), () -> text("Span"));
+                        span().bold(true).children(() -> text("Span"));
                         text(", and Text are the base building blocks.");
                     });
                 });
@@ -50,38 +46,32 @@ public final class StorybookStories {
 
     private static void Buttons() {
         State<Integer> count = Hooks.useState(0);
-        Styles.type(DivNode.class).className("button-primary").style().backgroundColor(new Color(59, 130, 246));
-        Styles.type(DivNode.class).className("button-primary").hover().style().backgroundColor(new Color(37, 99, 235));
-        Styles.type(DivNode.class).className("button-secondary").style().backgroundColor(new Color(229, 231, 235));
-        Styles.type(DivNode.class).className("button-secondary").hover().style()
-                .backgroundColor(new Color(209, 213, 219));
-        div(s -> s.flexDirection(FlexDirection.ROW), () -> {
-            div(s -> s
-                    .className("button-primary")
+        div().flexDirection(FlexDirection.ROW).children(() -> {
+            div()
                     .padding(10)
-                    .borderRadius(8),
-                    node -> node.on(ClickEvent.class, event -> count.set(count.get() + 1)),
-                    () -> text("Clicked " + count.get() + " times", s -> s.color(Color.WHITE)));
-            div(s -> s.width(12));
-            div(s -> s.className("button-secondary").padding(10).borderRadius(8),
-                    () -> text("Secondary"));
+                    .radius(8)
+                    .backgroundColor(new Color(59, 130, 246)).children(
+                            () -> text("Clicked " + count.get() + " times").color(Color.WHITE));
+            div().width(12);
+            div().padding(10).radius(8).backgroundColor(new Color(229, 231, 235))
+                    .children(() -> text("Secondary"));
         });
     }
 
     private static void Inputs() {
         State<String> name = Hooks.useState("JReact");
         State<String> variant = Hooks.useState("Primary");
-        text("Controlled input", s -> s.fontWeight(true));
-        input(name.get(), name::set, s -> s.width(240).padding(8));
+        text("Controlled input").bold(true);
+        input(name.get(), name::set).width(240).padding(8);
         text("Hello, " + name.get());
-        div(s -> s.height(16));
-        text("Select", s -> s.fontWeight(true));
-        select(variant.get(), List.of("Primary", "Secondary", "Danger"), variant::set, s -> s.width(180));
+        div().height(16);
+        text("Select").bold(true);
+        select(variant.get(), List.of("Primary", "Secondary", "Danger"), variant::set).width(180);
         text("Variant: " + variant.get());
     }
 
     private static void Feedback() {
-        div(s -> s.flexDirection(FlexDirection.ROW), () -> {
+        div().flexDirection(FlexDirection.ROW).children(() -> {
             badge("Info", new Color(219, 234, 254), new Color(30, 64, 175));
             badge("Success", new Color(220, 252, 231), new Color(22, 101, 52));
             badge("Warning", new Color(254, 249, 195), new Color(133, 77, 14));
@@ -89,31 +79,29 @@ public final class StorybookStories {
     }
 
     private static void badge(String label, Color background, Color foreground) {
-        div(s -> s.padding(10).margin(0, 8, 0, 0).borderRadius(999).backgroundColor(background),
-                () -> text(label, s -> s.color(foreground).fontWeight(true)));
+        div().padding(10).margin(0, 8, 0, 0).radius(999).backgroundColor(background)
+                .children(() -> text(label).color(foreground).bold(true));
     }
 
     private static void FlexLayout() {
         // --8<-- [start:flex-layout]
-        div(s -> s.display(Display.FLEX)
+        div().display(Display.FLEX)
                 .flexDirection(FlexDirection.ROW)
                 .padding(16)
-                .backgroundColor(new Color(255, 255, 255)), () -> {
-                    div(s -> s.flexGrow(1).padding(12).backgroundColor(new Color(219, 234, 254)),
-                            () -> text("Flexible"));
-                    div(s -> s.width(160).padding(12).backgroundColor(new Color(220, 252, 231)),
-                            () -> text("Fixed width"));
+                .backgroundColor(new Color(255, 255, 255)).children(() -> {
+                    div().flexGrow(1).padding(12).backgroundColor(new Color(219, 234, 254))
+                            .children(() -> text("Flexible"));
+                    div().width(160).padding(12).backgroundColor(new Color(220, 252, 231))
+                            .children(() -> text("Fixed width"));
                 });
         // --8<-- [end:flex-layout]
     }
 
     private static void CustomDialog() {
         // --8<-- [start:custom-dialog]
-        Styles.type(DivNode.class).className("dialog").style()
-                .padding(24).borderRadius(12).backgroundColor(Color.WHITE);
-        Styles.type(TextNode.class).className("dialog-title").style()
-                .fontSize(20).fontWeight(true);
-        div(s -> s.className("dialog"), () -> text("Dialog title", s -> s.className("dialog-title")));
+        div().padding(24).radius(12).backgroundColor(Color.WHITE);
+        div().fontSize(20).bold(true);
+        div().children(() -> text("Dialog title"));
         // --8<-- [end:custom-dialog]
     }
 
@@ -121,10 +109,9 @@ public final class StorybookStories {
         State<Integer> completed = Hooks.useState(0);
         String[] tasks = { "Design data model", "Wire refresh pipeline", "Paint the tree", "Write tests" };
         for (String task : tasks) {
-            div(s -> s.padding(12).margin(0, 0, 8, 0).borderRadius(8).backgroundColor(Color.WHITE),
-                    node -> node.on(ClickEvent.class, event -> completed.set(completed.get() + 1)),
-                    () -> text(task));
+            div().padding(12).margin(0, 0, 8, 0).radius(8).backgroundColor(Color.WHITE)
+                    .children(() -> text(task));
         }
-        text(completed.get() + " interactions", s -> s.color(new Color(75, 85, 99)));
+        text(completed.get() + " interactions").color(new Color(75, 85, 99));
     }
 }

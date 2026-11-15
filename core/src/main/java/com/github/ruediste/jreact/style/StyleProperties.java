@@ -53,23 +53,108 @@ public abstract class StyleProperties {
         void update(Style style, T value, com.antepod.taffy.style.Style.Builder builder);
     }
 
+    public enum MultiPropertyTaffyUpdater {
+        SIZE {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.size(new Size<>(WIDTH.get(style), HEIGHT.get(style)));
+            }
+        },
+        MIN_SIZE {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.minSize(new Size<>(MIN_WIDTH.get(style), MIN_HEIGHT.get(style)));
+            }
+        },
+        MAX_SIZE {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.maxSize(new Size<>(MAX_WIDTH.get(style), MAX_HEIGHT.get(style)));
+            }
+        },
+        INSET {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.inset(new Rect<>(LEFT.get(style), RIGHT.get(style), TOP.get(style), BOTTOM.get(style)));
+            }
+        },
+        MARGIN {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.margin(new Rect<>(MARGIN_LEFT.get(style), MARGIN_RIGHT.get(style),
+                        MARGIN_TOP.get(style), MARGIN_BOTTOM.get(style)));
+            }
+        },
+        PADDING {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.padding(new Rect<>(PADDING_LEFT.get(style), PADDING_RIGHT.get(style),
+                        PADDING_TOP.get(style), PADDING_BOTTOM.get(style)));
+            }
+        },
+        BORDER {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.border(new Rect<>(BORDER_LEFT_WIDTH.get(style), BORDER_RIGHT_WIDTH.get(style),
+                        BORDER_TOP_WIDTH.get(style), BORDER_BOTTOM_WIDTH.get(style)));
+            }
+        },
+        OVERFLOW {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.overflow(new Point<>(OVERFLOW_X.get(style), OVERFLOW_Y.get(style)));
+            }
+        },
+        GAP {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.gap(new Size<>(COLUMN_GAP.get(style), ROW_GAP.get(style)));
+            }
+        },
+        GRID_ROW {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.gridRow(new Line<>(GRID_ROW_START.get(style), GRID_ROW_END.get(style)));
+            }
+        },
+        GRID_COLUMN {
+            @Override
+            public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
+                builder.gridColumn(new Line<>(GRID_COLUMN_START.get(style), GRID_COLUMN_END.get(style)));
+            }
+        };
+
+        public abstract void update(Style style, com.antepod.taffy.style.Style.Builder builder);
+    }
+
     /** A single typed style property. */
     public static class Property<T> {
         public final String name;
         private final Optional<TaffyUpdater<T>> taffyUpdater;
+        private final Optional<MultiPropertyTaffyUpdater> multiPropertyUpdater;
         private final T defaultValue;
 
         Property(String name) {
-            this(name, null, null);
+            this(name, null, null, null);
         }
 
         Property(String name, TaffyUpdater<T> taffyUpdater) {
-            this(name, taffyUpdater, null);
+            this(name, taffyUpdater, null, null);
         }
 
         Property(String name, TaffyUpdater<T> taffyUpdater, T defaultValue) {
+            this(name, taffyUpdater, defaultValue, null);
+        }
+
+        Property(String name, T defaultValue, MultiPropertyTaffyUpdater multiPropertyUpdater) {
+            this(name, null, defaultValue, multiPropertyUpdater);
+        }
+
+        private Property(String name, TaffyUpdater<T> taffyUpdater, T defaultValue,
+                MultiPropertyTaffyUpdater multiPropertyUpdater) {
             this.name = name;
             this.taffyUpdater = Optional.ofNullable(taffyUpdater);
+            this.multiPropertyUpdater = Optional.ofNullable(multiPropertyUpdater);
             this.defaultValue = defaultValue;
             properties.add(this);
         }
@@ -85,6 +170,10 @@ public abstract class StyleProperties {
         @SuppressWarnings("unchecked")
         void applyTaffy(Style style, Object value, com.antepod.taffy.style.Style.Builder builder) {
             taffyUpdater.ifPresent(updater -> updater.update(style, (T) value, builder));
+        }
+
+        void registerTaffyUpdater(Style style) {
+            multiPropertyUpdater.ifPresent(style.taffyUpdaters::add);
         }
 
         @SuppressWarnings("unchecked")
@@ -108,14 +197,14 @@ public abstract class StyleProperties {
         }
 
         public void set(Style style, T value) {
-            style.values.put(this, Objects.requireNonNull(value));
+            style.put(this, Objects.requireNonNull(value));
         }
 
         public void setNullable(Style style, T value) {
             if (value == null) {
                 style.values.remove(this);
             } else {
-                style.values.put(this, value);
+                style.put(this, value);
             }
         }
     }
@@ -139,6 +228,8 @@ public abstract class StyleProperties {
         var builder = com.antepod.taffy.style.Style.builder();
         for (var entry : style.values.entrySet())
             entry.getKey().applyTaffy(style, entry.getValue(), builder);
+        for (var updater : style.taffyUpdaters)
+            updater.update(style, builder);
         return builder.build();
     }
 
@@ -187,6 +278,7 @@ public abstract class StyleProperties {
         }
     }
 
+    // Visual style properties
     public static final Property<Color> BACKGROUND = new Property<>("background");
     public static final Property<Color> COLOR = new Property<>("color", null,
             new Color(32, 36, 40));
@@ -204,79 +296,120 @@ public abstract class StyleProperties {
     public static final DoubleProperty OPACITY = new DoubleProperty("opacity", null, 1.0);
 
     // CSS layout properties used by the layout engine.
-    public static final DoubleProperty GROW = new DoubleProperty("grow",
-            (style, value, builder) -> builder.flexGrow(value.floatValue()), 0.0);
-    public static final DoubleProperty SHRINK = new DoubleProperty("shrink",
-            (style, value, builder) -> builder.flexShrink(value.floatValue()), 1.0);
     public static final Property<Display> DISPLAY = new Property<>("display",
             (style, value, builder) -> builder.display(value), Display.DEFAULT);
     public static final Property<Position> POSITION = new Property<>("position",
             (style, value, builder) -> builder.position(value), Position.RELATIVE);
-    public static final Property<Direction> WRITING_MODE = new Property<>("writing-direction",
-            (style, value, builder) -> builder.direction(value), Direction.LTR);
-    public static final Property<Float> FLOAT_MODE = new Property<>("float",
+    public static final Property<Float> FLOAT = new Property<>("float",
             (style, value, builder) -> builder.floatValue(value), Float.NONE);
     public static final Property<Clear> CLEAR = new Property<>("clear",
             (style, value, builder) -> builder.clear(value), Clear.NONE);
+    public static final Property<Direction> DIRECTION = new Property<>("direction",
+            (style, value, builder) -> builder.direction(value), Direction.LTR);
     public static final Property<BoxSizing> BOX_SIZING = new Property<>("box-sizing",
             (style, value, builder) -> builder.boxSizing(value), BoxSizing.BORDER_BOX);
-    public static final Property<TextAlign> TEXT_ALIGN = new Property<>("text-align",
-            (style, value, builder) -> builder.textAlign(value), TextAlign.AUTO);
+
+    public static final Property<LengthPercentageAuto> TOP = multiProperty("top",
+            LengthPercentageAuto.AUTO, MultiPropertyTaffyUpdater.INSET);
+    public static final Property<LengthPercentageAuto> RIGHT = multiProperty("right",
+            LengthPercentageAuto.AUTO, MultiPropertyTaffyUpdater.INSET);
+    public static final Property<LengthPercentageAuto> BOTTOM = multiProperty("bottom",
+            LengthPercentageAuto.AUTO, MultiPropertyTaffyUpdater.INSET);
+    public static final Property<LengthPercentageAuto> LEFT = multiProperty("left",
+            LengthPercentageAuto.AUTO, MultiPropertyTaffyUpdater.INSET);
+
+    public static final Property<Dimension> WIDTH = multiProperty("width",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.SIZE);
+    public static final Property<Dimension> HEIGHT = multiProperty("height",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.SIZE);
+    public static final Property<Dimension> MIN_WIDTH = multiProperty("min-width",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.MIN_SIZE);
+    public static final Property<Dimension> MIN_HEIGHT = multiProperty("min-height",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.MIN_SIZE);
+    public static final Property<Dimension> MAX_WIDTH = multiProperty("max-width",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.MAX_SIZE);
+    public static final Property<Dimension> MAX_HEIGHT = multiProperty("max-height",
+            Dimension.AUTO, MultiPropertyTaffyUpdater.MAX_SIZE);
+    public static final Property<java.lang.Float> ASPECT_RATIO = new Property<>("aspect-ratio",
+            (style, value, builder) -> builder.aspectRatio(value));
+
+    public static final Property<LengthPercentageAuto> MARGIN_TOP = multiProperty("margin-top",
+            LengthPercentageAuto.ZERO, MultiPropertyTaffyUpdater.MARGIN);
+    public static final Property<LengthPercentageAuto> MARGIN_RIGHT = multiProperty("margin-right",
+            LengthPercentageAuto.ZERO, MultiPropertyTaffyUpdater.MARGIN);
+    public static final Property<LengthPercentageAuto> MARGIN_BOTTOM = multiProperty("margin-bottom",
+            LengthPercentageAuto.ZERO, MultiPropertyTaffyUpdater.MARGIN);
+    public static final Property<LengthPercentageAuto> MARGIN_LEFT = multiProperty("margin-left",
+            LengthPercentageAuto.ZERO, MultiPropertyTaffyUpdater.MARGIN);
+
+    public static final Property<LengthPercentage> PADDING_TOP = multiProperty("padding-top",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.PADDING);
+    public static final Property<LengthPercentage> PADDING_RIGHT = multiProperty("padding-right",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.PADDING);
+    public static final Property<LengthPercentage> PADDING_BOTTOM = multiProperty("padding-bottom",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.PADDING);
+    public static final Property<LengthPercentage> PADDING_LEFT = multiProperty("padding-left",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.PADDING);
+
+    public static final Property<LengthPercentage> BORDER_TOP_WIDTH = multiProperty("border-top-width",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
+    public static final Property<LengthPercentage> BORDER_RIGHT_WIDTH = multiProperty("border-right-width",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
+    public static final Property<LengthPercentage> BORDER_BOTTOM_WIDTH = multiProperty("border-bottom-width",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
+    public static final Property<LengthPercentage> BORDER_LEFT_WIDTH = multiProperty("border-left-width",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
+
+    public static final Property<Overflow> OVERFLOW_X = multiProperty("overflow-x",
+            Overflow.VISIBLE, MultiPropertyTaffyUpdater.OVERFLOW);
+    public static final Property<Overflow> OVERFLOW_Y = multiProperty("overflow-y",
+            Overflow.VISIBLE, MultiPropertyTaffyUpdater.OVERFLOW);
+    public static final Property<java.lang.Float> SCROLLBAR_WIDTH = new Property<>(
+            "scrollbar-width",
+            (style, value, builder) -> builder.scrollbarWidth(value), 0.0f);
+
+    public static final Property<AlignContent> ALIGN_CONTENT = new Property<>("align-content",
+            (style, value, builder) -> builder.alignContent(Optional.of(value)));
     public static final Property<AlignItems> ALIGN_ITEMS = new Property<>("align-items",
             (style, value, builder) -> builder.alignItems(Optional.of(value)));
     public static final Property<AlignItems> ALIGN_SELF = new Property<>("align-self",
             (style, value, builder) -> builder.alignSelf(Optional.of(value)));
-    public static final Property<AlignContent> ALIGN_CONTENT = new Property<>("align-content",
-            (style, value, builder) -> builder.alignContent(Optional.of(value)));
     public static final Property<AlignContent> JUSTIFY_CONTENT = new Property<>("justify-content",
             (style, value, builder) -> builder.justifyContent(Optional.of(value)));
     public static final Property<AlignItems> JUSTIFY_ITEMS = new Property<>("justify-items",
             (style, value, builder) -> builder.justifyItems(Optional.of(value)));
     public static final Property<AlignItems> JUSTIFY_SELF = new Property<>("justify-self",
             (style, value, builder) -> builder.justifySelf(Optional.of(value)));
+
     public static final Property<FlexDirection> FLEX_DIRECTION = new Property<>("flex-direction",
             (style, value, builder) -> builder.flexDirection(value), FlexDirection.ROW);
     public static final Property<FlexWrap> FLEX_WRAP = new Property<>("flex-wrap",
             (style, value, builder) -> builder.flexWrap(value), FlexWrap.NO_WRAP);
     public static final Property<Dimension> FLEX_BASIS = new Property<>("flex-basis",
             (style, value, builder) -> builder.flexBasis(value), Dimension.AUTO);
-    public static final Property<Size<Dimension>> SIZE = new Property<>("size",
-            (style, value, builder) -> builder.size(value), autoSize());
-    public static final Property<Size<Dimension>> MIN_SIZE = new Property<>("min-size",
-            (style, value, builder) -> builder.minSize(value), autoSize());
-    public static final Property<Size<Dimension>> MAX_SIZE = new Property<>("max-size",
-            (style, value, builder) -> builder.maxSize(value), autoSize());
-    public static final Property<java.lang.Float> ASPECT_RATIO = new Property<>("aspect-ratio",
-            (style, value, builder) -> builder.aspectRatio(Optional.of(value)));
-    public static final Property<Size<LengthPercentage>> GAP = new Property<>("gap",
-            (style, value, builder) -> builder.gap(value),
-            new Size<>(LengthPercentage.ZERO, LengthPercentage.ZERO));
-    public static final Property<Rect<LengthPercentageAuto>> MARGIN = new Property<>("margin",
-            (style, value, builder) -> builder.margin(value), zeroAutoRect());
-    public static final Property<Rect<LengthPercentage>> PADDING = new Property<>("padding",
-            (style, value, builder) -> builder.padding(value), zeroLpRect());
-    public static final Property<Rect<LengthPercentage>> BORDER = new Property<>("border",
-            (style, value, builder) -> builder.border(value), zeroLpRect());
-    public static final Property<Rect<LengthPercentageAuto>> INSET = new Property<>("inset",
-            (style, value, builder) -> builder.inset(value), autoRect());
-    public static final Property<Boolean> ITEM_IS_TABLE = new Property<>("item-is-table",
-            (style, value, builder) -> builder.itemIsTable(value), false);
-    public static final Property<Boolean> ITEM_IS_REPLACED = new Property<>("item-is-replaced",
-            (style, value, builder) -> builder.itemIsReplaced(value), false);
-    public static final Property<java.lang.Float> SCROLLBAR_WIDTH = new Property<>(
-            "scrollbar-width",
-            (style, value, builder) -> builder.scrollbarWidth(value), 0.0f);
-    public static final Property<Point<Overflow>> OVERFLOW = new Property<>("overflow",
-            (style, value, builder) -> builder.overflow(value),
-            new Point<>(Overflow.VISIBLE, Overflow.VISIBLE));
+    public static final DoubleProperty FLEX_GROW = new DoubleProperty("flex-grow",
+            (style, value, builder) -> builder.flexGrow(value.floatValue()), 0.0);
+    public static final DoubleProperty FLEX_SHRINK = new DoubleProperty("flex-shrink",
+            (style, value, builder) -> builder.flexShrink(value.floatValue()), 1.0);
+
+    public static final Property<LengthPercentage> ROW_GAP = multiProperty("row-gap",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.GAP);
+    public static final Property<LengthPercentage> COLUMN_GAP = multiProperty("column-gap",
+            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.GAP);
+
+    public static final Property<TextAlign> TEXT_ALIGN = new Property<>("text-align",
+            (style, value, builder) -> builder.textAlign(value), TextAlign.AUTO);
+
     public static final Property<GridAutoFlow> GRID_AUTO_FLOW = new Property<>("grid-auto-flow",
             (style, value, builder) -> builder.gridAutoFlow(value), GridAutoFlow.ROW);
-    public static final Property<Line<GridPlacement>> GRID_ROW = new Property<>("grid-row",
-            (style, value, builder) -> builder.gridRow(value),
-            new Line<>(GridPlacement.AUTO, GridPlacement.AUTO));
-    public static final Property<Line<GridPlacement>> GRID_COLUMN = new Property<>("grid-column",
-            (style, value, builder) -> builder.gridColumn(value),
-            new Line<>(GridPlacement.AUTO, GridPlacement.AUTO));
+    public static final Property<GridPlacement> GRID_ROW_START = multiProperty("grid-row-start",
+            GridPlacement.AUTO, MultiPropertyTaffyUpdater.GRID_ROW);
+    public static final Property<GridPlacement> GRID_ROW_END = multiProperty("grid-row-end",
+            GridPlacement.AUTO, MultiPropertyTaffyUpdater.GRID_ROW);
+    public static final Property<GridPlacement> GRID_COLUMN_START = multiProperty("grid-column-start",
+            GridPlacement.AUTO, MultiPropertyTaffyUpdater.GRID_COLUMN);
+    public static final Property<GridPlacement> GRID_COLUMN_END = multiProperty("grid-column-end",
+            GridPlacement.AUTO, MultiPropertyTaffyUpdater.GRID_COLUMN);
     public static final Property<List<GridTemplateComponent>> GRID_TEMPLATE_ROWS = new Property<>(
             "grid-template-rows",
             (style, value, builder) -> builder.gridTemplateRows(value), Collections.emptyList());
@@ -296,66 +429,32 @@ public abstract class StyleProperties {
             "grid-template-column-names",
             (style, value, builder) -> builder.gridTemplateColumnNames(value), Collections.emptyList());
     public static final Property<List<GridTemplateArea>> GRID_TEMPLATE_AREAS = new Property<>(
-            "grid-template-areas", (style, value, builder) -> builder.gridTemplateAreas(
-                    new GridTemplateAreas(value, getGridTemplateAreaRowCount(style),
-                            getGridTemplateAreaColumnCount(style))));
-    public static final Property<Integer> GRID_TEMPLATE_AREA_ROW_COUNT = new Property<>(
-            "grid-template-area-row-count",
-            (style, value, builder) -> applyGridAreas(style, builder));
-    public static final Property<Integer> GRID_TEMPLATE_AREA_COLUMN_COUNT = new Property<>(
-            "grid-template-area-column-count",
-            (style, value, builder) -> applyGridAreas(style, builder));
+            "grid-template-areas",
+            (style, value, builder) -> builder.gridTemplateAreas(toGridTemplateAreas(value)),
+            Collections.emptyList());
 
-    private static Size<Dimension> autoSize() {
-        return new Size<>(Dimension.AUTO, Dimension.AUTO);
+    private static <T> Property<T> multiProperty(String name, T defaultValue,
+            MultiPropertyTaffyUpdater multiPropertyUpdater) {
+        return new Property<>(name, defaultValue, multiPropertyUpdater);
     }
 
-    private static Rect<LengthPercentage> zeroLpRect() {
-        return new Rect<>(LengthPercentage.ZERO, LengthPercentage.ZERO,
-                LengthPercentage.ZERO, LengthPercentage.ZERO);
+    private static Optional<GridTemplateAreas> toGridTemplateAreas(List<GridTemplateArea> areas) {
+        if (areas.isEmpty())
+            return Optional.empty();
+        return Optional.of(new GridTemplateAreas(areas, gridAreaRowCount(areas), gridAreaColumnCount(areas)));
     }
 
-    private static Rect<LengthPercentageAuto> zeroAutoRect() {
-        return new Rect<>(LengthPercentageAuto.ZERO, LengthPercentageAuto.ZERO,
-                LengthPercentageAuto.ZERO, LengthPercentageAuto.ZERO);
-    }
-
-    private static Rect<LengthPercentageAuto> autoRect() {
-        return new Rect<>(LengthPercentageAuto.AUTO, LengthPercentageAuto.AUTO,
-                LengthPercentageAuto.AUTO, LengthPercentageAuto.AUTO);
-    }
-
-    private static void applyGridAreas(Style style, com.antepod.taffy.style.Style.Builder builder) {
-        builder.gridTemplateAreas(new GridTemplateAreas(GRID_TEMPLATE_AREAS.get(style),
-                getGridTemplateAreaRowCount(style),
-                getGridTemplateAreaColumnCount(style)));
-    }
-
-    public static int getGridTemplateAreaRowCount(Style style) {
-        int inferred = inferredAreaRows(style);
-        Integer explicit = GRID_TEMPLATE_AREA_ROW_COUNT.getIfPresent(style);
-        return explicit == null ? inferred : Math.max(explicit, inferred);
-    }
-
-    public static int getGridTemplateAreaColumnCount(Style style) {
-        int inferred = inferredAreaColumns(style);
-        Integer explicit = GRID_TEMPLATE_AREA_COLUMN_COUNT.getIfPresent(style);
-        return explicit == null ? inferred : Math.max(explicit, inferred);
-    }
-
-    private static int inferredAreaRows(Style style) {
+    private static int gridAreaRowCount(List<GridTemplateArea> areas) {
         int rows = 0;
-        for (GridTemplateArea area : GRID_TEMPLATE_AREAS.get(style)) {
+        for (GridTemplateArea area : areas)
             rows = Math.max(rows, area.rowEnd - 1);
-        }
         return rows;
     }
 
-    private static int inferredAreaColumns(Style style) {
+    private static int gridAreaColumnCount(List<GridTemplateArea> areas) {
         int columns = 0;
-        for (GridTemplateArea area : GRID_TEMPLATE_AREAS.get(style)) {
+        for (GridTemplateArea area : areas)
             columns = Math.max(columns, area.columnEnd - 1);
-        }
         return columns;
     }
 

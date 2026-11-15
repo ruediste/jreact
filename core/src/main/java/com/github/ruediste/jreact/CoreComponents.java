@@ -35,7 +35,7 @@ public final class CoreComponents {
 
         @Override
         public <T> Api putStyle(Property<T> property, T value) {
-            node.style.put(property, value);
+            property.set(node.inline, value);
             return api;
         }
 
@@ -47,13 +47,14 @@ public final class CoreComponents {
 
     }
 
-    static interface VisualStyleApiBase<Self> extends LayoutStyleApi<Self, NodeApiHelper<Self>> {
+    public static interface VisualStyleApiBase<Self> extends LayoutStyleApi<Self, NodeApiHelper<Self>>,
+            com.github.ruediste.jreact.style.Styles.VisualStyleApi<Self, NodeApiHelper<Self>> {
     }
 
-    static interface VisualStyleApi extends VisualStyleApiBase<VisualStyleApi> {
+    public static interface VisualStyleApi extends VisualStyleApiBase<VisualStyleApi> {
     }
 
-    static interface VisualStyleWithChildrenApi extends VisualStyleApiBase<VisualStyleWithChildrenApi>,
+    public static interface VisualStyleWithChildrenApi extends VisualStyleApiBase<VisualStyleWithChildrenApi>,
             ChildrenApi<VisualStyleWithChildrenApi, NodeApiHelper<VisualStyleWithChildrenApi>> {
     }
 
@@ -107,7 +108,7 @@ public final class CoreComponents {
     }
 
     public static VisualStyleWithChildrenApi div() {
-        return addNode(new DivNode());
+        return addNode(new DivNode(), new DivApi());
     }
 
     public static VisualStyleWithChildrenApi div(Runnable children) {
@@ -115,11 +116,16 @@ public final class CoreComponents {
     }
 
     public static VisualStyleWithChildrenApi span() {
-        return addNode(new SpanNode());
+        return addNode(new SpanNode(), new SpanApi());
+    }
+
+    public static VisualStyleWithChildrenApi span(Runnable children) {
+        var api = span();
+        return api.children(children);
     }
 
     public static VisualStyleApi text(String text) {
-        return addNode(new TextNode(Objects.requireNonNull(text)));
+        return addNode(new TextNode(Objects.requireNonNull(text)), new TextApi());
     }
 
     public static VisualStyleApi icon(Icon icon) {
@@ -151,6 +157,25 @@ public final class CoreComponents {
     public static VisualStyleApi select(String value, List<String> options, Consumer<String> onChange) {
         SelectNode node = new SelectNode(value, options, onChange);
         node.focusable = true;
-        return addNode(node);
+        class ApiImpl extends NodeApi<VisualStyleApi> implements VisualStyleApi {
+        }
+        return addNode(node, new ApiImpl());
+    }
+
+    public static float viewportWidth() {
+        return JReactContext.viewportWidth();
+    }
+
+    public static float viewportHeight() {
+        return JReactContext.viewportHeight();
+    }
+
+    private static class DivApi extends NodeApi<VisualStyleWithChildrenApi> implements VisualStyleWithChildrenApi {
+    }
+
+    private static class SpanApi extends NodeApi<VisualStyleWithChildrenApi> implements VisualStyleWithChildrenApi {
+    }
+
+    private static class TextApi extends NodeApi<VisualStyleApi> implements VisualStyleApi {
     }
 }

@@ -70,7 +70,7 @@ public final class TextLayout {
         float baseline = layout.border.top + layout.padding.top
                 + (lineHeight - metrics.getHeight()) / 2 + metrics.getAscent();
         TextAlign align = StyleProperties.TEXT_ALIGN.get(node.style);
-        boolean rtl = StyleProperties.WRITING_MODE.get(node.style) == Direction.RTL;
+        boolean rtl = StyleProperties.DIRECTION.get(node.style) == Direction.RTL;
         for (String line : lines) {
             float offset = switch (align) {
                 case LEGACY_LEFT -> 0;

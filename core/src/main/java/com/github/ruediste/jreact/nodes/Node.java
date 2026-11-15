@@ -26,9 +26,8 @@ public class Node {
     public List<String> classNames = new ArrayList<>();
 
     public final Style inline = new Style();
-    public Style style = new Style();
-
     public final List<StyleRule> styleRules = new ArrayList<>();
+    public Style style = new Style();
 
     public boolean hover;
     public boolean active;

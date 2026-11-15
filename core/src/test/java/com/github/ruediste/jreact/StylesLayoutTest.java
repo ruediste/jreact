@@ -10,20 +10,16 @@ import java.awt.Color;
 import org.junit.jupiter.api.Test;
 
 import com.antepod.taffy.style.FlexDirection;
-import com.github.ruediste.jreact.nodes.DivNode;
 import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.style.StyleProperties;
-import com.github.ruediste.jreact.style.Styles;
 
 class StylesLayoutTest {
 
     @Test
     void scopedRulesAndLayoutProduceBounds() {
         JReactRoot root = new JReactRoot(() -> {
-            Styles.type(DivNode.class).className("box").style()
-                    .width(50).height(20).backgroundColor(Color.RED);
-            div(s -> s.width(200).height(100).padding(10).flexDirection(FlexDirection.ROW), () -> {
-                div(s -> s.className("box"));
+            div().width(200).height(100).padding(10).flexDirection(FlexDirection.ROW).children(() -> {
+                div().width(50).height(20).backgroundColor(Color.RED);
                 text("hello");
             });
         });
@@ -31,7 +27,7 @@ class StylesLayoutTest {
         root.refresh(200, 100);
         Node container = root.rootNode().children().get(0);
         Node box = container.children().get(0);
-        assertEquals(Color.RED, box.style.get(StyleProperties.BACKGROUND, null));
+        assertEquals(Color.RED, StyleProperties.BACKGROUND.get(box.style, null));
         assertEquals(10, box.bounds.x, 0.01);
         assertEquals(10, box.bounds.y, 0.01);
         assertEquals(50, box.bounds.width, 0.01);

@@ -72,23 +72,7 @@ public final class Styles {
         <T> Api putStyle(Property<T> property, T value);
     }
 
-    public interface LayoutStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
-
-        default Self grow(double value) {
-            return _helper().putStyle(StyleProperties.GROW, value);
-        }
-
-        default Self shrink(double value) {
-            return _helper().putStyle(StyleProperties.SHRINK, value);
-        }
-
-        default Self display(Display value) {
-            return _helper().putStyle(StyleProperties.DISPLAY, value);
-        }
-
-        default Self position(Position value) {
-            return _helper().putStyle(StyleProperties.POSITION, value);
-        }
+    public interface VisualStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
 
         default Self backgroundColor(Color value) {
             return _helper().putStyle(StyleProperties.BACKGROUND, value);
@@ -137,13 +121,32 @@ public final class Styles {
         default Self opacity(double value) {
             return _helper().putStyle(StyleProperties.OPACITY, value);
         }
+    }
 
-        default Self writingDirection(Direction value) {
-            return _helper().putStyle(StyleProperties.WRITING_MODE, value);
+    public interface LayoutStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
+
+        default Self flexGrow(double value) {
+            return _helper().putStyle(StyleProperties.FLEX_GROW, value);
+        }
+
+        default Self flexShrink(double value) {
+            return _helper().putStyle(StyleProperties.FLEX_SHRINK, value);
+        }
+
+        default Self display(Display value) {
+            return _helper().putStyle(StyleProperties.DISPLAY, value);
+        }
+
+        default Self position(Position value) {
+            return _helper().putStyle(StyleProperties.POSITION, value);
+        }
+
+        default Self direction(Direction value) {
+            return _helper().putStyle(StyleProperties.DIRECTION, value);
         }
 
         default Self floatMode(Float value) {
-            return _helper().putStyle(StyleProperties.FLOAT_MODE, value);
+            return _helper().putStyle(StyleProperties.FLOAT, value);
         }
 
         default Self clear(Clear value) {
@@ -154,8 +157,292 @@ public final class Styles {
             return _helper().putStyle(StyleProperties.BOX_SIZING, value);
         }
 
-        default Self textAlign(TextAlign value) {
-            return _helper().putStyle(StyleProperties.TEXT_ALIGN, value);
+        default Self top(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.TOP, value);
+        }
+
+        default Self top(double value) {
+            return top(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self right(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.RIGHT, value);
+        }
+
+        default Self right(double value) {
+            return right(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self bottom(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.BOTTOM, value);
+        }
+
+        default Self bottom(double value) {
+            return bottom(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self left(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.LEFT, value);
+        }
+
+        default Self left(double value) {
+            return left(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self inset(LengthPercentageAuto value) {
+            _helper().putStyle(StyleProperties.TOP, value);
+            _helper().putStyle(StyleProperties.RIGHT, value);
+            _helper().putStyle(StyleProperties.BOTTOM, value);
+            return _helper().putStyle(StyleProperties.LEFT, value);
+        }
+
+        default Self inset(double value) {
+            return inset(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self inset(Rect<LengthPercentageAuto> value) {
+            _helper().putStyle(StyleProperties.TOP, value.top);
+            _helper().putStyle(StyleProperties.RIGHT, value.right);
+            _helper().putStyle(StyleProperties.BOTTOM, value.bottom);
+            return _helper().putStyle(StyleProperties.LEFT, value.left);
+        }
+
+        default Self width(Dimension value) {
+            return _helper().putStyle(StyleProperties.WIDTH, value);
+        }
+
+        default Self width(double value) {
+            return width(Dimension.length((float) value));
+        }
+
+        default Self height(Dimension value) {
+            return _helper().putStyle(StyleProperties.HEIGHT, value);
+        }
+
+        default Self height(double value) {
+            return height(Dimension.length((float) value));
+        }
+
+        default Self minWidth(Dimension value) {
+            return _helper().putStyle(StyleProperties.MIN_WIDTH, value);
+        }
+
+        default Self minWidth(double value) {
+            return minWidth(Dimension.length((float) value));
+        }
+
+        default Self minHeight(Dimension value) {
+            return _helper().putStyle(StyleProperties.MIN_HEIGHT, value);
+        }
+
+        default Self minHeight(double value) {
+            return minHeight(Dimension.length((float) value));
+        }
+
+        default Self maxWidth(Dimension value) {
+            return _helper().putStyle(StyleProperties.MAX_WIDTH, value);
+        }
+
+        default Self maxWidth(double value) {
+            return maxWidth(Dimension.length((float) value));
+        }
+
+        default Self maxHeight(Dimension value) {
+            return _helper().putStyle(StyleProperties.MAX_HEIGHT, value);
+        }
+
+        default Self maxHeight(double value) {
+            return maxHeight(Dimension.length((float) value));
+        }
+
+        default Self aspectRatio(float value) {
+            return _helper().putStyle(StyleProperties.ASPECT_RATIO, value);
+        }
+
+        default Self marginTop(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.MARGIN_TOP, value);
+        }
+
+        default Self marginTop(double value) {
+            return marginTop(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self marginRight(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.MARGIN_RIGHT, value);
+        }
+
+        default Self marginRight(double value) {
+            return marginRight(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self marginBottom(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.MARGIN_BOTTOM, value);
+        }
+
+        default Self marginBottom(double value) {
+            return marginBottom(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self marginLeft(LengthPercentageAuto value) {
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, value);
+        }
+
+        default Self marginLeft(double value) {
+            return marginLeft(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self margin(LengthPercentageAuto value) {
+            _helper().putStyle(StyleProperties.MARGIN_TOP, value);
+            _helper().putStyle(StyleProperties.MARGIN_RIGHT, value);
+            _helper().putStyle(StyleProperties.MARGIN_BOTTOM, value);
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, value);
+        }
+
+        default Self margin(double value) {
+            return margin(LengthPercentageAuto.length((float) value));
+        }
+
+        default Self margin(double top, double right, double bottom, double left) {
+            _helper().putStyle(StyleProperties.MARGIN_TOP, LengthPercentageAuto.length((float) top));
+            _helper().putStyle(StyleProperties.MARGIN_RIGHT, LengthPercentageAuto.length((float) right));
+            _helper().putStyle(StyleProperties.MARGIN_BOTTOM, LengthPercentageAuto.length((float) bottom));
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, LengthPercentageAuto.length((float) left));
+        }
+
+        default Self margin(Rect<LengthPercentageAuto> value) {
+            _helper().putStyle(StyleProperties.MARGIN_TOP, value.top);
+            _helper().putStyle(StyleProperties.MARGIN_RIGHT, value.right);
+            _helper().putStyle(StyleProperties.MARGIN_BOTTOM, value.bottom);
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, value.left);
+        }
+
+        default Self paddingTop(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.PADDING_TOP, value);
+        }
+
+        default Self paddingTop(double value) {
+            return paddingTop(LengthPercentage.length((float) value));
+        }
+
+        default Self paddingRight(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.PADDING_RIGHT, value);
+        }
+
+        default Self paddingRight(double value) {
+            return paddingRight(LengthPercentage.length((float) value));
+        }
+
+        default Self paddingBottom(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.PADDING_BOTTOM, value);
+        }
+
+        default Self paddingBottom(double value) {
+            return paddingBottom(LengthPercentage.length((float) value));
+        }
+
+        default Self paddingLeft(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.PADDING_LEFT, value);
+        }
+
+        default Self paddingLeft(double value) {
+            return paddingLeft(LengthPercentage.length((float) value));
+        }
+
+        default Self padding(LengthPercentage value) {
+            _helper().putStyle(StyleProperties.PADDING_TOP, value);
+            _helper().putStyle(StyleProperties.PADDING_RIGHT, value);
+            _helper().putStyle(StyleProperties.PADDING_BOTTOM, value);
+            return _helper().putStyle(StyleProperties.PADDING_LEFT, value);
+        }
+
+        default Self padding(double value) {
+            return padding(LengthPercentage.length((float) value));
+        }
+
+        default Self padding(double top, double right, double bottom, double left) {
+            _helper().putStyle(StyleProperties.PADDING_TOP, LengthPercentage.length((float) top));
+            _helper().putStyle(StyleProperties.PADDING_RIGHT, LengthPercentage.length((float) right));
+            _helper().putStyle(StyleProperties.PADDING_BOTTOM, LengthPercentage.length((float) bottom));
+            return _helper().putStyle(StyleProperties.PADDING_LEFT, LengthPercentage.length((float) left));
+        }
+
+        default Self padding(Rect<LengthPercentage> value) {
+            _helper().putStyle(StyleProperties.PADDING_TOP, value.top);
+            _helper().putStyle(StyleProperties.PADDING_RIGHT, value.right);
+            _helper().putStyle(StyleProperties.PADDING_BOTTOM, value.bottom);
+            return _helper().putStyle(StyleProperties.PADDING_LEFT, value.left);
+        }
+
+        default Self borderTopWidth(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
+        }
+
+        default Self borderTopWidth(double value) {
+            return borderTopWidth(LengthPercentage.length((float) value));
+        }
+
+        default Self borderRightWidth(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
+        }
+
+        default Self borderRightWidth(double value) {
+            return borderRightWidth(LengthPercentage.length((float) value));
+        }
+
+        default Self borderBottomWidth(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
+        }
+
+        default Self borderBottomWidth(double value) {
+            return borderBottomWidth(LengthPercentage.length((float) value));
+        }
+
+        default Self borderLeftWidth(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
+        }
+
+        default Self borderLeftWidth(double value) {
+            return borderLeftWidth(LengthPercentage.length((float) value));
+        }
+
+        default Self borderWidth(LengthPercentage value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
+        }
+
+        default Self borderWidth(double value) {
+            return borderWidth(LengthPercentage.length((float) value));
+        }
+
+        default Self borderWidth(Rect<LengthPercentage> value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value.top);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value.right);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value.bottom);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value.left);
+        }
+
+        default Self overflowX(Overflow value) {
+            return _helper().putStyle(StyleProperties.OVERFLOW_X, value);
+        }
+
+        default Self overflowY(Overflow value) {
+            return _helper().putStyle(StyleProperties.OVERFLOW_Y, value);
+        }
+
+        default Self overflow(Overflow value) {
+            _helper().putStyle(StyleProperties.OVERFLOW_X, value);
+            return _helper().putStyle(StyleProperties.OVERFLOW_Y, value);
+        }
+
+        default Self overflow(Point<Overflow> value) {
+            _helper().putStyle(StyleProperties.OVERFLOW_X, value.x);
+            return _helper().putStyle(StyleProperties.OVERFLOW_Y, value.y);
+        }
+
+        default Self scrollbarWidth(float value) {
+            return _helper().putStyle(StyleProperties.SCROLLBAR_WIDTH, value);
         }
 
         default Self alignItems(AlignItems value) {
@@ -194,68 +481,68 @@ public final class Styles {
             return _helper().putStyle(StyleProperties.FLEX_BASIS, value);
         }
 
-        default Self size(Size<Dimension> value) {
-            return _helper().putStyle(StyleProperties.SIZE, value);
+        default Self rowGap(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.ROW_GAP, value);
         }
 
-        default Self minSize(Size<Dimension> value) {
-            return _helper().putStyle(StyleProperties.MIN_SIZE, value);
+        default Self rowGap(double value) {
+            return rowGap(LengthPercentage.length((float) value));
         }
 
-        default Self maxSize(Size<Dimension> value) {
-            return _helper().putStyle(StyleProperties.MAX_SIZE, value);
+        default Self columnGap(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.COLUMN_GAP, value);
         }
 
-        default Self aspectRatio(float value) {
-            return _helper().putStyle(StyleProperties.ASPECT_RATIO, value);
+        default Self columnGap(double value) {
+            return columnGap(LengthPercentage.length((float) value));
+        }
+
+        default Self gap(LengthPercentage value) {
+            _helper().putStyle(StyleProperties.ROW_GAP, value);
+            return _helper().putStyle(StyleProperties.COLUMN_GAP, value);
+        }
+
+        default Self gap(double value) {
+            return gap(LengthPercentage.length((float) value));
         }
 
         default Self gap(Size<LengthPercentage> value) {
-            return _helper().putStyle(StyleProperties.GAP, value);
+            _helper().putStyle(StyleProperties.ROW_GAP, value.height);
+            return _helper().putStyle(StyleProperties.COLUMN_GAP, value.width);
         }
 
-        default Self margin(Rect<LengthPercentageAuto> value) {
-            return _helper().putStyle(StyleProperties.MARGIN, value);
-        }
-
-        default Self padding(Rect<LengthPercentage> value) {
-            return _helper().putStyle(StyleProperties.PADDING, value);
-        }
-
-        default Self border(Rect<LengthPercentage> value) {
-            return _helper().putStyle(StyleProperties.BORDER, value);
-        }
-
-        default Self inset(Rect<com.antepod.taffy.style.LengthPercentageAuto> value) {
-            return _helper().putStyle(StyleProperties.INSET, value);
-        }
-
-        default Self itemIsTable(boolean value) {
-            return _helper().putStyle(StyleProperties.ITEM_IS_TABLE, value);
-        }
-
-        default Self itemIsReplaced(boolean value) {
-            return _helper().putStyle(StyleProperties.ITEM_IS_REPLACED, value);
-        }
-
-        default Self scrollbarWidth(float value) {
-            return _helper().putStyle(StyleProperties.SCROLLBAR_WIDTH, value);
-        }
-
-        default Self overflow(Point<Overflow> value) {
-            return _helper().putStyle(StyleProperties.OVERFLOW, value);
+        default Self textAlign(TextAlign value) {
+            return _helper().putStyle(StyleProperties.TEXT_ALIGN, value);
         }
 
         default Self gridAutoFlow(GridAutoFlow value) {
             return _helper().putStyle(StyleProperties.GRID_AUTO_FLOW, value);
         }
 
+        default Self gridRowStart(GridPlacement value) {
+            return _helper().putStyle(StyleProperties.GRID_ROW_START, value);
+        }
+
+        default Self gridRowEnd(GridPlacement value) {
+            return _helper().putStyle(StyleProperties.GRID_ROW_END, value);
+        }
+
+        default Self gridColumnStart(GridPlacement value) {
+            return _helper().putStyle(StyleProperties.GRID_COLUMN_START, value);
+        }
+
+        default Self gridColumnEnd(GridPlacement value) {
+            return _helper().putStyle(StyleProperties.GRID_COLUMN_END, value);
+        }
+
         default Self gridRow(Line<GridPlacement> value) {
-            return _helper().putStyle(StyleProperties.GRID_ROW, value);
+            _helper().putStyle(StyleProperties.GRID_ROW_START, value.start);
+            return _helper().putStyle(StyleProperties.GRID_ROW_END, value.end);
         }
 
         default Self gridColumn(Line<GridPlacement> value) {
-            return _helper().putStyle(StyleProperties.GRID_COLUMN, value);
+            _helper().putStyle(StyleProperties.GRID_COLUMN_START, value.start);
+            return _helper().putStyle(StyleProperties.GRID_COLUMN_END, value.end);
         }
 
         default Self gridTemplateRows(List<GridTemplateComponent> value) {
@@ -284,14 +571,6 @@ public final class Styles {
 
         default Self gridTemplateAreas(List<GridTemplateArea> value) {
             return _helper().putStyle(StyleProperties.GRID_TEMPLATE_AREAS, value);
-        }
-
-        default Self gridTemplateAreaRowCount(int value) {
-            return _helper().putStyle(StyleProperties.GRID_TEMPLATE_AREA_ROW_COUNT, value);
-        }
-
-        default Self gridTemplateAreaColumnCount(int value) {
-            return _helper().putStyle(StyleProperties.GRID_TEMPLATE_AREA_COLUMN_COUNT, value);
         }
     }
 }
