@@ -30,6 +30,21 @@ public final class Hooks {
                 }, root::validateStateWrite));
     }
 
+    /**
+     * Returns the value of the nearest provider of {@code context}, or its
+     * default value when no provider is present.
+     *
+     * <p>
+     * The calling component is rerendered when the provider's value changes.
+     *
+     * @param context the context to read
+     * @param <T>     the context value type
+     * @return the current context value
+     */
+    public static <T> T useContext(Context<T> context) {
+        return Objects.requireNonNull(context).use();
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T useMemo(Supplier<T> factory, Object... dependencies) {
         Objects.requireNonNull(factory);

@@ -187,15 +187,15 @@ public final class JReactRoot {
     }
 
     private void renderComponents() {
-        if (dirtyFibers.isEmpty())
-            return;
-        List<Set<Fiber>> pending = new ArrayList<>(dirtyFibers);
-        dirtyFibers.clear();
         Reconciler.Context context = new Reconciler.Context(this);
-        for (Set<Fiber> level : pending) {
-            for (Fiber fiber : level) {
-                if (fiber.dirty && fiber.component != null)
-                    Reconciler.renderAndReconcileDirtyComponent(context, fiber);
+        while (!dirtyFibers.isEmpty()) {
+            List<Set<Fiber>> pending = new ArrayList<>(dirtyFibers);
+            dirtyFibers.clear();
+            for (Set<Fiber> level : pending) {
+                for (Fiber fiber : level) {
+                    if (fiber.dirty && fiber.component != null)
+                        Reconciler.renderAndReconcileDirtyComponent(context, fiber);
+                }
             }
         }
     }

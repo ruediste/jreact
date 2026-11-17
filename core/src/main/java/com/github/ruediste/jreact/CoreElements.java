@@ -24,7 +24,7 @@ public final class CoreElements {
     private CoreElements() {
     }
 
-    static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api>,
+    public static class NodeApiHelper<Api> implements StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api>,
             NodeAccessApiHelper<Api> {
 
         public Api api;
@@ -91,6 +91,11 @@ public final class CoreElements {
 
         default Self accessibleName(String accessibleName) {
             return _helper().apply(n -> n.accessibleName = accessibleName);
+        }
+
+        @SuppressWarnings("unchecked")
+        default Self apply(Consumer<? super Self> consumer) {
+            return _helper().apply(n -> consumer.accept((Self) this));
         }
     }
 

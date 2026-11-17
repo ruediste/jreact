@@ -13,11 +13,17 @@
   <modules>
     <module>core</module>
     <module>storybook</module>
+    <module>utility</module>
+    <module>components</module>
+    <module>theme</module>
+    <module>primitives</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
   </properties>
 
   <build>
