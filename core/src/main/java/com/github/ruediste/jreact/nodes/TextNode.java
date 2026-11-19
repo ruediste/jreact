@@ -44,7 +44,7 @@ public class TextNode extends ElementNode {
                 graphics.setColor(shadow.color());
                 graphics.drawString(line.text(), x + (float) shadow.offsetX(), y + (float) shadow.offsetY());
             }
-            graphics.setColor(StyleProperties.COLOR.get(style));
+            graphics.setColor(StyleProperties.COLOR.get(style).toColor());
             graphics.drawString(line.text(), x, y);
         }
     }

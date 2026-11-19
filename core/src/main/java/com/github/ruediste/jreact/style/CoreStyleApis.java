@@ -1,7 +1,7 @@
 package com.github.ruediste.jreact.style;
 
-import java.awt.Color;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.antepod.taffy.geometry.Line;
 import com.antepod.taffy.geometry.Point;
@@ -29,6 +29,7 @@ import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
 import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.color.JColor;
+import com.github.ruediste.jreact.style.StyleProperties.BorderRadius;
 import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
 import com.github.ruediste.jreact.style.StyleProperties.Property;
 import com.github.ruediste.jreact.style.StyleProperties.Shadow;
@@ -58,6 +59,41 @@ public final class CoreStyleApis {
 
     public interface StyleApiHelper<Api> {
         <T> Api putStyle(Property<T> property, T value);
+    }
+
+    public interface BorderWidthApiHelper<Api, TBorderWidth> {
+        TBorderWidth borderWidth(Consumer<Double> consumer);
+    }
+
+    public interface BorderRadiusApiHelper<Api, TRadius> {
+        TRadius borderRadius(Consumer<BorderRadius> consumer);
+    }
+
+    public interface BorderStyleThemeApi<Api, TBorderWidth, TRadius, Helper extends BorderWidthApiHelper<Api, TBorderWidth> & BorderRadiusApiHelper<Api, TRadius> & StyleApiHelper<Api>>
+            extends ApiHelperProvider<Helper> {
+
+        default TBorderWidth borderTopWidth() {
+            return _helper().borderWidth(value -> _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value));
+        }
+
+        default TRadius borderTopLeftRadius() {
+            return _helper().borderRadius(value -> _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, value));
+        }
+    }
+
+    public interface ColorThemeApiHelper<Api, TColorApi> {
+        TColorApi color(Consumer<JColor> consumer);
+    }
+
+    public interface ColorThemeApi<Api, TColorApi, Helper extends ColorThemeApiHelper<Api, TColorApi> & StyleApiHelper<Api>>
+            extends ApiHelperProvider<Helper> {
+        default TColorApi color() {
+            return _helper().color(value -> _helper().putStyle(StyleProperties.COLOR, value));
+        }
+
+        default TColorApi backgroundColor() {
+            return _helper().color(value -> _helper().putStyle(StyleProperties.BACKGROUND_COLOR, value));
+        }
     }
 
     public interface BorderStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
@@ -108,39 +144,39 @@ public final class CoreStyleApis {
             return _helper().putStyle(StyleProperties.BORDER_LEFT_STYLE, value);
         }
 
-        default Self borderTopLeftRadius(LengthPercentage value) {
+        default Self borderTopLeftRadius(BorderRadius value) {
             return _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, value);
         }
 
         default Self borderTopLeftRadius(double value) {
-            return borderTopLeftRadius(LengthPercentage.length((float) value));
+            return borderTopLeftRadius(BorderRadius.of(value));
         }
 
-        default Self borderTopRightRadius(LengthPercentage value) {
+        default Self borderTopRightRadius(BorderRadius value) {
             return _helper().putStyle(StyleProperties.BORDER_TOP_RIGHT_RADIUS, value);
         }
 
         default Self borderTopRightRadius(double value) {
-            return borderTopRightRadius(LengthPercentage.length((float) value));
+            return borderTopRightRadius(BorderRadius.of(value));
         }
 
-        default Self borderBottomRightRadius(LengthPercentage value) {
+        default Self borderBottomRightRadius(BorderRadius value) {
             return _helper().putStyle(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS, value);
         }
 
         default Self borderBottomRightRadius(double value) {
-            return borderBottomRightRadius(LengthPercentage.length((float) value));
+            return borderBottomRightRadius(BorderRadius.of(value));
         }
 
-        default Self borderBottomLeftRadius(LengthPercentage value) {
+        default Self borderBottomLeftRadius(BorderRadius value) {
             return _helper().putStyle(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS, value);
         }
 
         default Self borderBottomLeftRadius(double value) {
-            return borderBottomLeftRadius(LengthPercentage.length((float) value));
+            return borderBottomLeftRadius(BorderRadius.of(value));
         }
 
-        default Self borderRadius(LengthPercentage value) {
+        default Self borderRadius(BorderRadius value) {
             _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, value);
             _helper().putStyle(StyleProperties.BORDER_TOP_RIGHT_RADIUS, value);
             _helper().putStyle(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS, value);
@@ -148,7 +184,7 @@ public final class CoreStyleApis {
         }
 
         default Self borderRadius(double value) {
-            return borderRadius(LengthPercentage.length((float) value));
+            return borderRadius(BorderRadius.of(value));
         }
 
         default Self borderTopWidth(double value) {
@@ -184,11 +220,11 @@ public final class CoreStyleApis {
 
     public interface VisualStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
 
-        default Self backgroundColor(Color value) {
-            return _helper().putStyle(StyleProperties.BACKGROUND, value);
+        default Self backgroundColor(JColor value) {
+            return _helper().putStyle(StyleProperties.BACKGROUND_COLOR, value);
         }
 
-        default Self color(Color value) {
+        default Self color(JColor value) {
             return _helper().putStyle(StyleProperties.COLOR, value);
         }
 

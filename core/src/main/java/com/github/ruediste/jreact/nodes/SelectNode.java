@@ -113,7 +113,7 @@ public class SelectNode extends ElementNode {
                 select.setBounds((int) Math.round(node.bounds.x), (int) Math.round(node.bounds.y),
                         (int) Math.round(node.bounds.width), (int) Math.round(node.bounds.height));
                 select.setFont(StyleProperties.font(node.style));
-                select.setForeground(StyleProperties.COLOR.get(node.style));
+                select.setForeground(StyleProperties.COLOR.get(node.style).toColor());
                 select.setEnabled(!node.disabled);
                 select.getAccessibleContext().setAccessibleName(node.accessibleName);
             } finally {

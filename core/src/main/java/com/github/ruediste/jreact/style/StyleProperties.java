@@ -268,10 +268,19 @@ public abstract class StyleProperties {
         NONE, HIDDEN, SOLID, DOTTED, DASHED
     }
 
+    public record BorderRadius(LengthPercentage horizontal, LengthPercentage vertical) {
+        public static final BorderRadius ZERO = new BorderRadius(LengthPercentage.ZERO, LengthPercentage.ZERO);
+
+        public static BorderRadius of(double value) {
+            LengthPercentage lp = LengthPercentage.length((float) value);
+            return new BorderRadius(lp, lp);
+        }
+    }
+
     // Visual style properties
-    public static final Property<Color> BACKGROUND = new Property<>("background");
-    public static final Property<Color> COLOR = new Property<>("color", null,
-            new Color(32, 36, 40));
+    public static final Property<JColor> BACKGROUND_COLOR = new Property<>("background");
+    public static final Property<JColor> COLOR = new Property<>("color", null,
+            JColor.rgb(28, 29, 31));
     public static final Property<String> FONT_FAMILY = new Property<>("font-family", null,
             java.awt.Font.DIALOG);
     public static final Property<Integer> FONT_SIZE = new Property<>("font-size", null, 14);
@@ -367,14 +376,14 @@ public abstract class StyleProperties {
     public static final Property<Double> BORDER_LEFT_WIDTH = multiProperty("border-left-width",
             0., MultiPropertyTaffyUpdater.BORDER);
 
-    public static final Property<LengthPercentage> BORDER_TOP_LEFT_RADIUS = new Property<>(
-            "border-top-left-radius", null, LengthPercentage.ZERO);
-    public static final Property<LengthPercentage> BORDER_TOP_RIGHT_RADIUS = new Property<>(
-            "border-top-right-radius", null, LengthPercentage.ZERO);
-    public static final Property<LengthPercentage> BORDER_BOTTOM_RIGHT_RADIUS = new Property<>(
-            "border-bottom-right-radius", null, LengthPercentage.ZERO);
-    public static final Property<LengthPercentage> BORDER_BOTTOM_LEFT_RADIUS = new Property<>(
-            "border-bottom-left-radius", null, LengthPercentage.ZERO);
+    public static final Property<BorderRadius> BORDER_TOP_LEFT_RADIUS = new Property<>(
+            "border-top-left-radius", null, BorderRadius.ZERO);
+    public static final Property<BorderRadius> BORDER_TOP_RIGHT_RADIUS = new Property<>(
+            "border-top-right-radius", null, BorderRadius.ZERO);
+    public static final Property<BorderRadius> BORDER_BOTTOM_RIGHT_RADIUS = new Property<>(
+            "border-bottom-right-radius", null, BorderRadius.ZERO);
+    public static final Property<BorderRadius> BORDER_BOTTOM_LEFT_RADIUS = new Property<>(
+            "border-bottom-left-radius", null, BorderRadius.ZERO);
 
     public static final Property<Overflow> OVERFLOW_X = multiProperty("overflow-x",
             Overflow.VISIBLE, MultiPropertyTaffyUpdater.OVERFLOW);

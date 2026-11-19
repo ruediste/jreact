@@ -1,7 +1,6 @@
 package com.github.ruediste.jreact.nodes;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -22,6 +21,7 @@ import com.antepod.taffy.tree.Layout;
 import com.github.ruediste.jreact.EventListener;
 import com.github.ruediste.jreact.JReactEvent;
 import com.github.ruediste.jreact.PaintUtils;
+import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
 import com.github.ruediste.jreact.style.StyleRule;
@@ -137,9 +137,9 @@ public class ElementNode extends Node {
             if (shadow != null)
                 PaintUtils.shadow(this, graphics, shadow, layer -> layer.fill(shape));
 
-            Color background = StyleProperties.BACKGROUND.get(style);
+            JColor background = StyleProperties.BACKGROUND_COLOR.get(style);
             if (background != null) {
-                graphics.setColor(background);
+                graphics.setColor(background.toColor());
                 graphics.fill(shape);
             }
 

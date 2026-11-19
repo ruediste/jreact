@@ -107,7 +107,7 @@ public class InputNode extends ElementNode {
                 field.setBounds((int) Math.round(node.bounds.x), (int) Math.round(node.bounds.y),
                         (int) Math.round(node.bounds.width), (int) Math.round(node.bounds.height));
                 field.setFont(StyleProperties.font(node.style));
-                field.setForeground(StyleProperties.COLOR.get(node.style));
+                field.setForeground(StyleProperties.COLOR.get(node.style).toColor());
                 field.setEnabled(!node.disabled);
                 field.getAccessibleContext().setAccessibleName(node.accessibleName);
             } finally {

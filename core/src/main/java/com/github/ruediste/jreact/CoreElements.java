@@ -123,11 +123,11 @@ public final class CoreElements {
     }
 
     static class NodeApi<Api> implements VisualStyleApiBase<Api>, ChildrenApi<Api, NodeApiHelper<Api>> {
-        public NodeApiHelper<Api> builder;
+        public NodeApiHelper<Api> helper;
 
         @Override
         public NodeApiHelper<Api> _helper() {
-            return builder;
+            return helper;
         }
 
     }
@@ -155,9 +155,9 @@ public final class CoreElements {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static <T> T api(ElementNode node, NodeApi<? extends T> api) {
-        var builder = new NodeApiHelper<T>(node);
-        api.builder = (NodeApiHelper) builder;
-        builder.api = (T) api;
+        var helper = new NodeApiHelper<T>(node);
+        api.helper = (NodeApiHelper) helper;
+        helper.api = (T) api;
         return (T) api;
     }
 

@@ -4,7 +4,6 @@ import java.awt.Font;
 import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.CoreElements;
-import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
 import com.github.ruediste.jreact.style.CoreStyleApis.StyleApiHelper;
 import com.github.ruediste.jreact.style.StyleProperties;
@@ -295,21 +294,6 @@ public class ThemeApis {
         /** Line height token for the {@code leading-10} scale. */
         default Self leading10() {
             return _helper().putStyle(StyleProperties.LINE_HEIGHT, _helper().getFontThemeValues().leading10);
-        }
-    }
-
-    public interface ColorApiHelper<ColorApi> {
-        ColorApi applyColor(Consumer<OkLch> consumer);
-    }
-
-    public interface ElementColorApi<Self, ColorApi, Helper extends ColorApiHelper<ColorApi> & StyleApiHelper<Self>>
-            extends ApiHelperProvider<Helper> {
-        default ColorApi backgroundColor() {
-            return _helper().applyColor(color -> _helper().putStyle(StyleProperties.BACKGROUND, color.toColor()));
-        }
-
-        default ColorApi color() {
-            return _helper().applyColor(color -> _helper().putStyle(StyleProperties.COLOR, color.toColor()));
         }
     }
 }
