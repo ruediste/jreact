@@ -34,6 +34,7 @@ import com.antepod.taffy.style.Position;
 import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
 import com.github.ruediste.jreact.OptionalN;
+import com.github.ruediste.jreact.color.JColor;
 
 /**
  * Typed declarations of the style properties supported by {@link Style}.
@@ -95,8 +96,11 @@ public abstract class StyleProperties {
         BORDER {
             @Override
             public void update(Style style, com.antepod.taffy.style.Style.Builder builder) {
-                builder.border(new Rect<>(BORDER_LEFT_WIDTH.get(style), BORDER_RIGHT_WIDTH.get(style),
-                        BORDER_TOP_WIDTH.get(style), BORDER_BOTTOM_WIDTH.get(style)));
+                builder.border(new Rect<>(
+                        LengthPercentage.length(BORDER_LEFT_WIDTH.get(style).floatValue()),
+                        LengthPercentage.length(BORDER_RIGHT_WIDTH.get(style).floatValue()),
+                        LengthPercentage.length(BORDER_TOP_WIDTH.get(style).floatValue()),
+                        LengthPercentage.length(BORDER_BOTTOM_WIDTH.get(style).floatValue())));
             }
         },
         OVERFLOW {
@@ -197,7 +201,7 @@ public abstract class StyleProperties {
         }
 
         public void set(Style style, T value) {
-            style.put(this, Objects.requireNonNull(value));
+            style.put(this, value);
         }
 
         public void setNullable(Style style, T value) {
@@ -250,24 +254,6 @@ public abstract class StyleProperties {
             throw new IllegalArgumentException("Value must be positive");
     }
 
-    /** Width and solid color of a single border edge. */
-    public record Edge(double width, Color color) {
-        public Edge {
-            nonNegative(width);
-            Objects.requireNonNull(color);
-        }
-    }
-
-    /** Per-side solid borders whose widths contribute to content insets. */
-    public record Border(Edge top, Edge right, Edge bottom, Edge left) {
-        public Border {
-            Objects.requireNonNull(top);
-            Objects.requireNonNull(right);
-            Objects.requireNonNull(bottom);
-            Objects.requireNonNull(left);
-        }
-    }
-
     /** One shadow with signed offsets, non-negative blur, and a solid color. */
     public record Shadow(double offsetX, double offsetY, double blur, Color color) {
         public Shadow {
@@ -278,12 +264,14 @@ public abstract class StyleProperties {
         }
     }
 
+    public enum BorderStyle {
+        NONE, HIDDEN, SOLID, DOTTED, DASHED
+    }
+
     // Visual style properties
     public static final Property<Color> BACKGROUND = new Property<>("background");
     public static final Property<Color> COLOR = new Property<>("color", null,
             new Color(32, 36, 40));
-    public static final Property<Border> BORDER_DECORATION = new Property<>("border-decoration");
-    public static final DoubleProperty RADIUS = new DoubleProperty("radius", null, 0.);
     public static final Property<String> FONT_FAMILY = new Property<>("font-family", null,
             java.awt.Font.DIALOG);
     public static final Property<Integer> FONT_SIZE = new Property<>("font-size", null, 14);
@@ -351,14 +339,42 @@ public abstract class StyleProperties {
     public static final Property<LengthPercentage> PADDING_LEFT = multiProperty("padding-left",
             LengthPercentage.ZERO, MultiPropertyTaffyUpdater.PADDING);
 
-    public static final Property<LengthPercentage> BORDER_TOP_WIDTH = multiProperty("border-top-width",
-            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
-    public static final Property<LengthPercentage> BORDER_RIGHT_WIDTH = multiProperty("border-right-width",
-            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
-    public static final Property<LengthPercentage> BORDER_BOTTOM_WIDTH = multiProperty("border-bottom-width",
-            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
-    public static final Property<LengthPercentage> BORDER_LEFT_WIDTH = multiProperty("border-left-width",
-            LengthPercentage.ZERO, MultiPropertyTaffyUpdater.BORDER);
+    public static final Property<JColor> BORDER_TOP_COLOR = new Property<>("border-top-color", null,
+            JColor.BLACK);
+    public static final Property<BorderStyle> BORDER_TOP_STYLE = new Property<>("border-top-style", null,
+            BorderStyle.NONE);
+    public static final Property<Double> BORDER_TOP_WIDTH = multiProperty("border-top-width",
+            1., MultiPropertyTaffyUpdater.BORDER);
+
+    public static final Property<JColor> BORDER_RIGHT_COLOR = new Property<>("border-right-color", null,
+            JColor.BLACK);
+    public static final Property<BorderStyle> BORDER_RIGHT_STYLE = new Property<>("border-right-style", null,
+            BorderStyle.NONE);
+    public static final Property<Double> BORDER_RIGHT_WIDTH = multiProperty("border-right-width",
+            0., MultiPropertyTaffyUpdater.BORDER);
+
+    public static final Property<JColor> BORDER_BOTTOM_COLOR = new Property<>("border-bottom-color", null,
+            JColor.BLACK);
+    public static final Property<BorderStyle> BORDER_BOTTOM_STYLE = new Property<>("border-bottom-style", null,
+            BorderStyle.NONE);
+    public static final Property<Double> BORDER_BOTTOM_WIDTH = multiProperty("border-bottom-width",
+            1., MultiPropertyTaffyUpdater.BORDER);
+
+    public static final Property<JColor> BORDER_LEFT_COLOR = new Property<>("border-left-color", null,
+            JColor.BLACK);
+    public static final Property<BorderStyle> BORDER_LEFT_STYLE = new Property<>("border-left-style", null,
+            BorderStyle.NONE);
+    public static final Property<Double> BORDER_LEFT_WIDTH = multiProperty("border-left-width",
+            0., MultiPropertyTaffyUpdater.BORDER);
+
+    public static final Property<LengthPercentage> BORDER_TOP_LEFT_RADIUS = new Property<>(
+            "border-top-left-radius", null, LengthPercentage.ZERO);
+    public static final Property<LengthPercentage> BORDER_TOP_RIGHT_RADIUS = new Property<>(
+            "border-top-right-radius", null, LengthPercentage.ZERO);
+    public static final Property<LengthPercentage> BORDER_BOTTOM_RIGHT_RADIUS = new Property<>(
+            "border-bottom-right-radius", null, LengthPercentage.ZERO);
+    public static final Property<LengthPercentage> BORDER_BOTTOM_LEFT_RADIUS = new Property<>(
+            "border-bottom-left-radius", null, LengthPercentage.ZERO);
 
     public static final Property<Overflow> OVERFLOW_X = multiProperty("overflow-x",
             Overflow.VISIBLE, MultiPropertyTaffyUpdater.OVERFLOW);

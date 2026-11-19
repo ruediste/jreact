@@ -11,5 +11,11 @@
 
     <artifactId>jreact-theme</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.github.ruediste.jreact</groupId>
+            <artifactId>jreact-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

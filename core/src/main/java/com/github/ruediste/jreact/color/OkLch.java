@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.utility;
+package com.github.ruediste.jreact.color;
 
 import java.awt.Color;
 
@@ -32,7 +32,7 @@ import java.awt.Color;
  * @param h     hue angle in degrees, in {@code [0, 360)}
  * @param alpha opacity in {@code [0, 1]}
  */
-public record OkLch(double l, double c, double h, double alpha) {
+public record OkLch(double l, double c, double h, double alpha) implements JColor {
 
     /**
      * Creates a fully opaque color, equivalent to
@@ -87,6 +87,7 @@ public record OkLch(double l, double c, double h, double alpha) {
      *
      * @return the corresponding sRGB color
      */
+    @Override
     public Color toColor() {
         double hRad = Math.toRadians(h);
         double a = c * Math.cos(hRad);

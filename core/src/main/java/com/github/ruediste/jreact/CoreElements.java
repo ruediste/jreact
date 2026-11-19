@@ -15,9 +15,9 @@ import com.github.ruediste.jreact.nodes.SelectNode;
 import com.github.ruediste.jreact.nodes.SpanNode;
 import com.github.ruediste.jreact.nodes.TextNode;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
+import com.github.ruediste.jreact.style.CoreStyleApis.LayoutStyleApi;
+import com.github.ruediste.jreact.style.CoreStyleApis.StyleApiHelper;
 import com.github.ruediste.jreact.style.StyleProperties.Property;
-import com.github.ruediste.jreact.style.Styles.LayoutStyleApi;
-import com.github.ruediste.jreact.style.Styles.StyleApiHelper;
 
 public final class CoreElements {
 
@@ -111,7 +111,7 @@ public final class CoreElements {
 
     public static interface VisualStyleApiBase<Self> extends ElementNodeCoreApi<Self, NodeApiHelper<Self>>,
             LayoutStyleApi<Self, NodeApiHelper<Self>>,
-            com.github.ruediste.jreact.style.Styles.VisualStyleApi<Self, NodeApiHelper<Self>>,
+            com.github.ruediste.jreact.style.CoreStyleApis.VisualStyleApi<Self, NodeApiHelper<Self>>,
             EventApi<Self, NodeApiHelper<Self>> {
     }
 

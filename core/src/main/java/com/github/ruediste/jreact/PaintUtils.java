@@ -3,6 +3,7 @@ package com.github.ruediste.jreact;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
@@ -13,19 +14,49 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.nodes.ElementNode;
 import com.github.ruediste.jreact.style.StyleProperties;
+import com.github.ruediste.jreact.style.StyleProperties.Border;
 
 public final class PaintUtils {
     private PaintUtils() {
     }
 
     public static Shape shape(ElementNode node) {
-        double radius = StyleProperties.RADIUS.get(node.style);
-        return new RoundRectangle2D.Double(node.bounds.x, node.bounds.y, node.bounds.width, node.bounds.height,
-                radius * 2, radius * 2);
+        Border.Radius radius = StyleProperties.RADIUS.get(node.style);
+        return roundedRectangle(node.bounds.x, node.bounds.y, node.bounds.width, node.bounds.height, radius);
+    }
+
+    private static Shape roundedRectangle(double x, double y, double width, double height, Border.Radius radius) {
+        double max = Math.max(0, Math.min(width, height) / 2);
+        double topLeft = Math.min(radius.topLeft(), max);
+        double topRight = Math.min(radius.topRight(), max);
+        double bottomRight = Math.min(radius.bottomRight(), max);
+        double bottomLeft = Math.min(radius.bottomLeft(), max);
+        if (topLeft == topRight && topRight == bottomRight && bottomRight == bottomLeft) {
+            return new RoundRectangle2D.Double(x, y, width, height, topLeft * 2, topLeft * 2);
+        }
+        Path2D path = new Path2D.Double();
+        path.moveTo(x + topLeft, y);
+        path.lineTo(x + width - topRight, y);
+        appendArc(path, x + width - topRight, y + topRight, topRight, 90);
+        path.lineTo(x + width, y + height - bottomRight);
+        appendArc(path, x + width - bottomRight, y + height - bottomRight, bottomRight, 0);
+        path.lineTo(x + bottomLeft, y + height);
+        appendArc(path, x + bottomLeft, y + height - bottomLeft, bottomLeft, 270);
+        path.lineTo(x, y + topLeft);
+        appendArc(path, x + topLeft, y + topLeft, topLeft, 180);
+        path.closePath();
+        return path;
+    }
+
+    private static void appendArc(Path2D path, double centerX, double centerY, double radius, double startDegrees) {
+        if (radius == 0)
+            return;
+        path.append(new Arc2D.Double(centerX - radius, centerY - radius, radius * 2, radius * 2,
+                startDegrees, -90, Arc2D.OPEN), true);
     }
 
     public static void paintBorder(ElementNode node, Graphics2D graphics, Shape outer) {
-        StyleProperties.Border border = StyleProperties.BORDER_DECORATION.get(node.style);
+        Border border = StyleProperties.BORDER.get(node.style);
         if (border == null)
             return;
         java.awt.geom.Rectangle2D.Double bounds = node.bounds;
@@ -34,13 +65,15 @@ public final class PaintUtils {
         double innerRight = Math.max(innerLeft, right - border.right().width());
         double innerTop = Math.min(bottom, top + border.top().width());
         double innerBottom = Math.max(innerTop, bottom - border.bottom().width());
-        double radius = Math.max(0, StyleProperties.RADIUS.get(node.style)
-
-                - Math.max(Math.max(border.left().width(), border.right().width()),
-                        Math.max(border.top().width(), border.bottom().width())));
+        Border.Radius radius = StyleProperties.RADIUS.get(node.style);
+        Border.Radius innerRadius = new Border.Radius(
+                Math.max(0, radius.topLeft() - Math.max(border.top().width(), border.left().width())),
+                Math.max(0, radius.topRight() - Math.max(border.top().width(), border.right().width())),
+                Math.max(0, radius.bottomRight() - Math.max(border.bottom().width(), border.right().width())),
+                Math.max(0, radius.bottomLeft() - Math.max(border.bottom().width(), border.left().width())));
         Area ring = new Area(outer);
-        ring.subtract(new Area(new RoundRectangle2D.Double(innerLeft, innerTop, innerRight - innerLeft,
-                innerBottom - innerTop, radius * 2, radius * 2)));
+        ring.subtract(new Area(roundedRectangle(innerLeft, innerTop, innerRight - innerLeft,
+                innerBottom - innerTop, innerRadius)));
         Graphics2D copy = (Graphics2D) graphics.create();
         try {
             copy.clip(ring);

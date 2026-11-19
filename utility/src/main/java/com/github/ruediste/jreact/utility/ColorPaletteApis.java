@@ -1,5 +1,6 @@
 package com.github.ruediste.jreact.utility;
 
+import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
 
 public class ColorPaletteApis {

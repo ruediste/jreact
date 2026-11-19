@@ -8,8 +8,8 @@ import com.github.ruediste.jreact.style.StyleProperties.Property;
 public final class Style {
     public HashMap<Property<?>, Object> defaultValues;
 
-    final HashMap<Property<?>, Object> values = new HashMap<>();
-    final EnumSet<StyleProperties.MultiPropertyTaffyUpdater> taffyUpdaters = EnumSet
+    final public HashMap<Property<?>, Object> values = new HashMap<>();
+    final public EnumSet<StyleProperties.MultiPropertyTaffyUpdater> taffyUpdaters = EnumSet
             .noneOf(StyleProperties.MultiPropertyTaffyUpdater.class);
 
     public void putAll(Style other) {

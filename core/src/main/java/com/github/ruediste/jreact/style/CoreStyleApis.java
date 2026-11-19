@@ -28,7 +28,8 @@ import com.antepod.taffy.style.Position;
 import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
 import com.github.ruediste.jreact.CoreElements;
-import com.github.ruediste.jreact.style.StyleProperties.Border;
+import com.github.ruediste.jreact.color.JColor;
+import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
 import com.github.ruediste.jreact.style.StyleProperties.Property;
 import com.github.ruediste.jreact.style.StyleProperties.Shadow;
 
@@ -53,10 +54,132 @@ import com.github.ruediste.jreact.style.StyleProperties.Shadow;
  * changes to affect pseudo-class rules without mutating the original
  * declarations.
  */
-public final class Styles {
+public final class CoreStyleApis {
 
     public interface StyleApiHelper<Api> {
         <T> Api putStyle(Property<T> property, T value);
+    }
+
+    public interface BorderStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
+
+        default Self borderTopColor(JColor value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_COLOR, value);
+        }
+
+        default Self borderRightColor(JColor value) {
+            return _helper().putStyle(StyleProperties.BORDER_RIGHT_COLOR, value);
+        }
+
+        default Self borderBottomColor(JColor value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_COLOR, value);
+        }
+
+        default Self borderLeftColor(JColor value) {
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_COLOR, value);
+        }
+
+        default Self borderColor(JColor value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_COLOR, value);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_COLOR, value);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_COLOR, value);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_COLOR, value);
+        }
+
+        default Self borderTopStyle(BorderStyle value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_STYLE, value);
+        }
+
+        default Self borderRightStyle(BorderStyle value) {
+            return _helper().putStyle(StyleProperties.BORDER_RIGHT_STYLE, value);
+        }
+
+        default Self borderBottomStyle(BorderStyle value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_STYLE, value);
+        }
+
+        default Self borderLeftStyle(BorderStyle value) {
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_STYLE, value);
+        }
+
+        default Self borderStyle(BorderStyle value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_STYLE, value);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_STYLE, value);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_STYLE, value);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_STYLE, value);
+        }
+
+        default Self borderTopLeftRadius(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, value);
+        }
+
+        default Self borderTopLeftRadius(double value) {
+            return borderTopLeftRadius(LengthPercentage.length((float) value));
+        }
+
+        default Self borderTopRightRadius(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_RIGHT_RADIUS, value);
+        }
+
+        default Self borderTopRightRadius(double value) {
+            return borderTopRightRadius(LengthPercentage.length((float) value));
+        }
+
+        default Self borderBottomRightRadius(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS, value);
+        }
+
+        default Self borderBottomRightRadius(double value) {
+            return borderBottomRightRadius(LengthPercentage.length((float) value));
+        }
+
+        default Self borderBottomLeftRadius(LengthPercentage value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS, value);
+        }
+
+        default Self borderBottomLeftRadius(double value) {
+            return borderBottomLeftRadius(LengthPercentage.length((float) value));
+        }
+
+        default Self borderRadius(LengthPercentage value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, value);
+            _helper().putStyle(StyleProperties.BORDER_TOP_RIGHT_RADIUS, value);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS, value);
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS, value);
+        }
+
+        default Self borderRadius(double value) {
+            return borderRadius(LengthPercentage.length((float) value));
+        }
+
+        default Self borderTopWidth(double value) {
+            return _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
+        }
+
+        default Self borderRightWidth(double value) {
+            return _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
+        }
+
+        default Self borderBottomWidth(double value) {
+            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
+        }
+
+        default Self borderLeftWidth(double value) {
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
+        }
+
+        default Self borderWidth(double value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
+        }
+
+        default Self borderWidth(Rect<Double> value) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value.top);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value.right);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value.bottom);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value.left);
+        }
     }
 
     public interface VisualStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
@@ -67,14 +190,6 @@ public final class Styles {
 
         default Self color(Color value) {
             return _helper().putStyle(StyleProperties.COLOR, value);
-        }
-
-        default Self borderDecoration(Border value) {
-            return _helper().putStyle(StyleProperties.BORDER_DECORATION, value);
-        }
-
-        default Self radius(double value) {
-            return _helper().putStyle(StyleProperties.RADIUS, value);
         }
 
         default Self fontFamily(String value) {
@@ -358,56 +473,6 @@ public final class Styles {
             _helper().putStyle(StyleProperties.PADDING_RIGHT, value.right);
             _helper().putStyle(StyleProperties.PADDING_BOTTOM, value.bottom);
             return _helper().putStyle(StyleProperties.PADDING_LEFT, value.left);
-        }
-
-        default Self borderTopWidth(LengthPercentage value) {
-            return _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
-        }
-
-        default Self borderTopWidth(double value) {
-            return borderTopWidth(LengthPercentage.length((float) value));
-        }
-
-        default Self borderRightWidth(LengthPercentage value) {
-            return _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
-        }
-
-        default Self borderRightWidth(double value) {
-            return borderRightWidth(LengthPercentage.length((float) value));
-        }
-
-        default Self borderBottomWidth(LengthPercentage value) {
-            return _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
-        }
-
-        default Self borderBottomWidth(double value) {
-            return borderBottomWidth(LengthPercentage.length((float) value));
-        }
-
-        default Self borderLeftWidth(LengthPercentage value) {
-            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
-        }
-
-        default Self borderLeftWidth(double value) {
-            return borderLeftWidth(LengthPercentage.length((float) value));
-        }
-
-        default Self borderWidth(LengthPercentage value) {
-            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value);
-            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value);
-            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value);
-            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value);
-        }
-
-        default Self borderWidth(double value) {
-            return borderWidth(LengthPercentage.length((float) value));
-        }
-
-        default Self borderWidth(Rect<LengthPercentage> value) {
-            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, value.top);
-            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, value.right);
-            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, value.bottom);
-            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, value.left);
         }
 
         default Self overflowX(Overflow value) {
