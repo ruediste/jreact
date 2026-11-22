@@ -1,90 +1,162 @@
 ---
 title: Primitives & CSS Subset
-description: JReact built-in primitives and the supported style subset.
+description: JReact built-in elements, typed styles, inheritance, and selector variants.
 ---
 
 import CodeSnippet from '@components/CodeSnippet.astro';
 
 # JReact Primitives and CSS Subset
 
-This document defines the initial JReact primitive and style contract, now implemented
-in the `jreact` module. Java method names are `Ui.div`, `Ui.span`, and `Ui.text`;
-the capitalized names below describe primitive concepts. Typed enum spelling and
-working examples are in [README.md](../README.md). Layout uses a Taffy-based
-Flexbox and grid layout engine.
+JReact provides a typed, CSS-inspired style API instead of parsing CSS text. The
+low-level element and style APIs live in `jreact-core` (`CoreElements`). The
+Tailwind-inspired scales and helpers live in `jreact-utility` (`UtilityElements`),
+and the shadcn/ui semantic color tokens live in `jreact-theme` (`ThemeElements`).
+Unstyled primitives such as `Accordion` live in `jreact-primitives`; styled
+components are assembled in `jreact-components`.
 
-## Primitive Components
+## Primitive Elements
 
-Primitives are the built-in building blocks used inside user-defined Java components. Names below show the intended Java API style; exact signatures can be settled with the implementation.
-
-| Primitive | Purpose | Children |
+| Element | Purpose | Children |
 | --- | --- | --- |
-| `Div` | A general-purpose rectangular container and the default Flexbox layout node. | Any primitives or user components. |
-| `Span` | An inline grouping for text and inline content. | `Text`, nested `Span`, and `Icon`. |
+| `Div` | General-purpose block/flex container, the default layout node. | Any primitives or user components. |
+| `Span` | Inline grouping for text and inline content. | `Text`, nested `Span`, and `Icon`. |
 | `Text` | Displays a string, including a string produced from a Java value. | None. |
+| `Icon` | Paints a Swing `Icon` at its intrinsic size. | None. |
+| `Input` | Controlled native `JTextField` overlay. | None. |
+| `Select` | Controlled native `JComboBox` overlay. | None. |
 
-For example:
+Factory methods are available on all three element providers:
+`CoreElements.div()`, `UtilityElements.div()`, and `ThemeElements.div()`. The
+utility and theme variants add token-aware style methods. User-defined
+components remain ordinary Java methods and can compose these elements.
 
 <CodeSnippet file="StorybookStories.java" tag="flex-layout" lang="java" title="A flex container" />
 
-User-defined components remain ordinary Java methods and can compose these primitives. HTML elements such as `form`, `input`, `select`, `img`, and `a` are not part of this initial primitive set; add them only with a defined Java/Swing behavior and interaction model.
+## Supported Style Subset
 
-## Supported CSS Subset
+Styles are declared fluently in Java. A declaration either updates the element's
+inline style or a selector-based rule. The API does not parse CSS strings and
+does not load external stylesheets.
 
-JReact styles are declared inline in Java components using a typed, CSS-inspired DSL. The DSL uses the properties listed below, but does not parse CSS text or external stylesheets.
-
-| Property | Supported initial values / behavior |
+| Property | Supported values / behavior |
 | --- | --- |
-| `display` | `flex` (default), `block`, or `grid`, passed through to the layout engine. `Text` is leaf content. |
-| `flex-direction` | `row`, `column`, `row-reverse`, or `column-reverse`. |
-| `flex-wrap` | `nowrap`, `wrap`, or `wrap-reverse`; defaults to `nowrap`. |
-| `flex-grow`, `flex-shrink` | Non-negative numeric factors; default to `0` and `1`, respectively. |
-| `justify-content` | `start`, `end`, `flex-start`, `flex-end`, `center`, `stretch`, `space-between`, or `space-evenly` (Taffy `AlignContent` values). |
-| `align-items` | `start`, `end`, `flex-start`, `flex-end`, `self-start`, `self-end`, `center`, or `baseline` (Taffy `AlignItems` values). |
-| `width`, `height` | A non-negative numeric size in logical pixels, `auto` for content/layout-driven sizing, or a percentage via the typed `Dimension` API. |
-| `margin`, `padding` | A non-negative numeric size in logical pixels, or a percentage, applied uniformly or per side. |
-| `background-color`, `color` | Solid colors, supplied as typed Java color values. `color` sets text color. |
-| `border` | A solid border with a non-negative logical-pixel width and a color; uniform on all sides or set per side. |
-| `border-radius` | A uniform non-negative logical-pixel corner radius. |
-| `font-family` | A font family available to Java on the host system. |
-| `font-size` | A positive logical-pixel size. |
-| `font-weight`, `font-style` | `normal` or `bold`; `normal` or `italic`, respectively. |
-| `text-align` | `auto`, `legacy_left`, `legacy_right`, or `legacy_center` (Taffy `TextAlign` values) for text content. |
-| `line-height` | `normal` or a positive logical-pixel line height. |
-| `box-shadow`, `text-shadow` | A single shadow with horizontal and vertical offsets, a non-negative blur radius, and a color; no spread, inset, or multiple shadows. |
-| `opacity` | A value from `0` (transparent) to `1` (opaque); defaults to `1`. |
+| `display` | `flex` (default), `block`, `flow-root`, `grid`, or `none`, passed through to Taffy. |
+| `flex-direction`, `flex-wrap` | The Taffy flex enums; defaults are `row` and `nowrap`. |
+| `flex-grow`, `flex-shrink`, `flex-basis` | Numeric factors and a `Dimension` basis. Utility helpers include `flex1()`, `grow0()`, and `shrink0()`. |
+| `justify-content`, `align-items`, `align-self` | Taffy `AlignContent`, `AlignItems`, and `AlignSelf` values. |
+| `width`, `height`, `min-*`, `max-*` | Logical pixels, `auto`, or percentages through `Dimension`. Utility `size()`, `wFull()`, and `hFull()` are available. |
+| `gap`, `row-gap`, `column-gap` | Logical pixels or the spacing-token scale (`gap(2)`, `gapX(1)`, `gapY(3)`). |
+| `margin`, `padding`, `inset` | Logical pixels, spacing tokens, percentages where applicable, and `auto` for margins. |
+| `position` | `relative` or `absolute` through the Taffy enum. |
+| `overflow`, `overflow-x`, `overflow-y` | `visible`, `clip`, `hidden`, or `scroll`. |
+| `background-color`, `color` | Typed `JColor` values. `color` sets text and icon color. |
+| `border-*` | Per-side width, style, and color; `solid`, `dotted`, `dashed`, `hidden`, and `none` styles. |
+| `border-*-radius` | Per-corner radius with `BorderRadius` values; utility radius tokens include `borderRadius().sm()/md()/lg()/xl()`. |
+| `font-family`, `font-size`, `line-height` | Host font family, logical-pixel size, and normal or explicit line height. |
+| `font-weight`, `font-style` | Normal or bold, and normal or italic. Swing cannot provide intermediate weights. |
+| `text-align`, `direction` | Taffy `TextAlign` and `Direction` values. |
+| `text-decoration` | `underline` or none, painted by the text element. |
+| `box-shadow`, `text-shadow` | A single shadow with offsets, blur, and color; no spread, inset, or multiple shadows. |
+| `opacity` | `0` to `1`; defaults to `1`. |
+| `pointer-events` | `auto` or `none`; `none` removes the element from hit testing. |
+| `ring-width`, `ring-color`, `ring-offset` | A JReact focus-ring extension painted outside the border, with an optional gap. Utility `ring()` uses a 3px default. |
 
-The corresponding Java API should use typed values and numeric dimensions rather than parsing CSS strings (for example, `flexDirection(Column)`, `padding(16)`, and `backgroundColor(color)`). These appearance properties apply to `Div`, `Span`, and `Text` where meaningful. Text measurement and wrapping are performed by the renderer using Java font metrics and the selected font styles.
+Semantic colors such as `background`, `foreground`, `card`, `primary`, `muted`,
+`accent`, `destructive`, `border`, `input`, `ring`, chart colors, and sidebar
+colors come from the theme layer. The utility layer supplies spacing, radius,
+text, and leading scales; palette colors also include the Tailwind-style
+`red500`, `slate900`, and similar tokens.
 
-### Inline Style Rules and Selectors
+Text measurement and wrapping use Java font metrics and the resolved font
+properties.
 
-A component may declare selector-based style rules alongside its child primitives. Selectors are built with the DSL rather than written as CSS strings. The initial selector forms are primitive type selectors, named style classes, IDs, direct-child and descendant combinators, and pseudo-classes.
+## Inheritance
 
-<CodeSnippet file="StorybookStories.java" tag="custom-dialog" lang="java" title="Scoped style rules" />
+CSS-inherited properties resolve from the nearest ancestor element when not set
+on the node:
 
-A primitive can set its `className` for selector matching and direct inline properties on the same style fluent builder. The class adds selector-based styles without replacing the inline properties; when both set the same property, the direct inline property takes precedence.
+- `color`, `font-family`, `font-size`, `font-weight` (bold), `font-style`
+  (italic), `line-height`, `text-align`, `direction`, `text-shadow`, and
+  `pointer-events`.
 
-`Scope.DIRECT_CHILDREN` is the default: rules declared by a component can style only its immediate child nodes. `Scope.TRANSITIVE` allows them to style all descendants in the rendered subtree, including nodes produced by nested user components. Scope limits the nodes a rule can match; it does not change the selector. A component's rules do not style the component itself. Nested components' own rules use their own scope.
+`text-decoration` is treated as inherited in JReact. CSS itself propagates
+decorations to descendants rather than inheriting the property; the JReact model
+approximates that propagation so a decoration on a container reaches its text
+children.
 
-The initial pseudo-classes are `hover`, `active`, `focus`, and `disabled`. A pseudo-class matches when the corresponding interaction state is reported for the target node; unsupported states do not match. Additional pseudo-classes and pseudo-elements are out of scope.
+All other properties, including backgrounds, borders, spacing, shadows, opacity,
+and rings, apply only to the element where they are declared.
 
-When multiple rules set the same property, a primitive's directly supplied style takes precedence over DSL rules. Among DSL rules, selector specificity is ordered by ID, then class and pseudo-class, then primitive type; ties are resolved by the nearest declaring component, then by later rule declaration. Scope determines whether a rule is eligible to match and does not add specificity.
+## Inline Style Rules and Selectors
 
-### Defined Swing Extensions
+A selector starts a rule on the element where it is declared. Subsequent style
+calls write into that rule until `inline()` ends the selector scope. Inline
+declarations always win over selector rules.
 
-`Ui.input(value, onChange, style)` overlays a controlled native JTextField. `Ui.select`
-overlays a JComboBox with a non-empty option list and a selected value from that list.
-Both support disabled state, keyboard focus, and an accessible name. `Ui.icon` paints
-a Swing Icon at its intrinsic size. These do not correspond to HTML elements.
-The component library builds higher-level controls from these extensions and primitives.
-Span accepts Text, nested Span, and Icon, but not block containers or native editors.
-Nested span decoration uses enclosing bounds rather than individual CSS fragment boxes.
+```java
+e.div().className("accordion-trigger")
+        .hover().backgroundColor().accent().underline().inline()
+        .focusVisible().ringWidth(3).ringColor().ring(0.5).inline()
+        .disabled().opacity(0.5).pointerEventsNone().inline();
+```
 
-### Not in the Initial Subset
+Terminal selectors:
 
-The following are not supported by this initial contract: CSS files or raw inline CSS strings; automatic property inheritance; attribute, sibling, or universal selectors; pseudo-elements and pseudo-classes beyond those listed above; fixed positioning; viewport or font-relative dimensions; background images or gradients; dashed or dotted borders and per-corner radii; text decoration; transforms, transitions, and animations. These can be specified separately when their Java API and rendering behavior are defined.
+| Selector | Matches |
+| --- | --- |
+| `hasId(String)` | The node's `id`. |
+| `hasClass(String)` | A name in the node's class-name set. |
+| `type(Class<? extends Node>)` | The node's class or a subclass. |
+| `hover()` | The node is under the pointer. |
+| `active()` | The node is pressed. |
+| `focus()` | The node currently has focus. |
+| `focusVisible()` | Focus came from a keyboard interaction. |
+| `disabled()` | The node's disabled flag is set. |
+| `notLast()` | The node is not the last element child of its parent element. |
 
-Grid (`display(grid)` plus grid track properties) and absolute positioning
-(`position(Position.ABSOLUTE)` with `top`/`left`/`right`/`bottom` insets) are
-available through the layout engine but are not listed in the subset table
-above. Percentage sizes are supported through the typed `Dimension` API.
+Chained selectors wrap the terminal selector:
+
+| Chain | Meaning |
+| --- | --- |
+| `parent().hover()` | The node's parent element is hovered. |
+| `ancestor().hasClass("group")` | The node has an ancestor element with class `group`. |
+
+A chain consists of zero or more `parent()` / `ancestor()` wrappers followed by
+one terminal selector. Components are transparent in the element tree, so
+`parent()`, `ancestor()`, and `notLast()` also work across component boundaries.
+
+Rules are stored on the node and re-evaluated when interaction state changes.
+Matching rules are applied in declaration order; there is no selector
+specificity, component scope, or global cascade. Inline declarations are applied
+last. `Selectors` supports no attribute, sibling, universal, `:not`, `:is`,
+`:has`, group, `aria-*`, or `data-*` selectors.
+
+<CodeSnippet file="StorybookStories.java" tag="accordion" lang="java" title="A themed accordion with selector variants" />
+
+## Defined Swing Extensions
+
+`CoreElements.input(value, onChange)` overlays a controlled native `JTextField`.
+`CoreElements.select(value, options, onChange)` overlays a `JComboBox` with a
+non-empty option list and a selected value from that list. Both support disabled
+state, keyboard focus, and an accessible name. `CoreElements.icon(icon)` paints a
+Swing `Icon` at its intrinsic size; custom icons that paint with the current
+graphics color follow the resolved text color. Utility and theme element
+providers expose the same factories with token-aware styling.
+
+## Not in the Subset
+
+The following are not supported:
+
+- CSS files, raw inline CSS strings, global stylesheets, or CSS variables.
+- Attribute, sibling, universal, `:not`, `:is`, `:has`, group, `aria-*`, and
+  `data-*` selectors; only the terminal and chained selectors listed above exist.
+- Pseudo-elements, transforms, transitions, keyframes, and animations.
+- Background images and gradients.
+- Multiple shadows, inset shadows, and shadow spread.
+- Font weights other than normal and bold.
+- Viewport-relative and font-relative dimensions; use logical pixels or the
+  spacing/font token scales instead.
+
+Grid (`display(grid)` plus grid track properties) and absolute positioning with
+insets are available through the layout engine but are not covered by the style
+table above. Percentage sizes are supported through the typed `Dimension` API.

@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.ruediste.jreact.color.JColor;
+import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.style.StyleProperties;
 
@@ -166,5 +167,37 @@ class SelectorStyleTest {
         ElementNode enabledNode = (ElementNode) root.rootNode().children().get(1);
         assertEquals(red, StyleProperties.BACKGROUND_COLOR.get(disabledNode, null));
         assertNull(StyleProperties.BACKGROUND_COLOR.get(enabledNode, null));
+    }
+
+    /**
+     * Verifies the id, class, type, active, and focus selector predicates.
+     */
+    @Test
+    void idClassTypeActiveAndFocusSelectors() {
+        JColor red = JColor.rgb(255, 0, 0);
+        JReactRoot root = new JReactRoot(() -> div().width(300).height(100).children(() -> {
+            div().id("node-a").hasId("node-a").backgroundColor(red);
+            div().className("node-c").hasClass("node-c").backgroundColor(red);
+            div().type(DivElement.class).backgroundColor(red);
+            div().className("no-class").hasClass("node-c").backgroundColor(red);
+            div().className("interactive").width(100).height(100)
+                    .active().backgroundColor(red).inline()
+                    .focus().opacity(0.5).inline();
+        }));
+
+        root.refresh(400, 300);
+        ElementNode outer = (ElementNode) root.rootNode().children().get(0);
+        List<ElementNode> nodes = outer.elementChildren();
+        assertEquals(red, StyleProperties.BACKGROUND_COLOR.get(nodes.get(0), null));
+        assertEquals(red, StyleProperties.BACKGROUND_COLOR.get(nodes.get(1), null));
+        assertEquals(red, StyleProperties.BACKGROUND_COLOR.get(nodes.get(2), null));
+        assertNull(StyleProperties.BACKGROUND_COLOR.get(nodes.get(3), null));
+
+        ElementNode interactive = nodes.get(4);
+        assertNull(StyleProperties.BACKGROUND_COLOR.get(interactive, null));
+        root.pointerPressed(interactive.bounds.getCenterX(), interactive.bounds.getCenterY());
+        root.refresh();
+        assertEquals(red, StyleProperties.BACKGROUND_COLOR.get(interactive, null));
+        assertEquals(0.5, StyleProperties.OPACITY.get(interactive));
     }
 }

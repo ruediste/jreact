@@ -4,6 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.github.ruediste.jreact.elements.ComponentNode;
+
 /**
  * A value shared with descendant components without passing it through
  * properties.
@@ -69,9 +71,7 @@ public final class Context<T> {
      */
     public void provide(T value, Runnable children) {
         Objects.requireNonNull(children);
-        ProviderNode provider = new ProviderNode(this, value);
-        JReactContext.addNode(provider);
-        JReactContext.withContainer(provider, children);
+        JReactContext.addNode(new ProviderNode(this, value, children));
     }
 
     @SuppressWarnings("unchecked")
@@ -85,20 +85,24 @@ public final class Context<T> {
     }
 
     private ProviderNode findProvider(Node component) {
-        for (Node ancestor = component.parent; ancestor != null; ancestor = ancestor.parent)
+        for (Node ancestor = component; ancestor != null; ancestor = ancestor.parent)
             if (ancestor instanceof ProviderNode provider && provider.context == this)
                 return provider;
         return null;
     }
 
-    private static final class ProviderNode extends Node {
+    private static final class ProviderNode extends ComponentNode {
         private final Context<?> context;
         private final Object value;
         private final Set<ContextHook> subscribers = new LinkedHashSet<>();
+        private final Runnable children;
 
-        ProviderNode(Context<?> context, Object value) {
+        ProviderNode(Context<?> context, Object value, Runnable children) {
+            super(ProviderNode.class);
             this.context = context;
             this.value = value;
+            this.children = children;
+            this.key = context;
         }
 
         @Override
@@ -108,6 +112,7 @@ public final class Context<T> {
 
         @Override
         public void reconcile(Node oldNode) {
+            super.reconcile(oldNode);
             ProviderNode old = (ProviderNode) oldNode;
             subscribers.addAll(old.subscribers);
             old.subscribers.clear();
@@ -125,6 +130,16 @@ public final class Context<T> {
         @Override
         public void dispose() {
             subscribers.clear();
+        }
+
+        @Override
+        public void render() {
+            children.run();
+        }
+
+        @Override
+        public boolean sameProperties(ComponentNode other) {
+            return true;
         }
     }
 

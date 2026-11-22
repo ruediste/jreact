@@ -6,6 +6,7 @@ import java.awt.Color;
 public interface JColor {
     public static final JColor BLACK = rgb(0, 0, 0);
     public static final JColor WHITE = rgb(255, 255, 255);
+    public static final JColor TRANSPARENT = new Rgb(0, 0, 0, 0);
 
     Color toColor();
 

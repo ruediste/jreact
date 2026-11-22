@@ -19,6 +19,15 @@ public class CoreTokenElementApis {
 
     public interface RadiusTokenElementApi<Self, TRadiusApi, Helper extends RadiusTokenApiHelper<TRadiusApi> & StyleApiHelper<Self>>
             extends ApiHelperProvider<Helper> {
+        default TRadiusApi borderRadius() {
+            return _helper().radius(v -> {
+                _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, v);
+                _helper().putStyle(StyleProperties.BORDER_TOP_RIGHT_RADIUS, v);
+                _helper().putStyle(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS, v);
+                _helper().putStyle(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS, v);
+            });
+        }
+
         default TRadiusApi borderTopLeftRadius() {
             return _helper().radius(v -> _helper().putStyle(StyleProperties.BORDER_TOP_LEFT_RADIUS, v));
         }

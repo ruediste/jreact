@@ -143,33 +143,32 @@ the mechanism for selector-based variants.
 
 ### 7. Accordion component styling
 
-- [ ] Root: `display(FLEX)`, `width(Dimension.percent(1f))`,
+- [x] Root: `display(FLEX)`, `width(Dimension.percent(1f))`,
       `flexDirection(COLUMN)`.
-- [ ] Item: `notLast().borderBottomWidth(1)`, border color from the theme
-      `border` token.
-- [ ] Header: `display(FLEX)`.
-- [ ] Trigger: `flex1()`, `alignItems(START)`, `justifyContent(SPACE_BETWEEN)`,
+- [x] Item: `notLast()` with a solid bottom border, using the theme `border` token.
+- [x] Header: `display(FLEX)`.
+- [x] Trigger: `flex1()`, `alignItems(START)`, `justifyContent(SPACE_BETWEEN)`,
       `borderRadius().lg()`, 1px transparent border, `paddingTop(2.5f)` /
-      `paddingBottom(2.5f)`, `textAlign(LEFT)`, `textSm()`, `fontBold()`.
-      Use bold because Swing cannot express `font-medium`.
-- [ ] Trigger hover: accent background and/or `hover().underline()`. Underline relies
-      on the text-decoration inheritance above.
-- [ ] Trigger focus: `focusVisible().ringWidth(3)` and a `ring` token at 50% alpha.
-      Trigger disabled: `opacity(0.5)` and `pointerEventsNone()`.
-- [ ] Chevron: branch on `isOpen` to draw up/down icons; size 4, `shrink0()`,
-      `mlAuto()`, and `color().mutedForeground()`. No rotation animation.
-- [ ] Content: `display(isOpen ? FLEX : NONE)`, `overflow(HIDDEN)`,
-      `paddingTop(0)`, `paddingBottom(2.5f)`, `textSm()`.
-- [ ] Add an accordion story to the storybook using the themed element APIs.
+      `paddingBottom(2.5f)`, `textAlign(LEGACY_LEFT)`, `textSm()`, `fontBold()`.
+      Bold is used because Swing cannot express `font-medium`.
+- [x] Trigger hover: accent background plus `hover().underline()`.
+- [x] Trigger focus: `focusVisible().ringWidth(3)` with the `ring` token at 50%
+      alpha. Trigger disabled: `opacity(0.5)` and `pointerEventsNone()`.
+- [x] Chevron: branches on `isOpen`; 16px, `shrink0()`, `mlAuto()`, and
+      `color().mutedForeground()`. No rotation animation.
+- [x] Content: `display(isOpen ? FLEX : NONE)`, `overflow(HIDDEN)`,
+      `paddingTop(0)`, `paddingBottom(2.5f)`, `textSm()`, column direction.
+- [x] Add an accordion story to the storybook using the themed element APIs.
 
 ### 8. Verification and documentation
 
-- [ ] Unit tests for the new style properties, selector predicates, and painting
-      (underline, ring).
-- [ ] Accordion interaction and style integration test.
-- [ ] Update `doc/src/content/docs/reference/primitives-and-css.mdx` for selector
-      variants, new properties, and the remaining limitations.
-- [ ] Run `mvn test`.
+- [x] Unit tests for the style properties, selector predicates, and painting
+      (underline, ring, ring offset, pointer events).
+- [x] Accordion interaction and style integration tests.
+- [x] Update `doc/src/content/docs/reference/primitives-and-css.mdx` for selector
+      variants, new properties, inheritance, and the remaining limitations.
+      The architecture reference style section was aligned with the current model.
+- [x] Run `mvn test` and build the documentation site.
 
 ### Explicitly out of scope for this plan
 

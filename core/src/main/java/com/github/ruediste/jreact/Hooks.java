@@ -100,11 +100,11 @@ public final class Hooks {
         hook.update(setup, dependencies, root);
     }
 
-    static <H extends Hook> H use(Class<H> type, Supplier<H> factory) {
+    public static <H extends Hook> H use(Class<H> type, Supplier<H> factory) {
         return fiber().use(type, factory);
     }
 
-    static Fiber fiber() {
+    public static Fiber fiber() {
         Fiber fiber = JReactContext.context().fiber;
         if (fiber == null)
             throw new IllegalStateException("No active component fiber");

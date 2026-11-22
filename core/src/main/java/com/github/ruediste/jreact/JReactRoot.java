@@ -265,7 +265,7 @@ public final class JReactRoot {
         hoverRef.setPath(hit);
         pressRef.setPath(hit);
         activeRef.setPath(hit);
-        focusRef.setPath(hit);
+        focusRef.setPath(focusPath(hit));
         focusVisible = false;
         requestRefresh();
     }
@@ -316,6 +316,18 @@ public final class JReactRoot {
             path.add(node);
         java.util.Collections.reverse(path);
         return path;
+    }
+
+    /**
+     * Focus belongs to the nearest focusable element on the hit path, not to an
+     * arbitrary text or icon child.
+     */
+    private List<Node> focusPath(List<Node> hitPath) {
+        for (int index = hitPath.size() - 1; index >= 0; index--) {
+            if (hitPath.get(index) instanceof ElementNode element && element.focusable)
+                return new ArrayList<>(hitPath.subList(0, index + 1));
+        }
+        return hitPath;
     }
 
     private static Node hitTest(Node node, double x, double y) {

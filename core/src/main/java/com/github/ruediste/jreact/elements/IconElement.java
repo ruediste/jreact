@@ -8,6 +8,7 @@ import javax.swing.Icon;
 
 import com.antepod.taffy.geometry.Size;
 import com.antepod.taffy.style.AvailableSpace;
+import com.github.ruediste.jreact.style.StyleProperties;
 
 public class IconElement extends ElementNode {
 
@@ -29,6 +30,7 @@ public class IconElement extends ElementNode {
 
     @Override
     protected void paintContent(Graphics2D graphics) {
+        graphics.setColor(StyleProperties.COLOR.get(this).toColor());
         icon.paintIcon(null, graphics, (int) Math.round(bounds.x), (int) Math.round(bounds.y));
     }
 }

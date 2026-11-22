@@ -114,40 +114,32 @@ making roots thread-safe. Background work must hand results back to the EDT with
 `SwingUtilities.invokeLater` before changing mounted state. Component bodies and hooks
 must not block the EDT with network or disk operations.
 
-# Scoped Styles and Selectors
+# Styles, Inheritance, and Selectors
 
-`Style` records explicitly
-set properties in a typed map. Defaults are supplied by accessors rather than
-inserted into every declaration, so absent inline properties do not erase rule
-values. Dimensions use logical pixels; auto width/height and normal line height
-use internal `Double.NaN` sentinels. Numeric setters validate their supported
-ranges. There is no CSS text parser or automatic property inheritance.
+`Style` records explicitly set properties in a typed map. Defaults are supplied
+by accessors rather than inserted into every declaration, so absent inline
+properties do not erase rule values. Dimensions use logical pixels; auto
+width/height and normal line height use internal `Double.NaN` sentinels. Numeric
+setters validate their supported ranges. There is no CSS text parser.
 
-`Styles` associates each
-component with a `Declaration` whose anchor is the primitive parent at component
-entry. The declaration is shared by the component's emitted nodes, and nested
-component contexts extend the enclosing declaration chain. Consequently, rules
-may be declared before or after the nodes they style: resolution happens later.
+CSS-inherited properties resolve from the nearest ancestor element when they are
+not declared on the node: `color`, `font-family`, `font-size`, font weight and
+style, `line-height`, `text-align`, `direction`, `text-shadow`, and
+`pointer-events`. `text-decoration` is modeled as inherited so decorations on a
+container reach its text descendants, approximating CSS propagation. Other
+properties apply only to the element where they are declared.
 
-`SCOPED` rules are eligible only for nodes rendered directly by the
-declaring component itself — the last declaration in a node's enclosing chain.
-They do not reach output emitted by nested components merely because that output
-appears under the same anchor. `TRANSITIVE` rules are eligible on every node
-carrying an enclosing component declaration, including nodes produced by nested
-components. Scope determines eligibility; it does not change selector matching.
+Selector terminals such as `hover()`, `focusVisible()`, `disabled()`,
+`hasClass()`, and `notLast()` start a rule on the element where they are
+declared. Subsequent style calls write into that rule until `inline()` ends the
+selector scope. `parent()` and `ancestor()` wrap the terminal selector; a chain
+is zero or more such wrappers followed by one terminal. Components are
+transparent in the element tree, so ancestor and `notLast()` matching also works
+across component boundaries.
 
-`Selector` matches node
-types, IDs, named classes, pseudo-classes, compounds, and ancestor relationships.
-For `left.child(right)` or `left.descendant(right)`, the target matches `right`
-and its parent or an ancestor must match `left`. Scope restricts eligible targets;
-it does not change the selector's ancestor matching or specificity.
-
-For each eligible target, resolution orders matching rules by:
-
-1. ID count, then class/pseudo-class count, then primitive-type count.
-2. Nearest declaring component for equal specificity.
-3. Later rule declaration within that component.
-4. Inline properties, which always override rule properties.
+For each element, matching rules are applied in declaration order, then the
+element's inline properties are applied last and therefore win. There is no
+selector specificity, component scope, or global cascade.
 
 Each resolution pass builds a replacement resolved `Style`. In the Swing host,
 pseudo-class flags are restored from interaction state before resolving again.

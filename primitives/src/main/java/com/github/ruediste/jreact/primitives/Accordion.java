@@ -140,7 +140,7 @@ public class Accordion {
         // todo
     }
 
-    public static record ItemContext(Object value, boolean isOpen, boolean isDisabled, Orientation orientation,
+    public static record ItemContext(boolean isOpen, boolean isDisabled, Orientation orientation,
             Runnable toggle, Consumer<Boolean> setOpen, String accessibleName) {
     }
 
@@ -192,7 +192,7 @@ public class Accordion {
             Consumer<Boolean> setOpen = open -> rootContextValue.setItemOpen().accept(data.value, open);
             String accessibleName = data.accessibleName != null ? data.accessibleName
                     : String.valueOf(data.value);
-            var itemContextValue = new ItemContext(data.value, isOpen, data.disabled,
+            var itemContextValue = new ItemContext(isOpen, data.disabled,
                     rootContextValue.orientation(), toggle, setOpen, accessibleName);
             itemContext
                     .provide(itemContextValue, () -> {

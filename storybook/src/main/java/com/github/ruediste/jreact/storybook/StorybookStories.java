@@ -11,10 +11,18 @@ import java.util.List;
 import com.antepod.taffy.style.Display;
 import com.antepod.taffy.style.FlexDirection;
 import com.github.ruediste.jreact.Hooks;
+import com.github.ruediste.jreact.OptionalN;
 import com.github.ruediste.jreact.State;
 import com.github.ruediste.jreact.color.JColor;
+import com.github.ruediste.jreact.components.Components;
+import com.github.ruediste.jreact.theme.ThemeElements;
+import com.github.ruediste.jreact.utility.UtilityElements;
 
 public final class StorybookStories {
+    private static final ThemeElements THEME = new ThemeElements(new UtilityElements.UtilityTokenValues(),
+            new ThemeElements.ThemeTokenValues());
+    private static final Components COMPONENTS = new Components(THEME);
+
     private StorybookStories() {
     }
 
@@ -23,6 +31,7 @@ public final class StorybookStories {
             case "Overview" -> Overview();
             case "Buttons" -> Buttons();
             case "Inputs" -> Inputs();
+            case "Accordion" -> AccordionStory();
             case "Feedback" -> Feedback();
             case "Layout" -> FlexLayout();
             case "Dialog" -> CustomDialog();
@@ -105,6 +114,20 @@ public final class StorybookStories {
         div().fontSize(20).bold(true);
         div().children(() -> text("Dialog title"));
         // --8<-- [end:custom-dialog]
+    }
+
+    private static void AccordionStory() {
+        // --8<-- [start:accordion]
+        State<OptionalN<String>> value = Hooks.useState(OptionalN.of("getting-started"));
+        COMPONENTS.accordion(value.get())
+                .onValueChange(value::set)
+                .item("getting-started", () -> text("Getting started"),
+                        () -> text("Install JReact and build your first component."))
+                .item("styling", () -> text("Styling"),
+                        () -> text("Use inline styles, selectors, and theme tokens."))
+                .item("layout", () -> text("Layout"),
+                        () -> text("Compose flex layouts with Taffy."));
+        // --8<-- [end:accordion]
     }
 
     private static void TaskBoard() {

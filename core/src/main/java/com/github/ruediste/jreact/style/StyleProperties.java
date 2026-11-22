@@ -48,7 +48,8 @@ import com.github.ruediste.jreact.elements.ElementNode;
  * <p>
  * Properties marked as inherited resolve from the nearest ancestor element when
  * not declared on the node itself. Use the {@link Property#get(ElementNode)}
- * family of methods for resolution; the {@link Style} based variants only inspect
+ * family of methods for resolution; the {@link Style} based variants only
+ * inspect
  * declarations.
  */
 public abstract class StyleProperties {
@@ -206,7 +207,6 @@ public abstract class StyleProperties {
             return OptionalN.empty();
         }
 
-        @SuppressWarnings("unchecked")
         T get(Style style, T fallback) {
             OptionalN<T> value = declaredValue(style);
             return value.isPresent() ? value.get() : fallback;
@@ -246,8 +246,8 @@ public abstract class StyleProperties {
             if (value.isPresent())
                 return value;
             if (inherited) {
-                for (ElementNode ancestor = node.parentElement().orElse(null); ancestor != null;
-                        ancestor = ancestor.parentElement().orElse(null)) {
+                for (ElementNode ancestor = node.parentElement().orElse(null); ancestor != null; ancestor = ancestor
+                        .parentElement().orElse(null)) {
                     value = declaredValue(ancestor.style);
                     if (value.isPresent())
                         return value;

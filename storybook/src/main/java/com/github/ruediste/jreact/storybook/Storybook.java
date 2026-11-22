@@ -21,8 +21,8 @@ import com.github.ruediste.jreact.State;
 import com.github.ruediste.jreact.color.JColor;
 
 public final class Storybook {
-    public static final List<String> STORIES = List.of("Overview", "Buttons", "Inputs", "Feedback", "Layout", "Dialog",
-            "Task Board");
+    public static final List<String> STORIES = List.of("Overview", "Buttons", "Inputs", "Accordion", "Feedback",
+            "Layout", "Dialog", "Task Board");
 
     private Storybook() {
     }

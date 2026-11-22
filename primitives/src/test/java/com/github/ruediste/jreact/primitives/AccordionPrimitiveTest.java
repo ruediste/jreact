@@ -149,7 +149,6 @@ class AccordionPrimitiveTest {
         root.refresh(400, 300);
 
         assertFalse(observed.get().isOpen());
-        assertEquals("foo", observed.get().value());
         assertEquals("foo", observed.get().accessibleName());
         assertEquals(Accordion.Orientation.VERTICAL, observed.get().orientation());
         assertNotNull(observed.get().toggle());
@@ -231,7 +230,7 @@ class AccordionPrimitiveTest {
 
         click(root, trigger(root, 0));
         assertTrue(observed.get().isOpen());
-        assertEquals("foo", observed.get().value());
+        assertEquals("foo", observed.get().accessibleName());
     }
 
     /**
