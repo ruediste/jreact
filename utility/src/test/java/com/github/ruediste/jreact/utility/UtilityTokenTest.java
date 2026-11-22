@@ -36,8 +36,8 @@ class UtilityTokenTest {
         root.refresh(200, 200);
         ElementNode node = (ElementNode) root.rootNode().children().get(0);
 
-        assertEquals(LengthPercentage.length(24), StyleProperties.ROW_GAP.get(node));
-        assertEquals(LengthPercentage.length(8), StyleProperties.COLUMN_GAP.get(node));
+        assertEquals(LengthPercentage.length(12), StyleProperties.ROW_GAP.get(node));
+        assertEquals(LengthPercentage.length(4), StyleProperties.COLUMN_GAP.get(node));
     }
 
     /**
@@ -53,8 +53,8 @@ class UtilityTokenTest {
 
         ElementNode size = (ElementNode) root.rootNode().children().get(0);
         ElementNode full = (ElementNode) root.rootNode().children().get(1);
-        assertEquals(Dimension.length(32), StyleProperties.WIDTH.get(size));
-        assertEquals(Dimension.length(32), StyleProperties.HEIGHT.get(size));
+        assertEquals(Dimension.length(16), StyleProperties.WIDTH.get(size));
+        assertEquals(Dimension.length(16), StyleProperties.HEIGHT.get(size));
         assertEquals(Dimension.percent(1f), StyleProperties.WIDTH.get(full));
         assertEquals(Dimension.percent(1f), StyleProperties.HEIGHT.get(full));
     }

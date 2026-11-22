@@ -11,7 +11,6 @@ import com.antepod.taffy.style.LengthPercentageAuto;
 import com.github.ruediste.jreact.CoreElementApis.ChildrenApi;
 import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.JReactContext;
-import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.elements.IconElement;
@@ -105,22 +104,10 @@ public class UtilityElements {
             implements InputApi {
     }
 
-    private void foo() {
-        div().borderTopLeftRadius().sm().color(JColor.rgb(255, 10, 10)).fontSans()
-                .marginTop(12.5f).children(() -> {
-                });
-    }
-
     public static class UtilityTokenValues {
-        public double spacingBase = 8;
+        public double spacingBase = 4;
         public FontTokenValues fontThemeValues = new FontTokenValues();
         public RadiusThemeValues radiusThemeValues = new RadiusThemeValues();
-
-        {
-            fontThemeValues.initializeLineHeights(12);
-            fontThemeValues.initializeTextSettings(12);
-            radiusThemeValues.initialize(5);
-        }
     }
 
     public static class ElementApiHelperImpl<Api> extends CoreElements.ElementApiHelperImpl<Api>

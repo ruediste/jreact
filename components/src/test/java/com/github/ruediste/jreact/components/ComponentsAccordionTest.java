@@ -107,14 +107,14 @@ class ComponentsAccordionTest {
         assertEquals(Dimension.percent(0f), StyleProperties.FLEX_BASIS.get(trigger));
         assertEquals(AlignItems.START, StyleProperties.ALIGN_ITEMS.get(trigger));
         assertEquals(AlignContent.SPACE_BETWEEN, StyleProperties.JUSTIFY_CONTENT.get(trigger));
-        assertEquals(LengthPercentage.length(7.5f), StyleProperties.BORDER_TOP_LEFT_RADIUS.get(trigger).horizontal());
-        assertEquals(LengthPercentage.length(7.5f),
+        assertEquals(LengthPercentage.length(8f), StyleProperties.BORDER_TOP_LEFT_RADIUS.get(trigger).horizontal());
+        assertEquals(LengthPercentage.length(8f),
                 StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS.get(trigger).horizontal());
         assertEquals(1.0, StyleProperties.BORDER_TOP_WIDTH.get(trigger));
         assertEquals(BorderStyle.SOLID, StyleProperties.BORDER_TOP_STYLE.get(trigger));
         assertEquals(0, StyleProperties.BORDER_TOP_COLOR.get(trigger).toColor().getAlpha());
         assertEquals(TextAlign.LEGACY_LEFT, StyleProperties.TEXT_ALIGN.get(trigger));
-        assertEquals(11, StyleProperties.FONT_SIZE.get(trigger));
+        assertEquals(14, StyleProperties.FONT_SIZE.get(trigger));
         assertTrue(StyleProperties.BOLD.get(trigger));
         assertTrue(trigger.focusable);
         assertFalse(trigger.disabled);
@@ -123,8 +123,8 @@ class ComponentsAccordionTest {
         ElementNode content = find(root.rootNode(), "accordion-content");
         assertEquals(Display.FLEX, StyleProperties.DISPLAY.get(content));
         assertEquals(Overflow.HIDDEN, StyleProperties.OVERFLOW_Y.get(content));
-        assertEquals(LengthPercentage.length(20), StyleProperties.PADDING_BOTTOM.get(content));
-        assertEquals(11, StyleProperties.FONT_SIZE.get(content));
+        assertEquals(LengthPercentage.length(10), StyleProperties.PADDING_BOTTOM.get(content));
+        assertEquals(14, StyleProperties.FONT_SIZE.get(content));
 
         ElementNode icon = find(root.rootNode(), "accordion-trigger-icon");
         assertEquals(Dimension.length(16), StyleProperties.WIDTH.get(icon));

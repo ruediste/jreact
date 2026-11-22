@@ -20,11 +20,19 @@ public interface UtilityTokenApis {
         public double lg;
         public double xl;
 
+        RadiusThemeValues() {
+            initialize(4);
+        }
+
+        /**
+         * Initializes the radius tokens from the base radius unit in logical pixels,
+         * matching the Tailwind CSS {@code rounded-sm/md/lg/xl} scale (0.25rem = 4px).
+         */
         public void initialize(double base) {
-            sm = base * 0.5;
-            md = base;
-            lg = base * 1.5;
-            xl = base * 2;
+            sm = base;
+            md = base * 1.5;
+            lg = base * 2;
+            xl = base * 3;
         }
     }
 
