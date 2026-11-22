@@ -1,14 +1,18 @@
 package com.github.ruediste.jreact;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.swing.Icon;
 
 import com.github.ruediste.jreact.CoreElementApis.ChildrenApi;
 import com.github.ruediste.jreact.CoreElementApis.ElementApiHelper;
 import com.github.ruediste.jreact.CoreElementApis.ElementStyleApiBase;
+import com.github.ruediste.jreact.CoreElementApis.XSelectors;
 import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.elements.IconElement;
@@ -16,7 +20,11 @@ import com.github.ruediste.jreact.elements.InputElement;
 import com.github.ruediste.jreact.elements.SelectElement;
 import com.github.ruediste.jreact.elements.SpanElement;
 import com.github.ruediste.jreact.elements.TextElement;
+import com.github.ruediste.jreact.style.Selector;
+import com.github.ruediste.jreact.style.Selectors.SelectorElementApiHelper;
+import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties.Property;
+import com.github.ruediste.jreact.style.StyleRule;
 
 public final class CoreElements {
 
@@ -127,6 +135,8 @@ public final class CoreElements {
         public Api api;
         public ElementNode node;
 
+        private Optional<StyleRule> currentStyleRule = Optional.empty();
+
         public ElementApiHelperImpl(ElementNode node) {
             this.node = node;
 
@@ -139,12 +149,6 @@ public final class CoreElements {
         }
 
         @Override
-        public <T> Api putStyle(Property<T> property, T value) {
-            property.set(node.inline, value);
-            return api;
-        }
-
-        @Override
         public Api withChildren(Runnable children) {
             JReactContext.withContainer(node, children);
             return api;
@@ -153,6 +157,53 @@ public final class CoreElements {
         @Override
         public <T extends JReactEvent> Api on(Class<T> eventClass, EventListener<T> listener) {
             node.on(eventClass, listener);
+            return api;
+        }
+
+        @Override
+        public <T> Api putStyle(Property<T> property, T value) {
+            property.set(currentStyleRule.map(x -> x.style()).orElse(node.inline), value);
+            return api;
+        }
+
+        @Override
+        public XSelectors<Api, ?> selectorChained(Function<Selector, Selector> factory) {
+            class Helper implements SelectorElementApiHelper<Api, XSelectors<Api, ?>> {
+                public XSelectors<Api, ?> api;
+                private List<Function<Selector, Selector>> chainedSelectors = new ArrayList<>();
+
+                @Override
+                public XSelectors<Api, ?> selectorChained(Function<Selector, Selector> factory) {
+                    chainedSelectors.add(factory);
+                    return api;
+                }
+
+                @Override
+                public Api selectorTerminal(Selector selector) {
+                    // Apply all chained selectors to the current selector
+                    for (Function<Selector, Selector> f : chainedSelectors) {
+                        selector = f.apply(selector);
+                    }
+                    currentStyleRule = Optional.of(new StyleRule(selector, new Style()));
+                    return ElementApiHelperImpl.this.api;
+                }
+
+            }
+            var helper = new Helper();
+            var api = new XSelectors<Api, Helper>() {
+
+                @Override
+                public Helper _helper() {
+                    return helper;
+                }
+            };
+            helper.api = api;
+            return api;
+        }
+
+        @Override
+        public Api selectorTerminal(Selector selector) {
+            currentStyleRule = Optional.of(new StyleRule(selector, new Style()));
             return api;
         }
 

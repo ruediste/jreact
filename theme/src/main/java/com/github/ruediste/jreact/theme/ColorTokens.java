@@ -3,7 +3,7 @@ package com.github.ruediste.jreact.theme;
 import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
-import com.github.ruediste.jreact.style.CoreTokenApis.ColorHelper;
+import com.github.ruediste.jreact.style.CoreTokenElementApis.ColorHelper;
 
 public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & ColorTokens.ColorValuesHelper>
         extends ApiHelperProvider<Helper> {
@@ -278,10 +278,10 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
             OkLch primaryLch = toOklch(primary);
             OkLch destructiveLch = toOklch(destructive);
 
-            boolean dark = bg.l() < 0.5;
+            boolean dark = bg.l < 0.5;
             double direction = dark ? 1 : -1;
-            double neutralHue = bg.c() >= fg.c() ? bg.h() : fg.h();
-            double neutralChroma = Math.min(Math.max(bg.c(), fg.c()), 0.012);
+            double neutralHue = bg.c >= fg.c ? bg.h : fg.h;
+            double neutralChroma = Math.min(Math.max(bg.c, fg.c), 0.012);
 
             this.background = background;
             this.foreground = foreground;
@@ -317,16 +317,16 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
         }
 
         private static OkLch onColor(OkLch color) {
-            return color.l() < LIGHTNESS_THRESHOLD ? LIGHT_ON_COLOR : DARK_ON_COLOR;
+            return color.l < LIGHTNESS_THRESHOLD ? LIGHT_ON_COLOR : DARK_ON_COLOR;
         }
 
         private static OkLch elevated(OkLch background, double delta) {
-            return new OkLch(clamp01(background.l() + delta), background.c(), background.h(),
-                    background.alpha());
+            return new OkLch(clamp01(background.l + delta), background.c, background.h,
+                    background.alpha);
         }
 
         private static OkLch surface(OkLch background, double chroma, double hue, double delta) {
-            return new OkLch(clamp01(background.l() + delta), chroma, hue, background.alpha());
+            return new OkLch(clamp01(background.l + delta), chroma, hue, background.alpha);
         }
 
         private static double clamp01(double value) {

@@ -2,10 +2,10 @@ package com.github.ruediste.jreact.utility;
 
 import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
-import com.github.ruediste.jreact.style.CoreTokenApis.ColorHelper;
+import com.github.ruediste.jreact.style.CoreTokenElementApis.ColorHelper;
 
-public class ColorPaletteApis {
-    private ColorPaletteApis() {
+public class ColorPaletteTokenApis {
+    private ColorPaletteTokenApis() {
     }
 
     public interface ColorRedApi<TResult, Helper extends ColorHelper<TResult>>
@@ -1241,7 +1241,7 @@ public class ColorPaletteApis {
         }
     }
 
-    public interface ColorPaletteApi<TResult, Helper extends ColorHelper<TResult>>
+    public interface Combined<TResult, Helper extends ColorHelper<TResult>>
             extends
             ColorBlackWhiteApi<TResult, Helper>,
             ColorRedApi<TResult, Helper>,
@@ -1271,4 +1271,5 @@ public class ColorPaletteApis {
             ColorMistApi<TResult, Helper>,
             ColorTaupeApi<TResult, Helper> {
     }
+
 }

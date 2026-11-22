@@ -1,6 +1,18 @@
 package com.github.ruediste.jreact.color;
 
-public record Rgb(int r, int g, int b, int a) implements JColor {
+public final class Rgb implements JColor {
+
+    public final int r;
+    public final int g;
+    public final int b;
+    public final int a;
+
+    public Rgb(int r, int g, int b, int a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
 
     public Rgb(int r, int g, int b) {
         this(r, g, b, 255);
@@ -17,5 +29,36 @@ public record Rgb(int r, int g, int b, int a) implements JColor {
     @Override
     public java.awt.Color toColor() {
         return new java.awt.Color(r, g, b, a);
+    }
+
+    @Override
+    public OkLch toOkLch() {
+        return OkLch.fromRgb(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Rgb other)) {
+            return false;
+        }
+        return r == other.r && g == other.g && b == other.b && a == other.a;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(r);
+        result = 31 * result + Integer.hashCode(g);
+        result = 31 * result + Integer.hashCode(b);
+        result = 31 * result + Integer.hashCode(a);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String rgb = String.format("#%02x%02x%02x", r, g, b);
+        return a == 255 ? rgb : rgb + String.format("%02x", a);
     }
 }

@@ -9,7 +9,13 @@ public interface JColor {
 
     Color toColor();
 
+    OkLch toOkLch();
+
     public static Rgb rgb(int r, int g, int b) {
         return new Rgb(r, g, b);
+    }
+
+    public static OkLch oklch(double l, double c, double h) {
+        return new OkLch(l, c, h);
     }
 }

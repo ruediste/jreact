@@ -9,6 +9,8 @@ import com.github.ruediste.jreact.style.ApiHelperProvider;
 import com.github.ruediste.jreact.style.CoreStyleApis;
 import com.github.ruediste.jreact.style.CoreStyleApis.LayoutStyleApi;
 import com.github.ruediste.jreact.style.CoreStyleApis.StyleApiHelper;
+import com.github.ruediste.jreact.style.Selectors;
+import com.github.ruediste.jreact.style.Selectors.SelectorElementApiHelper;
 
 public class CoreElementApis {
     public interface ChildrenApiHelper<Api> {
@@ -69,8 +71,16 @@ public class CoreElementApis {
         }
     }
 
+    // todo: this is a temporary helper which does not allow extending the selector
+    // API in a flexible way
+    // the selector API will likely need to be exposed via generic parameters of the
+    // element API itself
+    public interface XSelectors<Api, Helper extends SelectorElementApiHelper<Api, XSelectors<Api, ?>>>
+            extends Selectors.SelectorElementApi<Api, XSelectors<Api, ?>, Helper> {
+    }
+
     public interface ElementApiHelper<Api> extends StyleApiHelper<Api>, ChildrenApiHelper<Api>, EventApiHelper<Api>,
-            NodeAccessApiHelper<Api> {
+            NodeAccessApiHelper<Api>, SelectorElementApiHelper<Api, XSelectors<Api, ?>> {
     }
 
     public static interface ElementStyleApiBase<Self, Helper extends ElementApiHelper<Self>>
@@ -81,6 +91,7 @@ public class CoreElementApis {
             CoreStyleApis.FontStyleApi<Self, Helper>,
             CoreStyleApis.ShadowStyleApi<Self, Helper>,
             CoreStyleApis.OpacityStyleApi<Self, Helper>,
+            XSelectors<Self, Helper>,
             EventApi<Self, Helper> {
     }
 

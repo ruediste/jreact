@@ -6,20 +6,21 @@ import java.util.function.Function;
 import com.github.ruediste.jreact.Node;
 
 public class Selectors {
-    public interface SelectorBuilder<Self> {
-        Self selectorChained(Function<Selector, Selector> factory);
+    public interface SelectorElementApiHelper<Api, TSelectors> {
+        TSelectors selectorChained(Function<Selector, Selector> factory);
 
-        Self selectorTerminal(Selector selector);
+        Api selectorTerminal(Selector selector);
     }
 
-    public interface DefaultSelectors<Self, Builder extends SelectorBuilder<Self>> extends ApiHelperProvider<Builder> {
+    public interface SelectorElementApi<Self, TSelectors, Helper extends SelectorElementApiHelper<Self, TSelectors>>
+            extends ApiHelperProvider<Helper> {
 
-        default Self id(String id) {
+        default Self hasId(String id) {
             Objects.requireNonNull(id);
             return _helper().selectorTerminal(node -> new Selector.Result(id.equals(node.id)));
         }
 
-        default Self className(String name) {
+        default Self hasClass(String name) {
             if (name == null || name.isBlank() || name.chars().anyMatch(Character::isWhitespace))
                 throw new IllegalArgumentException("A selector class must be a single non-empty name");
             return _helper().selectorTerminal(node -> new Selector.Result(node.classNames.contains(name)));
@@ -46,12 +47,12 @@ public class Selectors {
             return _helper().selectorTerminal(node -> new Selector.Result(node.disabled));
         }
 
-        default Self parent() {
+        default TSelectors parent() {
             return _helper().selectorChained(selector -> node -> new Selector.Result(
                     node.parentElement().map(parent -> selector.match(parent).matches()).orElse(false)));
         }
 
-        default Self ancestor() {
+        default TSelectors ancestor() {
             return _helper().selectorChained(selector -> node -> new Selector.Result(
                     node.ancestorElements().anyMatch(ancestor -> selector.match(ancestor).matches())));
         }

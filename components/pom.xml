@@ -12,4 +12,16 @@
     <artifactId>jreact-components</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.ruediste.jreact</groupId>
+            <artifactId>jreact-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ruediste.jreact</groupId>
+            <artifactId>jreact-primitives</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

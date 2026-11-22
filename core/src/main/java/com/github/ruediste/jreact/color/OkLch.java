@@ -24,15 +24,46 @@ import java.awt.Color;
  * </ul>
  * No constructor or factory validates its arguments; out-of-range values are
  * only clamped when converting to sRGB.
- *
- * @param l     lightness in {@code [0, 1]}
- * @param c     chroma, {@code >= 0}, where 0 is gray; typical values are
- *              {@code 0.02-0.32}, with about {@code 0.32} being the sRGB
- *              maximum
- * @param h     hue angle in degrees, in {@code [0, 360)}
- * @param alpha opacity in {@code [0, 1]}
  */
-public record OkLch(double l, double c, double h, double alpha) implements JColor {
+public final class OkLch implements JColor {
+
+    /**
+     * Lightness in {@code [0, 1]}, where 0 is black and 1 is white.
+     */
+    public final double l;
+
+    /**
+     * Chroma, {@code >= 0}, where 0 is gray; typical values are
+     * {@code 0.02-0.32}, with about {@code 0.32} being the sRGB maximum.
+     */
+    public final double c;
+
+    /**
+     * Hue angle in degrees, in {@code [0, 360)}.
+     */
+    public final double h;
+
+    /**
+     * Opacity in {@code [0, 1]}.
+     */
+    public final double alpha;
+
+    /**
+     * Creates a color with the given OKLCH components.
+     *
+     * @param l     lightness in {@code [0, 1]}
+     * @param c     chroma, {@code >= 0}, where 0 is gray; typical values are
+     *              {@code 0.02-0.32}, with about {@code 0.32} being the sRGB
+     *              maximum
+     * @param h     hue angle in degrees, in {@code [0, 360)}
+     * @param alpha opacity in {@code [0, 1]}
+     */
+    public OkLch(double l, double c, double h, double alpha) {
+        this.l = l;
+        this.c = c;
+        this.h = h;
+        this.alpha = alpha;
+    }
 
     /**
      * Creates a fully opaque color, equivalent to
@@ -56,9 +87,21 @@ public record OkLch(double l, double c, double h, double alpha) implements JColo
      *         {@code [0, 1]}
      */
     public static OkLch fromColor(Color color) {
-        double red = toLinearChannel(color.getRed() / 255.0);
-        double green = toLinearChannel(color.getGreen() / 255.0);
-        double blue = toLinearChannel(color.getBlue() / 255.0);
+        return fromRgba(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+    }
+
+    public static OkLch fromRgb(int r, int g, int b) {
+        return fromRgba(r, g, b, 255);
+    }
+
+    public static OkLch fromRgb(Rgb rgb) {
+        return fromRgba(rgb.r, rgb.g, rgb.b, rgb.a);
+    }
+
+    public static OkLch fromRgba(int r, int g, int b, int a) {
+        double red = toLinearChannel(r / 255.0);
+        double green = toLinearChannel(g / 255.0);
+        double blue = toLinearChannel(b / 255.0);
 
         double l = 0.4122214708 * red + 0.5363325363 * green + 0.0514459929 * blue;
         double m = 0.2119034982 * red + 0.6806995451 * green + 0.1073969566 * blue;
@@ -69,16 +112,16 @@ public record OkLch(double l, double c, double h, double alpha) implements JColo
         double s_ = Math.cbrt(s);
 
         double lightness = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
-        double a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
-        double b = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+        double a_ = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+        double b_ = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
 
-        double chroma = Math.hypot(a, b);
-        double hue = Math.toDegrees(Math.atan2(b, a));
+        double chroma = Math.hypot(a_, b_);
+        double hue = Math.toDegrees(Math.atan2(b_, a_));
         if (hue < 0) {
             hue += 360;
         }
 
-        return new OkLch(lightness, chroma, hue, color.getAlpha() / 255.0);
+        return new OkLch(lightness, chroma, hue, a / 255.0);
     }
 
     /**
@@ -112,6 +155,35 @@ public record OkLch(double l, double c, double h, double alpha) implements JColo
                 clamp(alpha));
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof OkLch other)) {
+            return false;
+        }
+        return Double.compare(l, other.l) == 0
+                && Double.compare(c, other.c) == 0
+                && Double.compare(h, other.h) == 0
+                && Double.compare(alpha, other.alpha) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Double.hashCode(l);
+        result = 31 * result + Double.hashCode(c);
+        result = 31 * result + Double.hashCode(h);
+        result = 31 * result + Double.hashCode(alpha);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String base = "oklch(" + l + " " + c + " " + h;
+        return alpha == 1.0 ? base + ")" : base + " / " + alpha + ")";
+    }
+
     private static double toLinearChannel(double encoded) {
         return encoded <= 0.04045
                 ? encoded / 12.92
@@ -127,5 +199,10 @@ public record OkLch(double l, double c, double h, double alpha) implements JColo
 
     private static float clamp(double value) {
         return (float) Math.max(0.0, Math.min(1.0, value));
+    }
+
+    @Override
+    public OkLch toOkLch() {
+        return this;
     }
 }

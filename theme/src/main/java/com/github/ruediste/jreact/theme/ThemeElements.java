@@ -1,34 +1,27 @@
 package com.github.ruediste.jreact.theme;
 
+import static com.github.ruediste.jreact.utility.ColorPalette.COLOR_PALETTE;
+
 import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.CoreElementApis.ChildrenApi;
 import com.github.ruediste.jreact.CoreElementApis.ElementStyleApiBase;
-import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.JReactContext;
 import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.elements.ElementNode;
-import com.github.ruediste.jreact.style.StyleProperties.BorderRadius;
 import com.github.ruediste.jreact.theme.ThemeElementApis.CombinedColorTokens;
 import com.github.ruediste.jreact.theme.ThemeElementApis.CombinedColorTokensHelper;
 import com.github.ruediste.jreact.theme.ThemeElementApis.ElementThemeApiHelper;
-import com.github.ruediste.jreact.utility.UtilityTokenApis;
-import com.github.ruediste.jreact.utility.UtilityTokenApis.FontThemeValues;
-import com.github.ruediste.jreact.utility.UtilityTokenApis.RadiusApi;
-import com.github.ruediste.jreact.utility.UtilityTokenApis.RadiusThemeValues;
+import com.github.ruediste.jreact.utility.UtilityElements;
 
 public class ThemeElements {
-    public FontThemeValues fontThemeValues;
-    public RadiusThemeValues radiusThemeValues;
-    public ColorTokens.Values colorThemeValues;
+    public UtilityElements.UtilityTokenValues utilityValues;
+    public ThemeTokenValues themeValues;
 
-    public ThemeElements(FontThemeValues fontThemeValues,
-            RadiusThemeValues radiusThemeValues,
-            ColorTokens.Values colorThemeValues) {
-        this.fontThemeValues = fontThemeValues;
-        this.radiusThemeValues = radiusThemeValues;
-        this.colorThemeValues = colorThemeValues;
+    public ThemeElements(UtilityElements.UtilityTokenValues utilityValues, ThemeTokenValues themeValues) {
+        this.utilityValues = utilityValues;
+        this.themeValues = themeValues;
     }
 
     public static interface ElementApi
@@ -51,7 +44,7 @@ public class ThemeElements {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private <T> T api(ElementNode node, ElementApiImplBase<? extends T> api) {
-        var helper = new ElementApiHelperImpl<T>(node, fontThemeValues, radiusThemeValues);
+        var helper = new ElementApiHelperImpl<T>(node, utilityValues, themeValues);
         api.helper = (ElementApiHelperImpl) helper;
         helper.api = (T) api;
         return (T) api;
@@ -66,28 +59,24 @@ public class ThemeElements {
         return addElement(new DivElement());
     }
 
-    public class ElementApiHelperImpl<Api> extends CoreElements.ElementApiHelperImpl<Api>
+    public static class ThemeTokenValues {
+        public ColorTokens.Values colorThemeValues = new ColorTokens.Values();
+
+        {
+            colorThemeValues.initialize(COLOR_PALETTE.sky100(), COLOR_PALETTE.sky900(), COLOR_PALETTE.violet800(),
+                    COLOR_PALETTE.orange500());
+        }
+
+    }
+
+    public static class ElementApiHelperImpl<Api> extends UtilityElements.ElementApiHelperImpl<Api>
             implements ElementApiHelper<Api> {
+        private ThemeTokenValues themeValues;
 
-        private FontThemeValues fontThemeValues;
-        private RadiusThemeValues radiusThemeValues;
-
-        public ElementApiHelperImpl(ElementNode node, FontThemeValues fontThemeValues,
-                RadiusThemeValues radiusThemeValues) {
-            super(node);
-            this.fontThemeValues = fontThemeValues;
-            this.radiusThemeValues = radiusThemeValues;
-        }
-
-        @Override
-        public FontThemeValues getFontThemeValues() {
-            return fontThemeValues;
-        }
-
-        @Override
-        public RadiusApi<Api> radius(Consumer<BorderRadius> apply) {
-            return new UtilityTokenApis.RadiusApiImpl<Api>(radiusThemeValues, v -> apply.accept(BorderRadius.of(v)),
-                    api);
+        public ElementApiHelperImpl(ElementNode node, UtilityElements.UtilityTokenValues utilityValues,
+                ThemeTokenValues themeValues) {
+            super(node, utilityValues);
+            this.themeValues = themeValues;
         }
 
         @Override
@@ -104,7 +93,7 @@ public class ThemeElements {
 
                     @Override
                     public ColorTokens.Values colorValues() {
-                        return colorThemeValues;
+                        return themeValues.colorThemeValues;
                     }
                 };
 
@@ -114,6 +103,7 @@ public class ThemeElements {
                 }
             };
         }
+
     }
 
     static class ElementApiImplBase<Api>

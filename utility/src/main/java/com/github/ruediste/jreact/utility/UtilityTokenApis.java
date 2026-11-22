@@ -15,9 +15,16 @@ public interface UtilityTokenApis {
         public double md;
         public double lg;
         public double xl;
+
+        public void initialize(double base) {
+            sm = base * 0.5;
+            md = base;
+            lg = base * 1.5;
+            xl = base * 2;
+        }
     }
 
-    public interface RadiusApi<Api> {
+    public interface RadiusTokenApi<Api> {
         Api sm();
 
         Api md();
@@ -27,12 +34,12 @@ public interface UtilityTokenApis {
         Api xl();
     }
 
-    public class RadiusApiImpl<Api> implements RadiusApi<Api> {
+    public class RadiusTokenApiImpl<Api> implements RadiusTokenApi<Api> {
         private final RadiusThemeValues values;
         private Consumer<Double> apply;
         private Api api;
 
-        public RadiusApiImpl(RadiusThemeValues values, Consumer<Double> apply, Api api) {
+        public RadiusTokenApiImpl(RadiusThemeValues values, Consumer<Double> apply, Api api) {
             this.values = values;
             this.apply = apply;
             this.api = api;
@@ -63,7 +70,7 @@ public interface UtilityTokenApis {
         }
     }
 
-    public class FontThemeValues {
+    public class FontTokenValues {
         private static final double DEFAULT_BASE_FONT_SIZE = 16;
 
         public String fontSans;
@@ -94,7 +101,7 @@ public interface UtilityTokenApis {
         public double leading9;
         public double leading10;
 
-        public FontThemeValues() {
+        public FontTokenValues() {
             fontSans = Font.SANS_SERIF;
             fontSerif = Font.SERIF;
             fontMono = Font.MONOSPACED;
@@ -141,10 +148,10 @@ public interface UtilityTokenApis {
     }
 
     public interface FontUtilityApiHelper<Api> {
-        FontThemeValues getFontThemeValues();
+        FontTokenValues getFontThemeValues();
     }
 
-    public interface FontUtilityApi<Self, Helper extends CoreElementApis.NodeAccessApiHelper<Self> & StyleApiHelper<Self> & FontUtilityApiHelper<Self>>
+    public interface FontTokenElementApi<Self, Helper extends CoreElementApis.NodeAccessApiHelper<Self> & StyleApiHelper<Self> & FontUtilityApiHelper<Self>>
             extends ApiHelperProvider<Helper> {
         default Self fontSans() {
             return _helper().putStyle(StyleProperties.FONT_FAMILY, _helper().getFontThemeValues().fontSans);
