@@ -9,7 +9,6 @@ import javax.swing.Icon;
 import com.antepod.taffy.style.LengthPercentage;
 import com.antepod.taffy.style.LengthPercentageAuto;
 import com.github.ruediste.jreact.CoreElementApis.ChildrenApi;
-import com.github.ruediste.jreact.CoreElementApis.ElementStyleApiBase;
 import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.JReactContext;
 import com.github.ruediste.jreact.color.JColor;
@@ -51,14 +50,14 @@ public class UtilityElements {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private <T> T api(ElementNode node, ElementApiImplBase<? extends T> api) {
+    private <T> T api(ElementNode node, CoreElements.ElementApiImplBase<? extends T, ?> api) {
         var helper = new ElementApiHelperImpl<T>(node, values);
-        api.helper = (ElementApiHelperImpl) helper;
+        ((CoreElements.ElementApiImplBase) api).helper = helper;
         helper.api = (T) api;
         return (T) api;
     }
 
-    private <T> T addElement(ElementNode element, ElementApiImplBase<? extends T> api) {
+    private <T> T addElement(ElementNode element, CoreElements.ElementApiImplBase<? extends T, ?> api) {
         JReactContext.addNode(element);
         return api(element, api);
     }
@@ -91,14 +90,19 @@ public class UtilityElements {
         return addElement(node, new ElementApiImpl());
     }
 
-    static class ElementApiImpl extends ElementApiImplBase<ElementApi> implements ElementApi {
+    static class ElementApiImpl
+            extends CoreElements.ElementApiImplBase<ElementApi, ElementApiHelper<ElementApi>>
+            implements ElementApi {
     }
 
-    static class ElementWithChildrenApiImpl extends ElementApiImplBase<ElementWithChildrenApi>
+    static class ElementWithChildrenApiImpl
+            extends CoreElements.ElementApiImplBase<ElementWithChildrenApi, ElementApiHelper<ElementWithChildrenApi>>
             implements ElementWithChildrenApi {
     }
 
-    static class InputApiImpl extends ElementApiImplBase<InputApi> implements InputApi {
+    static class InputApiImpl
+            extends CoreElements.ElementApiImplBase<InputApi, ElementApiHelper<InputApi>>
+            implements InputApi {
     }
 
     private void foo() {
@@ -155,17 +159,5 @@ public class UtilityElements {
         public com.antepod.taffy.style.Dimension spacingToDimension(double value) {
             return com.antepod.taffy.style.Dimension.length((float) (value * values.spacingBase));
         }
-    }
-
-    static class ElementApiImplBase<Api>
-            implements ElementStyleApiBase<Api, ElementApiHelper<Api>>,
-            ChildrenApi<Api, ElementApiHelper<Api>> {
-        public ElementApiHelper<Api> helper;
-
-        @Override
-        public ElementApiHelper<Api> _helper() {
-            return helper;
-        }
-
     }
 }

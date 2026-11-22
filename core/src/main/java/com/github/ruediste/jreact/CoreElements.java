@@ -40,37 +40,27 @@ public final class CoreElements {
             ChildrenApi<ElementWithChildrenApi, ElementApiHelper<ElementWithChildrenApi>> {
     }
 
-    static class ElementApiImplBase<Api>
-            implements ElementStyleApiBase<Api, ElementApiHelper<Api>>,
-            ChildrenApi<Api, ElementApiHelper<Api>> {
-        public ElementApiHelper<Api> helper;
+    public static class ElementApiImplBase<Api, Helper extends ElementApiHelper<Api>>
+            implements ElementStyleApiBase<Api, Helper>,
+            ChildrenApi<Api, Helper> {
+        public Helper helper;
 
         @Override
-        public ElementApiHelper<Api> _helper() {
+        public Helper _helper() {
             return helper;
         }
 
     }
 
-    public static <T> T api(ElementNode node) {
-        var api = new ElementApiImplBase<T>();
-        return api(node, api);
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> T api(ElementNode node, ElementApiImplBase<? extends T> api) {
+    public static <T> T api(ElementNode node, ElementApiImplBase<? extends T, ?> api) {
         var helper = new ElementApiHelperImpl<T>(node);
-        api.helper = (ElementApiHelperImpl) helper;
+        ((ElementApiImplBase) api).helper = helper;
         helper.api = (T) api;
         return (T) api;
     }
 
-    public static <T> T addElement(ElementNode element) {
-        JReactContext.addNode(element);
-        return api(element);
-    }
-
-    public static <T> T addElement(ElementNode element, ElementApiImplBase<? extends T> api) {
+    public static <T> T addElement(ElementNode element, ElementApiImplBase<? extends T, ?> api) {
         JReactContext.addNode(element);
         return api(element, api);
     }
@@ -96,7 +86,7 @@ public final class CoreElements {
     }
 
     public static ElementStyleApi icon(Icon icon) {
-        return addElement(new IconElement(Objects.requireNonNull(icon)));
+        return addElement(new IconElement(Objects.requireNonNull(icon)), new ElementApiImpl());
     }
 
     public interface InputApi extends ElementStyleApiBase<InputApi, ElementApiHelper<InputApi>> {
@@ -105,7 +95,7 @@ public final class CoreElements {
     public static InputApi input(String value, Consumer<String> onChange) {
         InputElement node = new InputElement(Objects.requireNonNull(value), Objects.requireNonNull(onChange));
         node.focusable = true;
-        class ApiImpl extends ElementApiImplBase<InputApi> implements InputApi {
+        class ApiImpl extends ElementApiImplBase<InputApi, ElementApiHelper<InputApi>> implements InputApi {
         }
         return addElement(node, new ApiImpl());
     }
@@ -113,7 +103,8 @@ public final class CoreElements {
     public static ElementStyleApi select(String value, List<String> options, Consumer<String> onChange) {
         SelectElement node = new SelectElement(value, options, onChange);
         node.focusable = true;
-        class ApiImpl extends ElementApiImplBase<ElementStyleApi> implements ElementStyleApi {
+        class ApiImpl extends ElementApiImplBase<ElementStyleApi, ElementApiHelper<ElementStyleApi>>
+                implements ElementStyleApi {
         }
         return addElement(node, new ApiImpl());
     }
@@ -224,10 +215,13 @@ public final class CoreElements {
 
     }
 
-    public static class ElementWithChildrenApiImpl extends ElementApiImplBase<ElementWithChildrenApi>
+    public static class ElementWithChildrenApiImpl
+            extends ElementApiImplBase<ElementWithChildrenApi, ElementApiHelper<ElementWithChildrenApi>>
             implements ElementWithChildrenApi {
     }
 
-    public static class ElementApiImpl extends ElementApiImplBase<ElementStyleApi> implements ElementStyleApi {
+    public static class ElementApiImpl
+            extends ElementApiImplBase<ElementStyleApi, ElementApiHelper<ElementStyleApi>>
+            implements ElementStyleApi {
     }
 }

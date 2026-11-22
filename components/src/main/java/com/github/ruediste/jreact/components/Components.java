@@ -1,5 +1,6 @@
 package com.github.ruediste.jreact.components;
 
+import com.antepod.taffy.style.Display;
 import com.github.ruediste.jreact.OptionalN;
 import com.github.ruediste.jreact.primitives.Accordion;
 import com.github.ruediste.jreact.theme.ThemeElements;
@@ -17,12 +18,17 @@ public class Components {
                 new Accordion.Item<>(item, ia -> e.div().apply(ia.config()).children(() -> {
                     Accordion.Header(ha -> {
                         e.div().apply(ha.config()).children(() -> {
-                            Accordion.Trigger(ta -> e.div().apply(ta.config()).disabled(ta.ctx().isDisabled())
+                            Accordion.Trigger(ta -> e.div().apply(ta.config())
+                                    .disabled(ta.ctx().isDisabled())
+                                    .focusable(!ta.ctx().isDisabled())
+                                    .accessibleName(ta.ctx().accessibleName())
                                     .children(item.header));
                         });
                     });
                     Accordion.Content(ca -> {
-                        e.div().apply(ca.config()).children(item.content);
+                        e.div().apply(ca.config())
+                                .display(ca.ctx().isOpen() ? Display.FLEX : Display.NONE)
+                                .children(item.content);
                     });
                 }));
             });

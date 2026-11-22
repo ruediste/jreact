@@ -18,10 +18,24 @@ import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.color.Rgb;
 import com.github.ruediste.jreact.elements.DivElement;
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.elements.TextElement;
 import com.github.ruediste.jreact.style.StyleProperties;
 
 class StyleFeatureTest {
+
+    /**
+     * Verifies that the generic element state helpers set the node flags.
+     */
+    @Test
+    void elementStateHelpers() {
+        JReactRoot root = new JReactRoot(() -> div().focusable(true).disabled(true));
+        root.refresh(200, 200);
+        ElementNode node = (ElementNode) root.rootNode().children().get(0);
+
+        assertTrue(node.focusable);
+        assertTrue(node.disabled);
+    }
 
     /**
      * Verifies that an underlined text node paints a line below its baseline.

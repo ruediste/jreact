@@ -58,6 +58,31 @@ public class CoreTokenElementApis {
             return _helper().color(v -> _helper().putStyle(StyleProperties.BACKGROUND_COLOR, v));
         }
 
+        default TColorApi borderColor() {
+            return _helper().color(v -> {
+                _helper().putStyle(StyleProperties.BORDER_TOP_COLOR, v);
+                _helper().putStyle(StyleProperties.BORDER_RIGHT_COLOR, v);
+                _helper().putStyle(StyleProperties.BORDER_BOTTOM_COLOR, v);
+                _helper().putStyle(StyleProperties.BORDER_LEFT_COLOR, v);
+            });
+        }
+
+        default TColorApi borderTopColor() {
+            return _helper().color(v -> _helper().putStyle(StyleProperties.BORDER_TOP_COLOR, v));
+        }
+
+        default TColorApi borderRightColor() {
+            return _helper().color(v -> _helper().putStyle(StyleProperties.BORDER_RIGHT_COLOR, v));
+        }
+
+        default TColorApi borderBottomColor() {
+            return _helper().color(v -> _helper().putStyle(StyleProperties.BORDER_BOTTOM_COLOR, v));
+        }
+
+        default TColorApi borderLeftColor() {
+            return _helper().color(v -> _helper().putStyle(StyleProperties.BORDER_LEFT_COLOR, v));
+        }
+
         default TColorApi ringColor() {
             return _helper().color(v -> _helper().putStyle(StyleProperties.RING_COLOR, v));
         }

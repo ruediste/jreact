@@ -99,43 +99,47 @@ the mechanism for selector-based variants.
 
 ### 4. Theme layer (shadcn/ui)
 
-- [ ] Keep the semantic token set aligned with shadcn/ui: `background`,
+- [x] Keep the semantic token set aligned with shadcn/ui: `background`,
       `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`,
       `destructive`, `border`, `input`, `ring`, their foreground variants, and the
-      chart/sidebar tokens.
-- [ ] Add fluent theme color helpers for every color-bearing property, at least
+      chart/sidebar tokens. Chart and sidebar values are now part of
+      `ColorTokens.Values` and exposed through `ColorTokens`.
+- [x] Add fluent theme color helpers for every color-bearing property, at least
       `borderColor().border()` and `ringColor().ring()`, with alpha variants for
-      `ring/50`.
-- [ ] Make `ThemeElements` expose every element factory, not only `div()`.
-- [ ] Keep light/dark derivation in `ColorTokens.Values`; do not duplicate colors in
+      `ring/50`. Per-side border color tokens are available too.
+- [x] Make `ThemeElements` expose every element factory, not only `div()`.
+- [x] Keep light/dark derivation in `ColorTokens.Values`; do not duplicate colors in
       utility tokens.
 
 ### 5. Elements
 
-- [ ] Add `span()`, `text(String)`, `icon(Icon)`, `input(...)`, and `select(...)` to
+- [x] Add `span()`, `text(String)`, `icon(Icon)`, `input(...)`, and `select(...)` to
       `UtilityElements` and `ThemeElements`, mirroring `CoreElements`.
-- [ ] Containers (`div`, `span`) get the children API; `text`, `icon`, `input`, and
+- [x] Containers (`div`, `span`) get the children API; `text`, `icon`, `input`, and
       `select` stay leaves.
-- [ ] Add core node-state helpers needed by primitives: `disabled(boolean)`,
-      `focusable(boolean)`, and `expanded(boolean)` (or `open(boolean)`).
-- [ ] Reduce duplication between `CoreElements`, `UtilityElements`, and
-      `ThemeElements` where practical.
+- [x] Add core node-state helpers needed by primitives: `disabled(boolean)` and
+      `focusable(boolean)`. Expanded/open is an accordion concept and stays in the
+      primitive context, not on `ElementNode`.
+- [x] Reduce duplication between `CoreElements`, `UtilityElements`, and
+      `ThemeElements` where practical. The API implementations now share
+      `CoreElements.ElementApiImplBase<Api, Helper>`.
 
 ### 6. Accordion primitive
 
-- [ ] Extend `ItemContext` with the item value, `isOpen`, `isDisabled`,
-      `orientation`, `toggle`, and `setOpen`.
-- [ ] Expose the same state through `TriggerArgs` and `ContentArgs`. The primitive
-      calls the render callbacks; those callbacks apply the styles themselves, so no
-      style callback is needed in the primitive `Args`.
-- [ ] Wire the root `onValueChange`, controlled and uncontrolled single mode, and
+- [x] Extend `ItemContext` with the item value, `isOpen`, `isDisabled`,
+      `orientation`, `toggle`, `setOpen`, and an accessible name.
+- [x] Expose the same state through `TriggerArgs` and `ContentArgs` via their
+      `ItemContext`. The primitive calls the render callbacks; those callbacks apply
+      the styles themselves, so no style callback is needed in the primitive `Args`.
+- [x] Wire the root `onValueChange`, controlled and uncontrolled single mode, and
       collapsible behavior.
-- [ ] In the trigger render path set `node.focusable`, `node.disabled`, and
-      `node.expanded`, handle click plus Enter/Space, and set an accessible name.
-- [ ] Keep the content mounted so child state survives toggling; the component
+- [x] Apply `node.focusable`, `node.disabled`, and the accessible name in the
+      component trigger render path; the primitive config handles click and
+      Enter/Space. Expanded state stays in the accordion context, not on the node.
+- [x] Keep the content mounted so child state survives toggling; the component
       applies `display(NONE)` when closed. No animation.
-- [ ] Add tests for open/close, disabled items, controlled/uncontrolled mode, and
-      keyboard activation.
+- [x] Add tests for open/close, collapsible behavior, disabled items, controlled
+      mode, content mounting, and keyboard activation.
 
 ### 7. Accordion component styling
 

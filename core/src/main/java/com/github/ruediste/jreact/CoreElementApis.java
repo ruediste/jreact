@@ -59,6 +59,10 @@ public class CoreElementApis {
             return _helper().apply(n -> n.disabled = disabled);
         }
 
+        default Self focusable(boolean focusable) {
+            return _helper().apply(n -> n.focusable = focusable);
+        }
+
         @SuppressWarnings("unchecked")
         default Self apply(Consumer<? super Self> consumer) {
             return _helper().apply(n -> consumer.accept((Self) this));
@@ -70,6 +74,10 @@ public class CoreElementApis {
     }
 
     public interface EventApi<Self, Helper extends EventApiHelper<Self>> extends ApiHelperProvider<Helper> {
+        default <T extends JReactEvent> Self on(Class<T> eventType, EventListener<T> listener) {
+            return _helper().on(eventType, listener);
+        }
+
         default Self onClick(EventListener<ClickEvent> onClick) {
             return _helper().on(ClickEvent.class, onClick);
         }

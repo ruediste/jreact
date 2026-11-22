@@ -1,14 +1,19 @@
 package com.github.ruediste.jreact.primitives;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.Component;
 import com.github.ruediste.jreact.Context;
 import com.github.ruediste.jreact.CoreElementApis.EventApi;
+import com.github.ruediste.jreact.Hooks;
 import com.github.ruediste.jreact.OptionalN;
+import com.github.ruediste.jreact.State;
+import com.github.ruediste.jreact.events.KeyboardEvent;
 
 public class Accordion {
 
@@ -17,15 +22,17 @@ public class Accordion {
         VERTICAL
     }
 
-    private static record RootContext(OptionalN<?> value, Orientation orientation) {
+    private static record RootContext(OptionalN<?> value, Orientation orientation, Consumer<Object> toggleItem,
+            BiConsumer<Object, Boolean> setItemOpen, boolean collapsible) {
     }
 
     private static Context<RootContext> rootContext = Context.create(null);
 
     public static class RootSingle<T> extends Component {
-        protected OptionalN<T> value;
+        protected OptionalN<T> value = OptionalN.empty();
         protected Consumer<OptionalN<T>> onValueChange;
-        public Orientation orientation;
+        public Orientation orientation = Orientation.VERTICAL;
+        protected boolean collapsible = true;
 
         protected List<ItemData<T>> items = new ArrayList<>();
 
@@ -69,12 +76,63 @@ public class Accordion {
             return this;
         }
 
+        /**
+         * Controls whether the open item can be closed again. Defaults to
+         * {@code true}.
+         */
+        public RootSingle<T> collapsible(boolean collapsible) {
+            this.collapsible = collapsible;
+            return this;
+        }
+
         @Override
         public void render() {
-            rootContext.provide(new RootContext(value, orientation), () -> {
-                render.accept(new Args<>(this, eventApi -> {
-                }, items));
-            });
+            OptionalN<T> initialValue = value == null ? OptionalN.empty() : value;
+            State<OptionalN<T>> state = Hooks.useState(initialValue);
+            boolean controlled = onValueChange != null;
+            OptionalN<T> selected = controlled ? initialValue : state.get();
+            if (selected == null)
+                selected = OptionalN.empty();
+            OptionalN<T> current = selected;
+            Orientation resolvedOrientation = orientation == null ? Orientation.VERTICAL : orientation;
+
+            Consumer<OptionalN<T>> change = next -> {
+                if (!controlled)
+                    state.set(next);
+                if (onValueChange != null)
+                    onValueChange.accept(next);
+            };
+
+            Consumer<Object> toggleItem = itemValue -> {
+                boolean isSelected = current.isPresent() && Objects.equals(current.get(), itemValue);
+                if (isSelected && !collapsible)
+                    return;
+                if (isSelected)
+                    change.accept(OptionalN.empty());
+                else
+                    change.accept(OptionalN.of(castItem(itemValue)));
+            };
+
+            BiConsumer<Object, Boolean> setItemOpen = (itemValue, open) -> {
+                boolean isSelected = current.isPresent() && Objects.equals(current.get(), itemValue);
+                if (open == isSelected)
+                    return;
+                if (open)
+                    change.accept(OptionalN.of(castItem(itemValue)));
+                else if (collapsible)
+                    change.accept(OptionalN.empty());
+            };
+
+            rootContext.provide(new RootContext(current, resolvedOrientation, toggleItem, setItemOpen, collapsible),
+                    () -> {
+                        render.accept(new Args<>(this, eventApi -> {
+                        }, items));
+                    });
+        }
+
+        @SuppressWarnings("unchecked")
+        private T castItem(Object itemValue) {
+            return (T) itemValue;
         }
     }
 
@@ -82,7 +140,8 @@ public class Accordion {
         // todo
     }
 
-    public static record ItemContext(boolean isOpen, boolean isDisabled, Orientation orientation) {
+    public static record ItemContext(Object value, boolean isOpen, boolean isDisabled, Orientation orientation,
+            Runnable toggle, Consumer<Boolean> setOpen, String accessibleName) {
     }
 
     private static Context<ItemContext> itemContext = Context.create(null);
@@ -90,6 +149,7 @@ public class Accordion {
     public static class ItemData<T> {
         public final T value;
         public boolean disabled;
+        public String accessibleName;
         public Runnable header;
         public Runnable content;
 
@@ -101,6 +161,11 @@ public class Accordion {
 
         public ItemData<T> disabled(boolean disabled) {
             this.disabled = disabled;
+            return this;
+        }
+
+        public ItemData<T> accessibleName(String accessibleName) {
+            this.accessibleName = accessibleName;
             return this;
         }
 
@@ -122,10 +187,13 @@ public class Accordion {
 
         public void render() {
             var rootContextValue = rootContext.use();
-            var itemContextValue = new ItemContext(
-                    rootContextValue.value().map(x -> Objects.equals(x, data.value)).orElse(false),
-                    data.disabled,
-                    rootContextValue.orientation());
+            boolean isOpen = rootContextValue.value().map(x -> Objects.equals(x, data.value)).orElse(false);
+            Runnable toggle = () -> rootContextValue.toggleItem().accept(data.value);
+            Consumer<Boolean> setOpen = open -> rootContextValue.setItemOpen().accept(data.value, open);
+            String accessibleName = data.accessibleName != null ? data.accessibleName
+                    : String.valueOf(data.value);
+            var itemContextValue = new ItemContext(data.value, isOpen, data.disabled,
+                    rootContextValue.orientation(), toggle, setOpen, accessibleName);
             itemContext
                     .provide(itemContextValue, () -> {
                         render.accept(new Args(data, eventApi -> {
@@ -146,7 +214,20 @@ public class Accordion {
     }
 
     public static void Trigger(Consumer<TriggerArgs> render) {
-        render.accept(new TriggerArgs(itemContext.use(), eventApi -> {
+        ItemContext ctx = itemContext.use();
+        render.accept(new TriggerArgs(ctx, eventApi -> {
+            eventApi.onClick(event -> {
+                if (!ctx.isDisabled())
+                    ctx.toggle().run();
+            });
+            eventApi.on(KeyboardEvent.class, event -> {
+                if (ctx.isDisabled())
+                    return;
+                if (event.keyCode == KeyEvent.VK_ENTER || event.keyCode == KeyEvent.VK_SPACE) {
+                    ctx.toggle().run();
+                    event.stopPropagation();
+                }
+            });
         }));
     }
 

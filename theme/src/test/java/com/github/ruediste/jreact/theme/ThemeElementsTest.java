@@ -55,4 +55,36 @@ class ThemeElementsTest {
         assertInstanceOf(SelectElement.class, elements.get(3));
         assertInstanceOf(TextElement.class, elements.get(0).elementChildren().get(0));
     }
+
+    /**
+     * Verifies the border, chart, and sidebar token accessors, including alpha
+     * variants on border colors.
+     */
+    @Test
+    void semanticBorderChartAndSidebarTokens() {
+        ColorTokens.Values values = theme.themeValues.colorThemeValues;
+        JReactRoot root = new JReactRoot(() -> theme.div()
+                .borderColor().border(0.5)
+                .backgroundColor().sidebar()
+                .color().sidebarForeground()
+                .children(() -> theme.span().backgroundColor().chart1()));
+        root.refresh(200, 200);
+
+        ElementNode outer = (ElementNode) root.rootNode().children().get(0);
+        ElementNode child = outer.elementChildren().get(0);
+        JColor border = StyleProperties.BORDER_TOP_COLOR.get(outer);
+        assertEquals(values.border.toOkLch().l, border.toOkLch().l, 1e-9);
+        assertEquals(0.5, border.toOkLch().alpha, 1e-9);
+        assertEquals(0.5, StyleProperties.BORDER_BOTTOM_COLOR.get(outer).toOkLch().alpha, 1e-9);
+        assertEquals(values.sidebar, StyleProperties.BACKGROUND_COLOR.get(outer));
+        assertEquals(values.sidebarForeground, StyleProperties.COLOR.get(outer));
+        assertEquals(values.chart1, StyleProperties.BACKGROUND_COLOR.get(child));
+
+        for (JColor chart : List.of(values.chart1, values.chart2, values.chart3, values.chart4, values.chart5))
+            assertNotNull(chart);
+        for (JColor sidebar : List.of(values.sidebar, values.sidebarForeground, values.sidebarPrimary,
+                values.sidebarPrimaryForeground, values.sidebarAccent, values.sidebarAccentForeground,
+                values.sidebarBorder, values.sidebarRing))
+            assertNotNull(sidebar);
+    }
 }

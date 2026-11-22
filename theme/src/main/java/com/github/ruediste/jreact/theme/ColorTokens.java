@@ -6,7 +6,7 @@ import com.github.ruediste.jreact.style.ApiHelperProvider;
 import com.github.ruediste.jreact.style.CoreTokenElementApis.ColorHelper;
 
 public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & ColorTokens.ColorValuesHelper>
-        extends ApiHelperProvider<Helper> {
+        extends ApiHelperProvider<Helper>, ChartColorTokens<TResult>, SidebarColorTokens<TResult> {
     /**
      * Primary body text and icon color on the default background.
      */
@@ -145,6 +145,71 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
      */
     default TResult ring() {
         return _helper().color(_helper().colorValues().ring);
+    }
+
+    @Override
+    default TResult chart1() {
+        return _helper().color(_helper().colorValues().chart1);
+    }
+
+    @Override
+    default TResult chart2() {
+        return _helper().color(_helper().colorValues().chart2);
+    }
+
+    @Override
+    default TResult chart3() {
+        return _helper().color(_helper().colorValues().chart3);
+    }
+
+    @Override
+    default TResult chart4() {
+        return _helper().color(_helper().colorValues().chart4);
+    }
+
+    @Override
+    default TResult chart5() {
+        return _helper().color(_helper().colorValues().chart5);
+    }
+
+    @Override
+    default TResult sidebar() {
+        return _helper().color(_helper().colorValues().sidebar);
+    }
+
+    @Override
+    default TResult sidebarForeground() {
+        return _helper().color(_helper().colorValues().sidebarForeground);
+    }
+
+    @Override
+    default TResult sidebarPrimary() {
+        return _helper().color(_helper().colorValues().sidebarPrimary);
+    }
+
+    @Override
+    default TResult sidebarPrimaryForeground() {
+        return _helper().color(_helper().colorValues().sidebarPrimaryForeground);
+    }
+
+    @Override
+    default TResult sidebarAccent() {
+        return _helper().color(_helper().colorValues().sidebarAccent);
+    }
+
+    @Override
+    default TResult sidebarAccentForeground() {
+        return _helper().color(_helper().colorValues().sidebarAccentForeground);
+    }
+
+    @Override
+    default TResult sidebarBorder() {
+        return _helper().color(_helper().colorValues().sidebarBorder);
+    }
+
+    @Override
+    default TResult sidebarRing() {
+        return _helper().color(_helper().colorValues().sidebarRing);
     }
 
     /**
@@ -334,6 +399,71 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
          */
         public JColor ring;
 
+        /**
+         * First categorical chart color.
+         */
+        public JColor chart1;
+
+        /**
+         * Second categorical chart color.
+         */
+        public JColor chart2;
+
+        /**
+         * Third categorical chart color.
+         */
+        public JColor chart3;
+
+        /**
+         * Fourth categorical chart color.
+         */
+        public JColor chart4;
+
+        /**
+         * Fifth categorical chart color.
+         */
+        public JColor chart5;
+
+        /**
+         * Base sidebar surface color.
+         */
+        public JColor sidebar;
+
+        /**
+         * Text and icon color on the sidebar surface.
+         */
+        public JColor sidebarForeground;
+
+        /**
+         * Color for active sidebar items.
+         */
+        public JColor sidebarPrimary;
+
+        /**
+         * Text and icon color on top of the sidebar primary color.
+         */
+        public JColor sidebarPrimaryForeground;
+
+        /**
+         * Color for hovered sidebar items.
+         */
+        public JColor sidebarAccent;
+
+        /**
+         * Text and icon color on top of the sidebar accent color.
+         */
+        public JColor sidebarAccentForeground;
+
+        /**
+         * Sidebar divider color.
+         */
+        public JColor sidebarBorder;
+
+        /**
+         * Sidebar keyboard focus ring color.
+         */
+        public JColor sidebarRing;
+
         private static final double LIGHTNESS_THRESHOLD = 0.65;
         private static final OkLch LIGHT_ON_COLOR = new OkLch(0.985, 0, 0);
         private static final OkLch DARK_ON_COLOR = new OkLch(0.205, 0, 0);
@@ -387,6 +517,25 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
             this.border = surface(bg, neutralChroma, neutralHue, direction * 0.09);
             this.input = this.border;
             this.ring = primary;
+
+            this.chart1 = primary;
+            this.chart2 = hueShift(primaryLch, 72);
+            this.chart3 = hueShift(primaryLch, 144);
+            this.chart4 = hueShift(destructiveLch, 72);
+            this.chart5 = hueShift(primaryLch, 216);
+
+            this.sidebar = this.background;
+            this.sidebarForeground = this.foreground;
+            this.sidebarPrimary = this.primary;
+            this.sidebarPrimaryForeground = this.primaryForeground;
+            this.sidebarAccent = this.accent;
+            this.sidebarAccentForeground = this.accentForeground;
+            this.sidebarBorder = this.border;
+            this.sidebarRing = this.ring;
+        }
+
+        private static OkLch hueShift(OkLch color, double degrees) {
+            return new OkLch(color.l, color.c, (color.h + degrees) % 360, color.alpha);
         }
 
         private static OkLch toOklch(JColor color) {
