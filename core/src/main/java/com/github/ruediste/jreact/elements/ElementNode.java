@@ -159,6 +159,7 @@ public class ElementNode extends Node {
             }
 
             PaintUtils.paintBorder(this, graphics, shape);
+            PaintUtils.paintRing(this, graphics);
             paintContent(graphics);
         } finally {
             graphics.setComposite(previousComposite);

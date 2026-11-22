@@ -334,6 +334,14 @@ public abstract class StyleProperties {
         NONE, HIDDEN, SOLID, DOTTED, DASHED
     }
 
+    public enum TextDecoration {
+        NONE, UNDERLINE
+    }
+
+    public enum PointerEvents {
+        AUTO, NONE
+    }
+
     public record BorderRadius(LengthPercentage horizontal, LengthPercentage vertical) {
         public static final BorderRadius ZERO = new BorderRadius(LengthPercentage.ZERO, LengthPercentage.ZERO);
 
@@ -351,9 +359,19 @@ public abstract class StyleProperties {
     public static final Property<Boolean> BOLD = inherited("bold", false);
     public static final Property<Boolean> ITALIC = inherited("italic", false);
     public static final Property<java.lang.Double> LINE_HEIGHT = inherited("line-height", null, Double.NaN);
+    /**
+     * CSS does not inherit text-decoration, it propagates to descendants. JReact
+     * approximates that propagation with inheritance so a decoration declared on a
+     * container reaches its text descendants.
+     */
+    public static final Property<TextDecoration> TEXT_DECORATION = inherited("text-decoration", TextDecoration.NONE);
     public static final Property<Shadow> BOX_SHADOW = new Property<>("box-shadow");
     public static final Property<Shadow> TEXT_SHADOW = inherited("text-shadow");
     public static final Property<java.lang.Double> OPACITY = new Property<>("opacity", null, 1.0);
+    public static final Property<PointerEvents> POINTER_EVENTS = inherited("pointer-events", PointerEvents.AUTO);
+    public static final Property<java.lang.Double> RING_WIDTH = new Property<>("ring-width", null, 0.0);
+    public static final Property<JColor> RING_COLOR = new Property<>("ring-color");
+    public static final Property<java.lang.Double> RING_OFFSET = new Property<>("ring-offset", null, 0.0);
 
     // CSS layout properties used by the layout engine.
     public static final Property<Display> DISPLAY = new Property<>("display",

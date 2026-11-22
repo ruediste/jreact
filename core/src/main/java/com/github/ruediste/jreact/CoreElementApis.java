@@ -95,6 +95,8 @@ public class CoreElementApis {
             CoreStyleApis.FontStyleApi<Self, Helper>,
             CoreStyleApis.ShadowStyleApi<Self, Helper>,
             CoreStyleApis.OpacityStyleApi<Self, Helper>,
+            CoreStyleApis.PointerEventsStyleApi<Self, Helper>,
+            CoreStyleApis.RingStyleApi<Self, Helper>,
             XSelectors<Self, Helper>,
             EventApi<Self, Helper> {
     }

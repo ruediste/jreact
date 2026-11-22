@@ -146,6 +146,55 @@ public final class PaintUtils {
                 startDegrees, -90, Arc2D.OPEN), true);
     }
 
+    /**
+     * Paints the focus ring outside the border box. The ring is a rounded band
+     * whose inner edge is offset from the element; the offset leaves a transparent
+     * gap.
+     */
+    public static void paintRing(ElementNode node, Graphics2D graphics) {
+        double width = StyleProperties.RING_WIDTH.get(node);
+        if (width <= 0)
+            return;
+        JColor color = StyleProperties.RING_COLOR.get(node, null);
+        if (color == null)
+            color = StyleProperties.COLOR.get(node);
+        double offset = Math.max(0, StyleProperties.RING_OFFSET.get(node));
+        Rectangle2D.Double bounds = node.bounds;
+        Corners base = fit(cornerRadii(node, bounds.width, bounds.height), bounds.width, bounds.height);
+        double outerExpand = offset + width;
+        Shape outer = roundedRectangle(
+                bounds.x - outerExpand, bounds.y - outerExpand,
+                bounds.width + 2 * outerExpand, bounds.height + 2 * outerExpand,
+                expand(base, outerExpand));
+        Shape inner = offset > 0
+                ? roundedRectangle(
+                        bounds.x - offset, bounds.y - offset,
+                        bounds.width + 2 * offset, bounds.height + 2 * offset,
+                        expand(base, offset))
+                : shape(node);
+        Area ring = new Area(outer);
+        ring.subtract(new Area(inner));
+        Graphics2D copy = (Graphics2D) graphics.create();
+        try {
+            copy.setColor(color.toColor());
+            copy.fill(ring);
+        } finally {
+            copy.dispose();
+        }
+    }
+
+    private static Corners expand(Corners corners, double delta) {
+        if (delta <= 0)
+            return corners;
+        double[] horizontal = new double[4];
+        double[] vertical = new double[4];
+        for (int index = 0; index < 4; index++) {
+            horizontal[index] = corners.horizontal()[index] > 0 ? corners.horizontal()[index] + delta : 0;
+            vertical[index] = corners.vertical()[index] > 0 ? corners.vertical()[index] + delta : 0;
+        }
+        return new Corners(horizontal, vertical);
+    }
+
     public static void paintBorder(ElementNode node, Graphics2D graphics, Shape outer) {
         double topWidth = borderWidth(node, StyleProperties.BORDER_TOP_STYLE, StyleProperties.BORDER_TOP_WIDTH);
         double rightWidth = borderWidth(node, StyleProperties.BORDER_RIGHT_STYLE,

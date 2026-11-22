@@ -205,4 +205,9 @@ public final class OkLch implements JColor {
     public OkLch toOkLch() {
         return this;
     }
+
+    @Override
+    public OkLch withAlpha(double alpha) {
+        return new OkLch(l, c, h, alpha);
+    }
 }

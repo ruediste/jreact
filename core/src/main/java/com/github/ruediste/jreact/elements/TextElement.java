@@ -1,6 +1,7 @@
 package com.github.ruediste.jreact.elements;
 
 import java.awt.Graphics2D;
+import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +47,15 @@ public class TextElement extends ElementNode {
             }
             graphics.setColor(StyleProperties.COLOR.get(this).toColor());
             graphics.drawString(line.text(), x, y);
+            if (!line.text().isEmpty()
+                    && StyleProperties.TEXT_DECORATION.get(this) == StyleProperties.TextDecoration.UNDERLINE) {
+                LineMetrics metrics = graphics.getFont().getLineMetrics(line.text(),
+                        graphics.getFontRenderContext());
+                int underlineY = Math.round(y + metrics.getUnderlineOffset());
+                int thickness = Math.max(1, Math.round(metrics.getUnderlineThickness()));
+                graphics.fillRect(Math.round(x), underlineY, graphics.getFontMetrics().stringWidth(line.text()),
+                        thickness);
+            }
         }
     }
 }

@@ -147,6 +147,86 @@ public interface ColorTokens<TResult, Helper extends ColorHelper<TResult> & Colo
         return _helper().color(_helper().colorValues().ring);
     }
 
+    /**
+     * Alpha variants of the semantic tokens, following the Tailwind
+     * {@code color/opacity} syntax.
+     */
+    default TResult foreground(double alpha) {
+        return _helper().color(_helper().colorValues().foreground, alpha);
+    }
+
+    default TResult background(double alpha) {
+        return _helper().color(_helper().colorValues().background, alpha);
+    }
+
+    default TResult card(double alpha) {
+        return _helper().color(_helper().colorValues().card, alpha);
+    }
+
+    default TResult cardForeground(double alpha) {
+        return _helper().color(_helper().colorValues().cardForeground, alpha);
+    }
+
+    default TResult popover(double alpha) {
+        return _helper().color(_helper().colorValues().popover, alpha);
+    }
+
+    default TResult popoverForeground(double alpha) {
+        return _helper().color(_helper().colorValues().popoverForeground, alpha);
+    }
+
+    default TResult primary(double alpha) {
+        return _helper().color(_helper().colorValues().primary, alpha);
+    }
+
+    default TResult primaryForeground(double alpha) {
+        return _helper().color(_helper().colorValues().primaryForeground, alpha);
+    }
+
+    default TResult secondary(double alpha) {
+        return _helper().color(_helper().colorValues().secondary, alpha);
+    }
+
+    default TResult secondaryForeground(double alpha) {
+        return _helper().color(_helper().colorValues().secondaryForeground, alpha);
+    }
+
+    default TResult muted(double alpha) {
+        return _helper().color(_helper().colorValues().muted, alpha);
+    }
+
+    default TResult mutedForeground(double alpha) {
+        return _helper().color(_helper().colorValues().mutedForeground, alpha);
+    }
+
+    default TResult accent(double alpha) {
+        return _helper().color(_helper().colorValues().accent, alpha);
+    }
+
+    default TResult accentForeground(double alpha) {
+        return _helper().color(_helper().colorValues().accentForeground, alpha);
+    }
+
+    default TResult destructive(double alpha) {
+        return _helper().color(_helper().colorValues().destructive, alpha);
+    }
+
+    default TResult destructiveForeground(double alpha) {
+        return _helper().color(_helper().colorValues().destructiveForeground, alpha);
+    }
+
+    default TResult border(double alpha) {
+        return _helper().color(_helper().colorValues().border, alpha);
+    }
+
+    default TResult input(double alpha) {
+        return _helper().color(_helper().colorValues().input, alpha);
+    }
+
+    default TResult ring(double alpha) {
+        return _helper().color(_helper().colorValues().ring, alpha);
+    }
+
     public interface ColorValuesHelper {
         Values colorValues();
     }

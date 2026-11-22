@@ -66,37 +66,36 @@ the mechanism for selector-based variants.
 
 ### 2. Style properties
 
-- [ ] Add `TEXT_DECORATION` (`NONE`, `UNDERLINE`) with `underline()` /
-      `noUnderline()`, and paint underlines in `TextElement`.
-- [ ] Resolve text decoration from the nearest ancestor when not set on the text
-      element. This is the minimum CSS-like inheritance needed for
-      `hover:underline` on a trigger to reach user-provided header text.
-- [ ] Decide whether to inherit the other text properties (`COLOR`, `FONT_FAMILY`,
-      `FONT_SIZE`, `BOLD`, `ITALIC`, `LINE_HEIGHT`). Without inheritance,
-      `textSm()` or a theme color on a container does not affect arbitrary child
-      `Text` elements and every text must be styled explicitly.
-- [ ] Add `POINTER_EVENTS` (`AUTO`, `NONE`) and include it in hit testing so
+- [x] Add `TEXT_DECORATION` (`NONE`, `UNDERLINE`) as an inherited property, with
+      `underline()` / `noUnderline()`, and paint underlines in `TextElement`.
+      Property inheritance already handles `hover:underline` on a trigger reaching
+      user-provided text; no separate ancestor resolution is needed.
+- [x] Inherit the text properties (`COLOR`, `FONT_FAMILY`, `FONT_SIZE`, `BOLD`,
+      `ITALIC`, `LINE_HEIGHT`), plus `TEXT_SHADOW`, `DIRECTION`, and `TEXT_ALIGN`.
+      This was implemented with the `Property` inheritance flag in section 1.1.
+- [x] Add `POINTER_EVENTS` (`AUTO`, `NONE`) and include it in hit testing so
       `pointer-events-none` disables interaction.
-- [ ] Add focus-ring properties: `RING_WIDTH`, `RING_COLOR`, `RING_OFFSET`. Paint the
+- [x] Add focus-ring properties: `RING_WIDTH`, `RING_COLOR`, `RING_OFFSET`. Paint the
       ring after the border, respecting border radius, in `ElementNode` / `PaintUtils`.
-- [ ] Add color-alpha support to make shadcn `ring/50` possible (for example
+- [x] Add color-alpha support to make shadcn `ring/50` possible (for example
       `JColor.withAlpha()` and an alpha overload on theme color tokens).
-- [ ] Keep the Swing font limitation: normal/bold/italic only, no `font-medium`.
-- [ ] Do not add transitions, keyframes, or CSS variables yet.
+- [x] Keep the Swing font limitation: normal/bold/italic only, no `font-medium`.
+- [x] Do not add transitions, keyframes, or CSS variables yet.
 
 ### 3. Utility layer (Tailwind concepts)
 
-- [ ] Extend spacing tokens to `gap`, `gapX`, `gapY`, plus `size`, `wFull` / `hFull`,
+- [x] Extend spacing tokens to `gap`, `gapX`, `gapY`, plus `size`, `wFull` / `hFull`,
       and auto margins (`mAuto`, `mlAuto`, ...).
-- [ ] Add flex helpers used by the accordion and similar components:
+- [x] Add flex helpers used by the accordion and similar components:
       `flex1()`, `grow()`, `grow0()`, `shrink()`, `shrink0()`.
-- [ ] Add border helpers: `border()` as the 1px default, plus
+- [x] Add border helpers: `border()` as the 1px default, plus
       `border0()` / `border2()` / `border4()` / `border8()`. Per-side methods
       already exist.
-- [ ] Add ring helpers (`ring()`, `ringWidth()`, `ringOffset()`) and text helpers
-      (`underline()`, `noUnderline()`), plus `pointerEventsNone()`.
-- [ ] Add the missing element factories (see section 5).
-- [ ] Keep semantic colors out of the utility layer; they belong to the theme.
+- [x] Add ring helpers (`ring()`, `ringWidth()`, `ringOffset()`); `underline()`,
+      `noUnderline()`, and `pointerEventsNone()` already come from the core style API.
+- [x] Add the missing element factories (`span`, `text`, `icon`, `input`, `select`)
+      to `UtilityElements` and `ThemeElements`.
+- [x] Keep semantic colors out of the utility layer; they belong to the theme.
 
 ### 4. Theme layer (shadcn/ui)
 

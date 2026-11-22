@@ -38,6 +38,10 @@ public class CoreTokenElementApis {
 
     public interface ColorHelper<TResult> {
         TResult color(JColor color);
+
+        default TResult color(JColor color, double alpha) {
+            return color(color.withAlpha(alpha));
+        }
     }
 
     public interface ColorTokenElementApiHelper<TColorApi> {
@@ -53,12 +57,18 @@ public class CoreTokenElementApis {
         default TColorApi backgroundColor() {
             return _helper().color(v -> _helper().putStyle(StyleProperties.BACKGROUND_COLOR, v));
         }
+
+        default TColorApi ringColor() {
+            return _helper().color(v -> _helper().putStyle(StyleProperties.RING_COLOR, v));
+        }
     }
 
     public interface SpacingTokenElementApiHelper {
         LengthPercentage spacingToLength(double value);
 
         LengthPercentageAuto spacingToLengthAuto(double value);
+
+        com.antepod.taffy.style.Dimension spacingToDimension(double value);
     }
 
     public interface SpacingIntTokenElementApi<Self, Helper extends SpacingTokenElementApiHelper & StyleApiHelper<Self>>

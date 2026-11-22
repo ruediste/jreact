@@ -331,8 +331,11 @@ public final class JReactRoot {
         }
         if (hit != null)
             return hit;
-        if (node instanceof ElementNode element && element.bounds.contains(x, y))
+        if (node instanceof ElementNode element && element.bounds.contains(x, y)) {
+            if (StyleProperties.POINTER_EVENTS.get(element) == StyleProperties.PointerEvents.NONE)
+                return null;
             return element;
+        }
         return null;
     }
 

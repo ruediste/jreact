@@ -92,6 +92,21 @@ class StyleInheritanceTest {
     }
 
     /**
+     * Verifies that text decoration is propagated to child text through the
+     * inherited-property approximation.
+     */
+    @Test
+    void textDecorationInheritsFromAncestor() {
+        JReactRoot root = new JReactRoot(() -> div().underline().children(() -> text("hello")));
+
+        root.refresh(200, 100);
+        ElementNode parent = (ElementNode) root.rootNode().children().get(0);
+        ElementNode child = (ElementNode) parent.children().get(0);
+
+        assertEquals(StyleProperties.TextDecoration.UNDERLINE, StyleProperties.TEXT_DECORATION.get(child));
+    }
+
+    /**
      * Verifies that inherited layout properties are included in the Taffy style
      * used for layout.
      */

@@ -244,6 +244,39 @@ public final class CoreStyleApis {
             return _helper().putStyle(StyleProperties.LINE_HEIGHT, value);
         }
 
+        default Self underline() {
+            return _helper().putStyle(StyleProperties.TEXT_DECORATION, StyleProperties.TextDecoration.UNDERLINE);
+        }
+
+        default Self noUnderline() {
+            return _helper().putStyle(StyleProperties.TEXT_DECORATION, StyleProperties.TextDecoration.NONE);
+        }
+
+    }
+
+    public interface PointerEventsStyleApi<Self, Helper extends StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self pointerEvents(StyleProperties.PointerEvents value) {
+            return _helper().putStyle(StyleProperties.POINTER_EVENTS, value);
+        }
+
+        default Self pointerEventsNone() {
+            return pointerEvents(StyleProperties.PointerEvents.NONE);
+        }
+    }
+
+    public interface RingStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
+        default Self ringWidth(double value) {
+            return _helper().putStyle(StyleProperties.RING_WIDTH, value);
+        }
+
+        default Self ringColor(JColor value) {
+            return _helper().putStyle(StyleProperties.RING_COLOR, value);
+        }
+
+        default Self ringOffset(double value) {
+            return _helper().putStyle(StyleProperties.RING_OFFSET, value);
+        }
     }
 
     public interface ShadowStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {

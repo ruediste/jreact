@@ -37,6 +37,11 @@ public final class Rgb implements JColor {
     }
 
     @Override
+    public Rgb withAlpha(double alpha) {
+        return new Rgb(r, g, b, (int) Math.round(Math.max(0, Math.min(1, alpha)) * 255));
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

@@ -3,10 +3,14 @@ package com.github.ruediste.jreact.utility;
 import java.awt.Font;
 import java.util.function.Consumer;
 
+import com.antepod.taffy.style.Dimension;
+import com.antepod.taffy.style.LengthPercentageAuto;
 import com.github.ruediste.jreact.CoreElementApis;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
 import com.github.ruediste.jreact.style.CoreStyleApis.StyleApiHelper;
+import com.github.ruediste.jreact.style.CoreTokenElementApis;
 import com.github.ruediste.jreact.style.StyleProperties;
+import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
 
 public interface UtilityTokenApis {
 
@@ -299,6 +303,196 @@ public interface UtilityTokenApis {
         /** Line height token for the {@code leading-10} scale. */
         default Self leading10() {
             return _helper().putStyle(StyleProperties.LINE_HEIGHT, _helper().getFontThemeValues().leading10);
+        }
+    }
+
+    /**
+     * Tailwind {@code gap-*}, {@code gap-x-*}, and {@code gap-y-*} helpers backed
+     * by the spacing scale.
+     */
+    public interface GapTokenElementApi<Self, Helper extends CoreTokenElementApis.SpacingTokenElementApiHelper & StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self gap(int value) {
+            return gap((float) value);
+        }
+
+        default Self gap(float value) {
+            _helper().putStyle(StyleProperties.ROW_GAP, _helper().spacingToLength(value));
+            return _helper().putStyle(StyleProperties.COLUMN_GAP, _helper().spacingToLength(value));
+        }
+
+        default Self gapX(int value) {
+            return gapX((float) value);
+        }
+
+        default Self gapX(float value) {
+            return _helper().putStyle(StyleProperties.COLUMN_GAP, _helper().spacingToLength(value));
+        }
+
+        default Self gapY(int value) {
+            return gapY((float) value);
+        }
+
+        default Self gapY(float value) {
+            return _helper().putStyle(StyleProperties.ROW_GAP, _helper().spacingToLength(value));
+        }
+    }
+
+    /**
+     * Tailwind {@code size-*}, {@code w-full}, and {@code h-full} helpers.
+     */
+    public interface SizeTokenElementApi<Self, Helper extends CoreTokenElementApis.SpacingTokenElementApiHelper & StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self size(int value) {
+            return size((float) value);
+        }
+
+        default Self size(float value) {
+            Dimension dimension = _helper().spacingToDimension(value);
+            _helper().putStyle(StyleProperties.WIDTH, dimension);
+            return _helper().putStyle(StyleProperties.HEIGHT, dimension);
+        }
+
+        default Self size(double value) {
+            Dimension dimension = Dimension.length((float) value);
+            _helper().putStyle(StyleProperties.WIDTH, dimension);
+            return _helper().putStyle(StyleProperties.HEIGHT, dimension);
+        }
+
+        default Self wFull() {
+            return _helper().putStyle(StyleProperties.WIDTH, Dimension.percent(1f));
+        }
+
+        default Self hFull() {
+            return _helper().putStyle(StyleProperties.HEIGHT, Dimension.percent(1f));
+        }
+
+        default Self sizeFull() {
+            _helper().putStyle(StyleProperties.WIDTH, Dimension.percent(1f));
+            return _helper().putStyle(StyleProperties.HEIGHT, Dimension.percent(1f));
+        }
+    }
+
+    /**
+     * Tailwind auto-margin helpers.
+     */
+    public interface AutoMarginTokenElementApi<Self, Helper extends StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self mAuto() {
+            _helper().putStyle(StyleProperties.MARGIN_TOP, LengthPercentageAuto.AUTO);
+            _helper().putStyle(StyleProperties.MARGIN_RIGHT, LengthPercentageAuto.AUTO);
+            _helper().putStyle(StyleProperties.MARGIN_BOTTOM, LengthPercentageAuto.AUTO);
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, LengthPercentageAuto.AUTO);
+        }
+
+        default Self mxAuto() {
+            _helper().putStyle(StyleProperties.MARGIN_LEFT, LengthPercentageAuto.AUTO);
+            return _helper().putStyle(StyleProperties.MARGIN_RIGHT, LengthPercentageAuto.AUTO);
+        }
+
+        default Self myAuto() {
+            _helper().putStyle(StyleProperties.MARGIN_TOP, LengthPercentageAuto.AUTO);
+            return _helper().putStyle(StyleProperties.MARGIN_BOTTOM, LengthPercentageAuto.AUTO);
+        }
+
+        default Self mtAuto() {
+            return _helper().putStyle(StyleProperties.MARGIN_TOP, LengthPercentageAuto.AUTO);
+        }
+
+        default Self mrAuto() {
+            return _helper().putStyle(StyleProperties.MARGIN_RIGHT, LengthPercentageAuto.AUTO);
+        }
+
+        default Self mbAuto() {
+            return _helper().putStyle(StyleProperties.MARGIN_BOTTOM, LengthPercentageAuto.AUTO);
+        }
+
+        default Self mlAuto() {
+            return _helper().putStyle(StyleProperties.MARGIN_LEFT, LengthPercentageAuto.AUTO);
+        }
+    }
+
+    /**
+     * Tailwind flex helpers.
+     */
+    public interface FlexTokenElementApi<Self, Helper extends StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self flex1() {
+            _helper().putStyle(StyleProperties.FLEX_GROW, 1.0);
+            _helper().putStyle(StyleProperties.FLEX_SHRINK, 1.0);
+            return _helper().putStyle(StyleProperties.FLEX_BASIS, Dimension.percent(0f));
+        }
+
+        default Self grow() {
+            return _helper().putStyle(StyleProperties.FLEX_GROW, 1.0);
+        }
+
+        default Self grow0() {
+            return _helper().putStyle(StyleProperties.FLEX_GROW, 0.0);
+        }
+
+        default Self shrink() {
+            return _helper().putStyle(StyleProperties.FLEX_SHRINK, 1.0);
+        }
+
+        default Self shrink0() {
+            return _helper().putStyle(StyleProperties.FLEX_SHRINK, 0.0);
+        }
+    }
+
+    /**
+     * Tailwind border-width helpers. Since JReact has no stylesheet preflight, the
+     * helpers also set the border style to solid.
+     */
+    public interface BorderTokenElementApi<Self, Helper extends StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self border() {
+            return border(1.0);
+        }
+
+        default Self border0() {
+            return border(0.0);
+        }
+
+        default Self border2() {
+            return border(2.0);
+        }
+
+        default Self border4() {
+            return border(4.0);
+        }
+
+        default Self border8() {
+            return border(8.0);
+        }
+
+        default Self border(double width) {
+            _helper().putStyle(StyleProperties.BORDER_TOP_STYLE, BorderStyle.SOLID);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_STYLE, BorderStyle.SOLID);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_STYLE, BorderStyle.SOLID);
+            _helper().putStyle(StyleProperties.BORDER_LEFT_STYLE, BorderStyle.SOLID);
+            _helper().putStyle(StyleProperties.BORDER_TOP_WIDTH, width);
+            _helper().putStyle(StyleProperties.BORDER_RIGHT_WIDTH, width);
+            _helper().putStyle(StyleProperties.BORDER_BOTTOM_WIDTH, width);
+            return _helper().putStyle(StyleProperties.BORDER_LEFT_WIDTH, width);
+        }
+    }
+
+    /**
+     * Tailwind ring helpers.
+     */
+    public interface RingTokenElementApi<Self, Helper extends StyleApiHelper<Self>>
+            extends ApiHelperProvider<Helper> {
+        default Self ring() {
+            return ringWidth(3);
+        }
+
+        default Self ringWidth(int value) {
+            return _helper().putStyle(StyleProperties.RING_WIDTH, (double) value);
+        }
+
+        default Self ringOffset(int value) {
+            return _helper().putStyle(StyleProperties.RING_OFFSET, (double) value);
         }
     }
 

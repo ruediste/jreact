@@ -16,7 +16,13 @@ public interface UtilityElementApis {
             UtilityTokenApis.FontTokenElementApi<Self, Helper>,
             CoreTokenElementApis.RadiusTokenElementApi<Self, UtilityTokenApis.RadiusTokenApi<Self>, Helper>,
             CoreTokenElementApis.SpacingIntTokenElementApi<Self, Helper>,
-            CoreTokenElementApis.SpacingFloatTokenElementApi<Self, Helper> {
+            CoreTokenElementApis.SpacingFloatTokenElementApi<Self, Helper>,
+            UtilityTokenApis.GapTokenElementApi<Self, Helper>,
+            UtilityTokenApis.SizeTokenElementApi<Self, Helper>,
+            UtilityTokenApis.AutoMarginTokenElementApi<Self, Helper>,
+            UtilityTokenApis.FlexTokenElementApi<Self, Helper>,
+            UtilityTokenApis.BorderTokenElementApi<Self, Helper>,
+            UtilityTokenApis.RingTokenElementApi<Self, Helper> {
 
     }
 
