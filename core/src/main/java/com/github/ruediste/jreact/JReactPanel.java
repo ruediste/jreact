@@ -152,7 +152,7 @@ public final class JReactPanel extends JPanel {
 
     private static void paintTree(Node node, Graphics2D graphics, Rectangle clip) {
         if (node instanceof ElementNode visual) {
-            if (StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
+            if (StyleProperties.DISPLAY.get(visual) == Display.NONE)
                 return;
             visual.paint(graphics, clip);
         }

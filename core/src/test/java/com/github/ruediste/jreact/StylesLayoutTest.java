@@ -26,7 +26,7 @@ class StylesLayoutTest {
         root.refresh(200, 100);
         ElementNode container = (ElementNode) root.rootNode().children().get(0);
         ElementNode box = (ElementNode) container.children().get(0);
-        assertEquals(JColor.rgb(255, 0, 0), StyleProperties.BACKGROUND_COLOR.get(box.style, null));
+        assertEquals(JColor.rgb(255, 0, 0), StyleProperties.BACKGROUND_COLOR.get(box, null));
         assertEquals(10, box.bounds.x, 0.01);
         assertEquals(10, box.bounds.y, 0.01);
         assertEquals(50, box.bounds.width, 0.01);

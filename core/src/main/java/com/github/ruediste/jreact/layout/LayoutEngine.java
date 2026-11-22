@@ -57,13 +57,15 @@ public final class LayoutEngine {
         List<ElementNode> children = node.elementChildren();
         NodeId id;
         if (children.isEmpty()) {
-            id = tree.newLeafWithContext(com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node.style),
+            id = tree.newLeafWithContext(
+                    com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node),
                     node);
         } else {
             List<NodeId> childIds = new ArrayList<>();
             for (ElementNode child : children)
                 childIds.add(build(tree, child, nodeIds, nodesById));
-            id = tree.newWithChildren(com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node.style),
+            id = tree.newWithChildren(
+                    com.github.ruediste.jreact.style.StyleProperties.buildTaffyStyle(node),
                     childIds);
         }
         nodeIds.put(node, id);

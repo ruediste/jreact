@@ -10,6 +10,8 @@ public class Selectors {
         TSelectors selectorChained(Function<Selector, Selector> factory);
 
         Api selectorTerminal(Selector selector);
+
+        Api inline();
     }
 
     public interface SelectorElementApi<Self, TSelectors, Helper extends SelectorElementApiHelper<Self, TSelectors>>
@@ -43,8 +45,28 @@ public class Selectors {
             return _helper().selectorTerminal(node -> new Selector.Result(node.focus));
         }
 
+        default Self focusVisible() {
+            return _helper().selectorTerminal(node -> new Selector.Result(node.focusVisible));
+        }
+
         default Self disabled() {
             return _helper().selectorTerminal(node -> new Selector.Result(node.disabled));
+        }
+
+        /**
+         * Matches every element child except the last one. Components are transparent,
+         * so this also works for elements rendered by components.
+         */
+        default Self notLast() {
+            return _helper().selectorTerminal(node -> new Selector.Result(!node.isLastElementChild()));
+        }
+
+        /**
+         * Ends the current selector rule. Subsequent style declarations apply to the
+         * element's inline style again.
+         */
+        default Self inline() {
+            return _helper().inline();
         }
 
         default TSelectors parent() {

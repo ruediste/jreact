@@ -43,6 +43,7 @@ public final class JReactRoot {
     private double pointerX;
     private double pointerY;
     private boolean pointerInside;
+    private boolean focusVisible;
 
     public JReactRoot(Runnable rootRender) {
         var rootComponent = new ComponentNode(JReactRoot.class) {
@@ -265,6 +266,7 @@ public final class JReactRoot {
         pressRef.setPath(hit);
         activeRef.setPath(hit);
         focusRef.setPath(hit);
+        focusVisible = false;
         requestRefresh();
     }
 
@@ -288,8 +290,13 @@ public final class JReactRoot {
     public void keyPressed(int keyCode) {
         validateThread();
         Node target = focusRef.target();
-        if (target != null)
-            dispatch(target, new KeyboardEvent(keyCode));
+        if (target == null)
+            return;
+        if (!focusVisible) {
+            focusVisible = true;
+            requestRefresh();
+        }
+        dispatch(target, new KeyboardEvent(keyCode));
     }
 
     private void updateHover() {
@@ -314,7 +321,7 @@ public final class JReactRoot {
     private static Node hitTest(Node node, double x, double y) {
         if (node == null)
             return null;
-        if (node instanceof ElementNode visual && StyleProperties.DISPLAY.get(visual.style) == Display.NONE)
+        if (node instanceof ElementNode visual && StyleProperties.DISPLAY.get(visual) == Display.NONE)
             return null;
         Node hit = null;
         for (Node child : node.children()) {
@@ -337,9 +344,11 @@ public final class JReactRoot {
     private void applyInteractionState(Node node, List<Node> path) {
         path.add(node);
         if (node instanceof ElementNode element) {
+            boolean focused = focusRef.equalsPath(path);
             element.hover = hoverRef.contains(node);
             element.active = activeRef.contains(node);
-            element.focus = focusRef.equalsPath(path);
+            element.focus = focused;
+            element.focusVisible = focused && focusVisible;
         }
         for (Node child : node.children())
             applyInteractionState(child, path);

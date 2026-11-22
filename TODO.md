@@ -36,29 +36,33 @@ the mechanism for selector-based variants.
 
 ### 0. Finish the existing selector-rule plumbing
 
-- [ ] `ElementApiHelperImpl.selectorTerminal` creates a `StyleRule` but never adds it
+- [x] `ElementApiHelperImpl.selectorTerminal` creates a `StyleRule` but never adds it
       to `node.styleRules`; append it so `JReactRoot.resolveStyles` evaluates it.
-- [ ] Define variant scope. After `hover()` / `notLast()` all following style calls
+- [x] Preserve the initial factory in `selectorChained`, so `ancestor()` /
+      `parent()` actually wrap the terminal selector.
+- [x] Define variant scope. After `hover()` / `notLast()` all following style calls
       currently go into that rule; add `inline()` to return to inline declarations
-- [ ] Keep precedence simple and documented: selector rules in declaration order,
+- [x] Keep precedence simple and documented: selector rules in declaration order,
       then inline declarations win. Update the `CoreStyleApis` javadoc; specificity
       and component scope are not implemented today.
-- [ ] Add tests for rule registration, inline precedence, and chained
+- [x] Add tests for rule registration, inline precedence, and chained
       `parent()` / `ancestor()` selectors.
 
 ### 1. Selector extensions needed by the accordion
 
-- [ ] Add `notLast()` (Tailwind `not-last:`) for the item bottom border. Add
+- [x] Add `notLast()` (Tailwind `not-last:`) for the item bottom border. Add
       `first()` / `last()` only if another component needs them.
-- [ ] Add `focusVisible()` and an `ElementNode.focusVisible` flag. Clear it on pointer
+- [x] Add `focusVisible()` and an `ElementNode.focusVisible` flag. Clear it on pointer
       press, set it for keyboard focus. Until keyboard focus traversal exists, it can
       alias `focus()`; use `focusVisible()` in component code from the start.
-- [ ] Reuse the existing `hover()`, `active()`, `focus()`, and `disabled()` selectors.
-- [ ] Make `disabled()` usable: the accordion trigger must set `node.disabled`.
+- [x] Reuse the existing `hover()`, `active()`, `focus()`, and `disabled()` selectors.
+- [x] Make `disabled()` usable: the accordion trigger must set `node.disabled`.
       Currently only `InputApi` sets it.
-- [ ] Do not add generic attribute, `aria-*`, or `data-*` selectors. Model the states
-      the accordion needs as typed `ElementNode` flags. `open()` / `closed()` are
-      optional because render callbacks receive `isOpen` and can branch directly.
+
+### 1.1 Style Inheritance
+- [x] Extend `StyleProperties.Property` with an inherited flag, indicating if the style property should be inherited
+- [x] mark the style properties with inheritance according to the CSS standard
+- [x] extends style resolution with inheritance. This implies that style properties can only be resolved on a node. Resolution on a Style directly does not make any sense anymore.
 
 ### 2. Style properties
 

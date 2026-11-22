@@ -39,6 +39,7 @@ public class ElementNode extends Node {
     public boolean hover;
     public boolean active;
     public boolean focus;
+    public boolean focusVisible;
     public boolean disabled;
     public boolean focusable;
     public String accessibleName;
@@ -98,6 +99,19 @@ public class ElementNode extends Node {
         return Optional.empty();
     }
 
+    /**
+     * Returns true if this node is the last element child of its parent element.
+     * Components are transparent, matching the element tree used for layout.
+     */
+    public boolean isLastElementChild() {
+        return parentElement()
+                .map(parent -> {
+                    List<ElementNode> children = parent.elementChildren();
+                    return !children.isEmpty() && children.get(children.size() - 1) == this;
+                })
+                .orElse(false);
+    }
+
     public Stream<ElementNode> ancestorElements() {
         return ancestors()
                 .filter(ElementNode.class::isInstance)
@@ -121,24 +135,24 @@ public class ElementNode extends Node {
     }
 
     public void paint(Graphics2D graphics, Rectangle clip) {
-        if (StyleProperties.DISPLAY.get(style) == Display.NONE)
+        if (StyleProperties.DISPLAY.get(this) == Display.NONE)
             return;
         if (clip != null && !bounds.intersects(clip))
             return;
 
         Composite previousComposite = graphics.getComposite();
-        double opacity = StyleProperties.OPACITY.get(style);
+        double opacity = StyleProperties.OPACITY.get(this);
         if (opacity < 1) {
             float alpha = (float) Math.max(0, Math.min(1, opacity));
             graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
         }
         try {
             Shape shape = PaintUtils.shape(this);
-            StyleProperties.Shadow shadow = StyleProperties.BOX_SHADOW.get(style);
+            StyleProperties.Shadow shadow = StyleProperties.BOX_SHADOW.get(this);
             if (shadow != null)
                 PaintUtils.shadow(this, graphics, shadow, layer -> layer.fill(shape));
 
-            JColor background = StyleProperties.BACKGROUND_COLOR.get(style);
+            JColor background = StyleProperties.BACKGROUND_COLOR.get(this);
             if (background != null) {
                 graphics.setColor(background.toColor());
                 graphics.fill(shape);

@@ -27,7 +27,6 @@ import com.antepod.taffy.style.Overflow;
 import com.antepod.taffy.style.Position;
 import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
-import com.github.ruediste.jreact.CoreElements;
 import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.style.StyleProperties.BorderRadius;
 import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
@@ -35,25 +34,19 @@ import com.github.ruediste.jreact.style.StyleProperties.Property;
 import com.github.ruediste.jreact.style.StyleProperties.Shadow;
 
 /**
- * Declares component-scoped style rules and resolves the node-tree cascade.
+ * Typed style declarations and selector-based inline rules.
  *
  * <p>
- * Declarations belong to the active {@link CoreElements} component context.
- * Direct-child
- * scope applies a rule to every node rendered by the declaring component
- * itself,
- * including nested layout nodes, but not to nodes rendered by nested
- * components.
- * Transitive scope extends matching to the component's entire rendered subtree,
- * including nested components. Scope eligibility is separate from selector
- * matching and does not increase specificity.
+ * Style declarations normally update the element's inline style. Starting a
+ * selector terminal, such as {@code hover()} or {@code hasClass("name")}, begins
+ * a rule; subsequent style declarations are added to that rule until
+ * {@code inline()} is called. The rule is registered on the element node and
+ * evaluated again whenever the node's interaction state changes.
  *
  * <p>
- * Resolution applies matching rules by specificity, then by nearest declaring
- * component, then by later rule order. A node's inline properties take final
- * precedence. Resolved styles are replaced on each pass, allowing interaction
- * changes to affect pseudo-class rules without mutating the original
- * declarations.
+ * Matching rules are applied in declaration order. Inline declarations are
+ * applied last and therefore take precedence. Specificity and component scope
+ * are not implemented yet; do not rely on them.
  */
 public final class CoreStyleApis {
 

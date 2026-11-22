@@ -55,6 +55,10 @@ public class CoreElementApis {
             return _helper().apply(n -> n.accessibleName = accessibleName);
         }
 
+        default Self disabled(boolean disabled) {
+            return _helper().apply(n -> n.disabled = disabled);
+        }
+
         @SuppressWarnings("unchecked")
         default Self apply(Consumer<? super Self> consumer) {
             return _helper().apply(n -> consumer.accept((Self) this));

@@ -35,6 +35,7 @@ import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.style.TrackSizingFunction;
 import com.github.ruediste.jreact.OptionalN;
 import com.github.ruediste.jreact.color.JColor;
+import com.github.ruediste.jreact.elements.ElementNode;
 
 /**
  * Typed declarations of the style properties supported by {@link Style}.
@@ -43,6 +44,12 @@ import com.github.ruediste.jreact.color.JColor;
  * Each property carries a stable name and stores its value in a {@link Style}'s
  * value map. {@link #properties} records every declared property in declaration
  * order.
+ *
+ * <p>
+ * Properties marked as inherited resolve from the nearest ancestor element when
+ * not declared on the node itself. Use the {@link Property#get(ElementNode)}
+ * family of methods for resolution; the {@link Style} based variants only inspect
+ * declarations.
  */
 public abstract class StyleProperties {
     /** All declared properties, in declaration order. */
@@ -137,37 +144,47 @@ public abstract class StyleProperties {
         private final Optional<TaffyUpdater<T>> taffyUpdater;
         private final Optional<MultiPropertyTaffyUpdater> multiPropertyUpdater;
         private final T defaultValue;
+        private final boolean inherited;
 
         Property(String name) {
-            this(name, null, null, null);
+            this(name, null, null, null, false);
         }
 
         Property(String name, TaffyUpdater<T> taffyUpdater) {
-            this(name, taffyUpdater, null, null);
+            this(name, taffyUpdater, null, null, false);
         }
 
         Property(String name, TaffyUpdater<T> taffyUpdater, T defaultValue) {
-            this(name, taffyUpdater, defaultValue, null);
+            this(name, taffyUpdater, defaultValue, null, false);
         }
 
         Property(String name, T defaultValue, MultiPropertyTaffyUpdater multiPropertyUpdater) {
-            this(name, null, defaultValue, multiPropertyUpdater);
+            this(name, null, defaultValue, multiPropertyUpdater, false);
         }
 
-        private Property(String name, TaffyUpdater<T> taffyUpdater, T defaultValue,
-                MultiPropertyTaffyUpdater multiPropertyUpdater) {
+        Property(String name, TaffyUpdater<T> taffyUpdater, T defaultValue,
+                MultiPropertyTaffyUpdater multiPropertyUpdater, boolean inherited) {
             this.name = name;
             this.taffyUpdater = Optional.ofNullable(taffyUpdater);
             this.multiPropertyUpdater = Optional.ofNullable(multiPropertyUpdater);
             this.defaultValue = defaultValue;
+            this.inherited = inherited;
             properties.add(this);
+        }
+
+        public boolean isInherited() {
+            return inherited;
+        }
+
+        boolean hasTaffyUpdater() {
+            return taffyUpdater.isPresent();
         }
 
         public String formatValue(T value) {
             return value != null ? value.toString() : "";
         }
 
-        public boolean isSet(Style style) {
+        boolean isSet(Style style) {
             return style.values.containsKey(this);
         }
 
@@ -181,23 +198,68 @@ public abstract class StyleProperties {
         }
 
         @SuppressWarnings("unchecked")
-        public T get(Style style, T fallback) {
+        private OptionalN<T> declaredValue(Style style) {
             if (style.values.containsKey(this))
-                return (T) style.values.get(this);
+                return OptionalN.of((T) style.values.get(this));
             if (style.defaultValues != null && style.defaultValues.containsKey(this))
-                return (T) style.defaultValues.get(this);
-            return fallback;
-        }
-
-        public T get(Style style) {
-            return get(style, defaultValue);
+                return OptionalN.of((T) style.defaultValues.get(this));
+            return OptionalN.empty();
         }
 
         @SuppressWarnings("unchecked")
-        public OptionalN<T> getIfPresent(Style style) {
-            if (style.values.containsKey(this))
-                return OptionalN.of((T) style.values.get(this));
+        T get(Style style, T fallback) {
+            OptionalN<T> value = declaredValue(style);
+            return value.isPresent() ? value.get() : fallback;
+        }
+
+        T get(Style style) {
+            return get(style, defaultValue);
+        }
+
+        OptionalN<T> getIfPresent(Style style) {
+            return declaredValue(style);
+        }
+
+        /**
+         * Resolves this property on a node, following inheritance when the property
+         * is inherited and not declared on the node.
+         */
+        public T get(ElementNode node) {
+            return get(node, defaultValue);
+        }
+
+        /**
+         * Resolves this property on a node, following inheritance when the property
+         * is inherited and not declared on the node.
+         */
+        public T get(ElementNode node, T fallback) {
+            OptionalN<T> value = getIfPresent(node);
+            return value.isPresent() ? value.get() : fallback;
+        }
+
+        /**
+         * Returns the resolved value of an inherited property, or the value declared
+         * on this node. Does not fall back to the property default.
+         */
+        public OptionalN<T> getIfPresent(ElementNode node) {
+            OptionalN<T> value = declaredValue(node.style);
+            if (value.isPresent())
+                return value;
+            if (inherited) {
+                for (ElementNode ancestor = node.parentElement().orElse(null); ancestor != null;
+                        ancestor = ancestor.parentElement().orElse(null)) {
+                    value = declaredValue(ancestor.style);
+                    if (value.isPresent())
+                        return value;
+                }
+            }
             return OptionalN.empty();
+        }
+
+        void copyInheritedValue(ElementNode node, Style target) {
+            T value = get(node, defaultValue);
+            if (value != null)
+                target.put(this, value);
         }
 
         public void set(Style style, T value) {
@@ -213,22 +275,26 @@ public abstract class StyleProperties {
         }
     }
 
-    /** A property whose value is a double. */
-    public static class DoubleProperty extends Property<java.lang.Double> {
-        DoubleProperty(String name) {
-            super(name);
-        }
-
-        DoubleProperty(String name, TaffyUpdater<java.lang.Double> updater) {
-            super(name, updater);
-        }
-
-        DoubleProperty(String name, TaffyUpdater<java.lang.Double> updater, java.lang.Double defaultValue) {
-            super(name, updater, defaultValue);
-        }
+    private static <T> Property<T> inherited(String name) {
+        return new Property<>(name, null, null, null, true);
     }
 
-    public static com.antepod.taffy.style.Style buildTaffyStyle(Style style) {
+    private static <T> Property<T> inherited(String name, T defaultValue) {
+        return new Property<>(name, null, defaultValue, null, true);
+    }
+
+    private static <T> Property<T> inherited(String name, TaffyUpdater<T> taffyUpdater, T defaultValue) {
+        return new Property<>(name, taffyUpdater, defaultValue, null, true);
+    }
+
+    public static com.antepod.taffy.style.Style buildTaffyStyle(ElementNode node) {
+        Style style = new Style();
+        style.putAll(node.style);
+        for (Property<?> property : properties) {
+            if (property.isInherited() && property.hasTaffyUpdater() && !style.values.containsKey(property))
+                property.copyInheritedValue(node, style);
+        }
+
         var builder = com.antepod.taffy.style.Style.builder();
         for (var entry : style.values.entrySet())
             entry.getKey().applyTaffy(style, entry.getValue(), builder);
@@ -279,18 +345,15 @@ public abstract class StyleProperties {
 
     // Visual style properties
     public static final Property<JColor> BACKGROUND_COLOR = new Property<>("background");
-    public static final Property<JColor> COLOR = new Property<>("color", null,
-            JColor.rgb(28, 29, 31));
-    public static final Property<String> FONT_FAMILY = new Property<>("font-family", null,
-            java.awt.Font.DIALOG);
-    public static final Property<Integer> FONT_SIZE = new Property<>("font-size", null, 14);
-    public static final Property<Boolean> BOLD = new Property<>("bold", null, false);
-    public static final Property<Boolean> ITALIC = new Property<>("italic", null, false);
-    public static final DoubleProperty LINE_HEIGHT = new DoubleProperty("line-height", null,
-            Double.NaN);
+    public static final Property<JColor> COLOR = inherited("color", JColor.rgb(28, 29, 31));
+    public static final Property<String> FONT_FAMILY = inherited("font-family", java.awt.Font.DIALOG);
+    public static final Property<Integer> FONT_SIZE = inherited("font-size", 14);
+    public static final Property<Boolean> BOLD = inherited("bold", false);
+    public static final Property<Boolean> ITALIC = inherited("italic", false);
+    public static final Property<java.lang.Double> LINE_HEIGHT = inherited("line-height", null, Double.NaN);
     public static final Property<Shadow> BOX_SHADOW = new Property<>("box-shadow");
-    public static final Property<Shadow> TEXT_SHADOW = new Property<>("text-shadow");
-    public static final DoubleProperty OPACITY = new DoubleProperty("opacity", null, 1.0);
+    public static final Property<Shadow> TEXT_SHADOW = inherited("text-shadow");
+    public static final Property<java.lang.Double> OPACITY = new Property<>("opacity", null, 1.0);
 
     // CSS layout properties used by the layout engine.
     public static final Property<Display> DISPLAY = new Property<>("display",
@@ -301,7 +364,7 @@ public abstract class StyleProperties {
             (style, value, builder) -> builder.floatValue(value), Float.NONE);
     public static final Property<Clear> CLEAR = new Property<>("clear",
             (style, value, builder) -> builder.clear(value), Clear.NONE);
-    public static final Property<Direction> DIRECTION = new Property<>("direction",
+    public static final Property<Direction> DIRECTION = inherited("direction",
             (style, value, builder) -> builder.direction(value), Direction.LTR);
     public static final Property<BoxSizing> BOX_SIZING = new Property<>("box-sizing",
             (style, value, builder) -> builder.boxSizing(value), BoxSizing.BORDER_BOX);
@@ -412,9 +475,9 @@ public abstract class StyleProperties {
             (style, value, builder) -> builder.flexWrap(value), FlexWrap.NO_WRAP);
     public static final Property<Dimension> FLEX_BASIS = new Property<>("flex-basis",
             (style, value, builder) -> builder.flexBasis(value), Dimension.AUTO);
-    public static final DoubleProperty FLEX_GROW = new DoubleProperty("flex-grow",
+    public static final Property<java.lang.Double> FLEX_GROW = new Property<>("flex-grow",
             (style, value, builder) -> builder.flexGrow(value.floatValue()), 0.0);
-    public static final DoubleProperty FLEX_SHRINK = new DoubleProperty("flex-shrink",
+    public static final Property<java.lang.Double> FLEX_SHRINK = new Property<>("flex-shrink",
             (style, value, builder) -> builder.flexShrink(value.floatValue()), 1.0);
 
     public static final Property<LengthPercentage> ROW_GAP = multiProperty("row-gap",
@@ -422,7 +485,7 @@ public abstract class StyleProperties {
     public static final Property<LengthPercentage> COLUMN_GAP = multiProperty("column-gap",
             LengthPercentage.ZERO, MultiPropertyTaffyUpdater.GAP);
 
-    public static final Property<TextAlign> TEXT_ALIGN = new Property<>("text-align",
+    public static final Property<TextAlign> TEXT_ALIGN = inherited("text-align",
             (style, value, builder) -> builder.textAlign(value), TextAlign.AUTO);
 
     public static final Property<GridAutoFlow> GRID_AUTO_FLOW = new Property<>("grid-auto-flow",
@@ -483,8 +546,8 @@ public abstract class StyleProperties {
         return columns;
     }
 
-    public static Font font(Style style) {
-        int flags = (BOLD.get(style) ? Font.BOLD : 0) | (ITALIC.get(style) ? Font.ITALIC : 0);
-        return new Font(FONT_FAMILY.get(style, Font.DIALOG), flags, FONT_SIZE.get(style));
+    public static Font font(ElementNode node) {
+        int flags = (BOLD.get(node) ? Font.BOLD : 0) | (ITALIC.get(node) ? Font.ITALIC : 0);
+        return new Font(FONT_FAMILY.get(node, Font.DIALOG), flags, FONT_SIZE.get(node));
     }
 }

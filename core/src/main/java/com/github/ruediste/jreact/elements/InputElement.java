@@ -35,7 +35,7 @@ public class InputElement extends ElementNode {
     public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
         if (handle == null)
             return Size.zeroFloat();
-        handle.field.setFont(StyleProperties.font(style));
+        handle.field.setFont(StyleProperties.font(this));
         Dimension preferred = handle.field.getPreferredSize();
         return new Size<>((float) preferred.width, (float) preferred.height);
     }
@@ -107,8 +107,8 @@ public class InputElement extends ElementNode {
                     field.setText(node.value);
                 field.setBounds((int) Math.round(node.bounds.x), (int) Math.round(node.bounds.y),
                         (int) Math.round(node.bounds.width), (int) Math.round(node.bounds.height));
-                field.setFont(StyleProperties.font(node.style));
-                field.setForeground(StyleProperties.COLOR.get(node.style).toColor());
+                field.setFont(StyleProperties.font(node));
+                field.setForeground(StyleProperties.COLOR.get(node).toColor());
                 field.setEnabled(!node.disabled);
                 field.getAccessibleContext().setAccessibleName(node.accessibleName);
             } finally {

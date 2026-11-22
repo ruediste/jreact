@@ -17,7 +17,6 @@ import com.antepod.taffy.style.CompactLength;
 import com.antepod.taffy.style.LengthPercentage;
 import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.elements.ElementNode;
-import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
 import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
 
@@ -45,23 +44,23 @@ public final class PaintUtils {
     public static Shape shape(ElementNode node) {
         Rectangle2D.Double bounds = node.bounds;
         return roundedRectangle(bounds.x, bounds.y, bounds.width, bounds.height,
-                cornerRadii(node.style, bounds.width, bounds.height));
+                cornerRadii(node, bounds.width, bounds.height));
     }
 
-    private static Corners cornerRadii(Style style, double width, double height) {
+    private static Corners cornerRadii(ElementNode node, double width, double height) {
         double horizontalBasis = Math.max(0, width);
         double verticalBasis = Math.max(0, height);
         return new Corners(
                 new double[] {
-                        resolve(StyleProperties.BORDER_TOP_LEFT_RADIUS.get(style).horizontal(), horizontalBasis),
-                        resolve(StyleProperties.BORDER_TOP_RIGHT_RADIUS.get(style).horizontal(), horizontalBasis),
-                        resolve(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS.get(style).horizontal(), horizontalBasis),
-                        resolve(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS.get(style).horizontal(), horizontalBasis) },
+                        resolve(StyleProperties.BORDER_TOP_LEFT_RADIUS.get(node).horizontal(), horizontalBasis),
+                        resolve(StyleProperties.BORDER_TOP_RIGHT_RADIUS.get(node).horizontal(), horizontalBasis),
+                        resolve(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS.get(node).horizontal(), horizontalBasis),
+                        resolve(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS.get(node).horizontal(), horizontalBasis) },
                 new double[] {
-                        resolve(StyleProperties.BORDER_TOP_LEFT_RADIUS.get(style).vertical(), verticalBasis),
-                        resolve(StyleProperties.BORDER_TOP_RIGHT_RADIUS.get(style).vertical(), verticalBasis),
-                        resolve(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS.get(style).vertical(), verticalBasis),
-                        resolve(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS.get(style).vertical(), verticalBasis) });
+                        resolve(StyleProperties.BORDER_TOP_LEFT_RADIUS.get(node).vertical(), verticalBasis),
+                        resolve(StyleProperties.BORDER_TOP_RIGHT_RADIUS.get(node).vertical(), verticalBasis),
+                        resolve(StyleProperties.BORDER_BOTTOM_RIGHT_RADIUS.get(node).vertical(), verticalBasis),
+                        resolve(StyleProperties.BORDER_BOTTOM_LEFT_RADIUS.get(node).vertical(), verticalBasis) });
     }
 
     /**
@@ -148,12 +147,12 @@ public final class PaintUtils {
     }
 
     public static void paintBorder(ElementNode node, Graphics2D graphics, Shape outer) {
-        double topWidth = borderWidth(node.style, StyleProperties.BORDER_TOP_STYLE, StyleProperties.BORDER_TOP_WIDTH);
-        double rightWidth = borderWidth(node.style, StyleProperties.BORDER_RIGHT_STYLE,
+        double topWidth = borderWidth(node, StyleProperties.BORDER_TOP_STYLE, StyleProperties.BORDER_TOP_WIDTH);
+        double rightWidth = borderWidth(node, StyleProperties.BORDER_RIGHT_STYLE,
                 StyleProperties.BORDER_RIGHT_WIDTH);
-        double bottomWidth = borderWidth(node.style, StyleProperties.BORDER_BOTTOM_STYLE,
+        double bottomWidth = borderWidth(node, StyleProperties.BORDER_BOTTOM_STYLE,
                 StyleProperties.BORDER_BOTTOM_WIDTH);
-        double leftWidth = borderWidth(node.style, StyleProperties.BORDER_LEFT_STYLE,
+        double leftWidth = borderWidth(node, StyleProperties.BORDER_LEFT_STYLE,
                 StyleProperties.BORDER_LEFT_WIDTH);
         if (topWidth == 0 && rightWidth == 0 && bottomWidth == 0 && leftWidth == 0)
             return;
@@ -165,7 +164,7 @@ public final class PaintUtils {
         double innerTop = Math.min(bottom, top + topWidth);
         double innerBottom = Math.max(innerTop, bottom - bottomWidth);
 
-        Corners outerCorners = fit(cornerRadii(node.style, bounds.width, bounds.height), bounds.width,
+        Corners outerCorners = fit(cornerRadii(node, bounds.width, bounds.height), bounds.width,
                 bounds.height);
         double[] horizontal = new double[] {
                 Math.max(0, outerCorners.horizontal()[TOP_LEFT] - Math.max(topWidth, leftWidth)),
@@ -186,29 +185,29 @@ public final class PaintUtils {
         try {
             copy.clip(ring);
             double centerX = (left + right) / 2, centerY = (top + bottom) / 2;
-            polygon(copy, borderColor(node.style, StyleProperties.BORDER_TOP_COLOR), left, top, right, top, centerX,
+            polygon(copy, borderColor(node, StyleProperties.BORDER_TOP_COLOR), left, top, right, top, centerX,
                     centerY);
-            polygon(copy, borderColor(node.style, StyleProperties.BORDER_RIGHT_COLOR), right, top, right, bottom,
+            polygon(copy, borderColor(node, StyleProperties.BORDER_RIGHT_COLOR), right, top, right, bottom,
                     centerX, centerY);
-            polygon(copy, borderColor(node.style, StyleProperties.BORDER_BOTTOM_COLOR), right, bottom, left, bottom,
+            polygon(copy, borderColor(node, StyleProperties.BORDER_BOTTOM_COLOR), right, bottom, left, bottom,
                     centerX, centerY);
-            polygon(copy, borderColor(node.style, StyleProperties.BORDER_LEFT_COLOR), left, bottom, left, top, centerX,
+            polygon(copy, borderColor(node, StyleProperties.BORDER_LEFT_COLOR), left, bottom, left, top, centerX,
                     centerY);
         } finally {
             copy.dispose();
         }
     }
 
-    private static double borderWidth(Style style, StyleProperties.Property<BorderStyle> borderStyle,
+    private static double borderWidth(ElementNode node, StyleProperties.Property<BorderStyle> borderStyle,
             StyleProperties.Property<Double> width) {
-        BorderStyle resolvedStyle = borderStyle.get(style);
+        BorderStyle resolvedStyle = borderStyle.get(node);
         if (resolvedStyle == BorderStyle.NONE || resolvedStyle == BorderStyle.HIDDEN)
             return 0;
-        return Math.max(0, width.get(style));
+        return Math.max(0, width.get(node));
     }
 
-    private static Color borderColor(Style style, StyleProperties.Property<JColor> color) {
-        return color.get(style).toColor();
+    private static Color borderColor(ElementNode node, StyleProperties.Property<JColor> color) {
+        return color.get(node).toColor();
     }
 
     private static void polygon(Graphics2D graphics, Color color, double... points) {

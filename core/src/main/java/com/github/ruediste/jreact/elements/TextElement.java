@@ -29,14 +29,14 @@ public class TextElement extends ElementNode {
     @Override
     public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
         AvailableSpace knownWidth = AvailableSpace.fromOptional(knownDimensions.width.orElse(null));
-        return TextLayout.measure(text, style, knownWidth, availableSpace.width,
+        return TextLayout.measure(text, this, knownWidth, availableSpace.width,
                 knownDimensions.width.orElse(0f));
     }
 
     @Override
     protected void paintContent(Graphics2D graphics) {
-        graphics.setFont(StyleProperties.font(style));
-        StyleProperties.Shadow shadow = StyleProperties.TEXT_SHADOW.get(style);
+        graphics.setFont(StyleProperties.font(this));
+        StyleProperties.Shadow shadow = StyleProperties.TEXT_SHADOW.get(this);
         for (Line line : lines) {
             float x = (float) bounds.x + line.x();
             float y = (float) bounds.y + line.baseline();
@@ -44,7 +44,7 @@ public class TextElement extends ElementNode {
                 graphics.setColor(shadow.color());
                 graphics.drawString(line.text(), x + (float) shadow.offsetX(), y + (float) shadow.offsetY());
             }
-            graphics.setColor(StyleProperties.COLOR.get(style).toColor());
+            graphics.setColor(StyleProperties.COLOR.get(this).toColor());
             graphics.drawString(line.text(), x, y);
         }
     }

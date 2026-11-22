@@ -100,9 +100,6 @@ public final class CoreElements {
     }
 
     public interface InputApi extends ElementStyleApiBase<InputApi, ElementApiHelper<InputApi>> {
-        default InputApi disabled(boolean disabled) {
-            return _helper().apply(node -> node.disabled = disabled);
-        }
     }
 
     public static InputApi input(String value, Consumer<String> onChange) {
@@ -140,6 +137,18 @@ public final class CoreElements {
         public ElementApiHelperImpl(ElementNode node) {
             this.node = node;
 
+        }
+
+        private void beginStyleRule(Selector selector) {
+            StyleRule rule = new StyleRule(selector, new Style());
+            node.styleRules.add(rule);
+            currentStyleRule = Optional.of(rule);
+        }
+
+        @Override
+        public Api inline() {
+            currentStyleRule = Optional.empty();
+            return api;
         }
 
         @Override
@@ -184,12 +193,18 @@ public final class CoreElements {
                     for (Function<Selector, Selector> f : chainedSelectors) {
                         selector = f.apply(selector);
                     }
-                    currentStyleRule = Optional.of(new StyleRule(selector, new Style()));
+                    beginStyleRule(selector);
                     return ElementApiHelperImpl.this.api;
+                }
+
+                @Override
+                public Api inline() {
+                    return ElementApiHelperImpl.this.inline();
                 }
 
             }
             var helper = new Helper();
+            helper.chainedSelectors.add(factory);
             var api = new XSelectors<Api, Helper>() {
 
                 @Override
@@ -203,7 +218,7 @@ public final class CoreElements {
 
         @Override
         public Api selectorTerminal(Selector selector) {
-            currentStyleRule = Optional.of(new StyleRule(selector, new Style()));
+            beginStyleRule(selector);
             return api;
         }
 

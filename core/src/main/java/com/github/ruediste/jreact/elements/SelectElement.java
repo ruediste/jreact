@@ -41,7 +41,7 @@ public class SelectElement extends ElementNode {
     public Size<Float> measure(Size<Optional<Float>> knownDimensions, Size<AvailableSpace> availableSpace) {
         if (handle == null)
             return Size.zeroFloat();
-        handle.select.setFont(StyleProperties.font(style));
+        handle.select.setFont(StyleProperties.font(this));
         Dimension preferred = handle.select.getPreferredSize();
         return new Size<>((float) preferred.width, (float) preferred.height);
     }
@@ -113,8 +113,8 @@ public class SelectElement extends ElementNode {
                     select.setSelectedItem(node.value);
                 select.setBounds((int) Math.round(node.bounds.x), (int) Math.round(node.bounds.y),
                         (int) Math.round(node.bounds.width), (int) Math.round(node.bounds.height));
-                select.setFont(StyleProperties.font(node.style));
-                select.setForeground(StyleProperties.COLOR.get(node.style).toColor());
+                select.setFont(StyleProperties.font(node));
+                select.setForeground(StyleProperties.COLOR.get(node).toColor());
                 select.setEnabled(!node.disabled);
                 select.getAccessibleContext().setAccessibleName(node.accessibleName);
             } finally {
