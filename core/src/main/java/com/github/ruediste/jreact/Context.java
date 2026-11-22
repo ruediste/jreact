@@ -4,8 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.github.ruediste.jreact.nodes.Node;
-
 /**
  * A value shared with descendant components without passing it through
  * properties.

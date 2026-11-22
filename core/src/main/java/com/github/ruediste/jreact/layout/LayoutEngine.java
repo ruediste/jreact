@@ -13,10 +13,10 @@ import com.antepod.taffy.style.FlexDirection;
 import com.antepod.taffy.tree.Layout;
 import com.antepod.taffy.tree.NodeId;
 import com.antepod.taffy.tree.TaffyTree;
+import com.github.ruediste.jreact.Node;
 import com.github.ruediste.jreact.TextLayout;
-import com.github.ruediste.jreact.nodes.ElementNode;
-import com.github.ruediste.jreact.nodes.Node;
-import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.elements.ElementNode;
+import com.github.ruediste.jreact.elements.TextElement;
 
 public final class LayoutEngine {
 
@@ -98,7 +98,7 @@ public final class LayoutEngine {
     }
 
     private static void commitText(Node node) {
-        if (node instanceof TextNode text)
+        if (node instanceof TextElement text)
             TextLayout.commit(text);
         for (Node child : node.children())
             commitText(child);

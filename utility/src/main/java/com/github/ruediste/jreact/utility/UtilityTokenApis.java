@@ -3,14 +3,12 @@ package com.github.ruediste.jreact.utility;
 import java.awt.Font;
 import java.util.function.Consumer;
 
-import com.github.ruediste.jreact.CoreElements;
+import com.github.ruediste.jreact.CoreElementApis;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
 import com.github.ruediste.jreact.style.CoreStyleApis.StyleApiHelper;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class ThemeApis {
-    private ThemeApis() {
-    }
+public interface UtilityTokenApis {
 
     public class RadiusThemeValues {
         public double sm;
@@ -142,11 +140,11 @@ public class ThemeApis {
     public record TextSetting(int fontSize, double lineHeight) {
     }
 
-    public interface FontApiHelper<Api> {
+    public interface FontUtilityApiHelper<Api> {
         FontThemeValues getFontThemeValues();
     }
 
-    public interface FontApi<Self, Helper extends CoreElements.NodeAccessApiHelper<Self> & StyleApiHelper<Self> & FontApiHelper<Self>>
+    public interface FontUtilityApi<Self, Helper extends CoreElementApis.NodeAccessApiHelper<Self> & StyleApiHelper<Self> & FontUtilityApiHelper<Self>>
             extends ApiHelperProvider<Helper> {
         default Self fontSans() {
             return _helper().putStyle(StyleProperties.FONT_FAMILY, _helper().getFontThemeValues().fontSans);
@@ -296,4 +294,5 @@ public class ThemeApis {
             return _helper().putStyle(StyleProperties.LINE_HEIGHT, _helper().getFontThemeValues().leading10);
         }
     }
+
 }

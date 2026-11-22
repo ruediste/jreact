@@ -1,10 +1,12 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import com.github.ruediste.jreact.elements.ElementNode;
 
 public class Node {
 

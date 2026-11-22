@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
-import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
+import com.github.ruediste.jreact.elements.TextElement;
 
 class ReconciliationTest {
 
@@ -61,7 +61,7 @@ class ReconciliationTest {
         childState.get().set("b");
         root.refresh(200, 100);
         assertEquals(2, renders[0]);
-        TextNode text = (TextNode) root.rootNode().children().get(0).children().get(0).children().get(0);
+        TextElement text = (TextElement) root.rootNode().children().get(0).children().get(0).children().get(0);
         assertEquals("b", text.text);
 
         property.get().set("c");
@@ -111,7 +111,7 @@ class ReconciliationTest {
         ComponentNode second = (ComponentNode) root.rootNode().children().get(1);
         assertEquals("b", first.key);
         assertEquals("a", second.key);
-        assertEquals("a2", ((TextNode) second.children().get(0)).text);
+        assertEquals("a2", ((TextElement) second.children().get(0)).text);
         assertSame(aFiber, second.fiber);
     }
 
@@ -145,6 +145,6 @@ class ReconciliationTest {
 
         childState.get().set("b");
         root.refresh(200, 100);
-        assertEquals("b", ((TextNode) second.children().get(0)).text);
+        assertEquals("b", ((TextElement) second.children().get(0)).text);
     }
 }

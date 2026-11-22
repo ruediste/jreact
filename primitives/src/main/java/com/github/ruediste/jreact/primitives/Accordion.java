@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.jreact.Component;
 import com.github.ruediste.jreact.Context;
-import com.github.ruediste.jreact.CoreElements.EventApi;
+import com.github.ruediste.jreact.CoreElementApis.EventApi;
 import com.github.ruediste.jreact.OptionalN;
 
 public class Accordion {

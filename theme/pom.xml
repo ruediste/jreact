@@ -17,5 +17,10 @@
             <artifactId>jreact-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ruediste.jreact</groupId>
+            <artifactId>jreact-utility</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

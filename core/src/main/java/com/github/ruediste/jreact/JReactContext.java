@@ -3,8 +3,6 @@ package com.github.ruediste.jreact;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.github.ruediste.jreact.nodes.Node;
-
 public final class JReactContext {
 
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<>();

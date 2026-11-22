@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -11,17 +11,17 @@ import com.antepod.taffy.style.AvailableSpace;
 import com.github.ruediste.jreact.TextLayout;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class TextNode extends ElementNode {
+public class TextElement extends ElementNode {
 
     public String text;
 
     public final List<Line> lines = new ArrayList<>();
 
-    public TextNode(String text) {
+    public TextElement(String text) {
         this(null, text);
     }
 
-    public TextNode(Object key, String text) {
+    public TextElement(Object key, String text) {
         super(key);
         this.text = Objects.requireNonNull(text);
     }

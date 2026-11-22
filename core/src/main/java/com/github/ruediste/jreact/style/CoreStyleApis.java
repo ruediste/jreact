@@ -218,7 +218,7 @@ public final class CoreStyleApis {
         }
     }
 
-    public interface VisualStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
+    public interface ColorStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
 
         default Self backgroundColor(JColor value) {
             return _helper().putStyle(StyleProperties.BACKGROUND_COLOR, value);
@@ -227,6 +227,9 @@ public final class CoreStyleApis {
         default Self color(JColor value) {
             return _helper().putStyle(StyleProperties.COLOR, value);
         }
+    }
+
+    public interface FontStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
 
         default Self fontFamily(String value) {
             return _helper().putStyle(StyleProperties.FONT_FAMILY, value);
@@ -248,6 +251,9 @@ public final class CoreStyleApis {
             return _helper().putStyle(StyleProperties.LINE_HEIGHT, value);
         }
 
+    }
+
+    public interface ShadowStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
         default Self boxShadow(Shadow value) {
             return _helper().putStyle(StyleProperties.BOX_SHADOW, value);
         }
@@ -255,7 +261,9 @@ public final class CoreStyleApis {
         default Self textShadow(Shadow value) {
             return _helper().putStyle(StyleProperties.TEXT_SHADOW, value);
         }
+    }
 
+    public interface OpacityStyleApi<Self, Helper extends StyleApiHelper<Self>> extends ApiHelperProvider<Helper> {
         default Self opacity(double value) {
             return _helper().putStyle(StyleProperties.OPACITY, value);
         }

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
 
 class HooksStateTest {
 

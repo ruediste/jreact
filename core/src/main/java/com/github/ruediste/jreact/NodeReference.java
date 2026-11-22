@@ -3,8 +3,6 @@ package com.github.ruediste.jreact;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.ruediste.jreact.nodes.Node;
-
 final class NodeReference {
 
     private final List<Node> path = new ArrayList<>();

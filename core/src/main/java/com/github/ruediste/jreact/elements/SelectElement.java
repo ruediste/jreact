@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.awt.Dimension;
 import java.util.List;
@@ -12,20 +12,21 @@ import javax.swing.JComboBox;
 import com.antepod.taffy.geometry.Size;
 import com.antepod.taffy.style.AvailableSpace;
 import com.github.ruediste.jreact.JReactContext;
+import com.github.ruediste.jreact.Node;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class SelectNode extends ElementNode {
+public class SelectElement extends ElementNode {
 
     public String value;
     public final List<String> options;
     public Consumer<String> onChange;
     private Handle handle;
 
-    public SelectNode(String value, List<String> options, Consumer<String> onChange) {
+    public SelectElement(String value, List<String> options, Consumer<String> onChange) {
         this(null, value, options, onChange);
     }
 
-    public SelectNode(Object key, String value, List<String> options, Consumer<String> onChange) {
+    public SelectElement(Object key, String value, List<String> options, Consumer<String> onChange) {
         super(key);
         this.value = Objects.requireNonNull(value);
         this.options = List.copyOf(options);
@@ -55,7 +56,7 @@ public class SelectNode extends ElementNode {
     @Override
     public void reconcile(Node oldNode) {
         super.reconcile(oldNode);
-        handle = ((SelectNode) oldNode).handle;
+        handle = ((SelectElement) oldNode).handle;
         handle.node = this;
     }
 
@@ -72,11 +73,11 @@ public class SelectNode extends ElementNode {
     }
 
     private static class Handle {
-        SelectNode node;
+        SelectElement node;
         final JComboBox<String> select;
         boolean syncing;
 
-        private Handle(SelectNode node) {
+        private Handle(SelectElement node) {
             this.node = node;
             select = new JComboBox<>();
             select.addActionListener(event -> selectChanged());

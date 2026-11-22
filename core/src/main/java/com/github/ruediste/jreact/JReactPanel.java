@@ -17,8 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.antepod.taffy.style.Display;
-import com.github.ruediste.jreact.nodes.ElementNode;
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.style.StyleProperties;
 
 public final class JReactPanel extends JPanel {

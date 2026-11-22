@@ -1,6 +1,6 @@
 package com.github.ruediste.jreact.style;
 
-import com.github.ruediste.jreact.nodes.ElementNode;
+import com.github.ruediste.jreact.elements.ElementNode;
 
 @FunctionalInterface
 public interface Selector {

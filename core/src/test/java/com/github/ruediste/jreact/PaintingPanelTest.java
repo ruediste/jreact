@@ -16,14 +16,14 @@ import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 
 import com.github.ruediste.jreact.color.JColor;
-import com.github.ruediste.jreact.nodes.DivNode;
+import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.style.StyleProperties;
 
 class PaintingPanelTest {
 
     @Test
     void visualNodesPaintBackground() {
-        DivNode node = new DivNode();
+        DivElement node = new DivElement();
         StyleProperties.BACKGROUND_COLOR.set(node.style, JColor.rgb(255, 0, 0));
         node.bounds.setRect(10, 10, 40, 20);
         BufferedImage image = new BufferedImage(100, 50, BufferedImage.TYPE_INT_ARGB);

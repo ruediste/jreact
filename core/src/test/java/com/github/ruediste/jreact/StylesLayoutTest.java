@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.antepod.taffy.style.FlexDirection;
 import com.github.ruediste.jreact.color.JColor;
-import com.github.ruediste.jreact.nodes.ElementNode;
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.style.StyleProperties;
 
 class StylesLayoutTest {

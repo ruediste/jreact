@@ -2,13 +2,10 @@ package com.github.ruediste.jreact.utility;
 
 import com.github.ruediste.jreact.color.OkLch;
 import com.github.ruediste.jreact.style.ApiHelperProvider;
+import com.github.ruediste.jreact.style.CoreTokenApis.ColorHelper;
 
 public class ColorPaletteApis {
     private ColorPaletteApis() {
-    }
-
-    public interface ColorHelper<TResult> {
-        TResult color(OkLch color);
     }
 
     public interface ColorRedApi<TResult, Helper extends ColorHelper<TResult>>

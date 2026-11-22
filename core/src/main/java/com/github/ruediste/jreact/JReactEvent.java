@@ -1,7 +1,5 @@
 package com.github.ruediste.jreact;
 
-import com.github.ruediste.jreact.nodes.Node;
-
 /**
  * Base class of all JReact events.
  *

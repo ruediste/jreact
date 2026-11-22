@@ -1,8 +1,9 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.util.Objects;
 
 import com.github.ruediste.jreact.Fiber;
+import com.github.ruediste.jreact.Node;
 
 public abstract class ComponentNode extends Node {
 

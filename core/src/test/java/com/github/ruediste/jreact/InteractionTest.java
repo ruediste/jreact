@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.events.KeyboardEvent;
-import com.github.ruediste.jreact.nodes.ElementNode;
 
 class InteractionTest {
 

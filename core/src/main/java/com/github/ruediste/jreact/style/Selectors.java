@@ -3,7 +3,7 @@ package com.github.ruediste.jreact.style;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.Node;
 
 public class Selectors {
     public interface SelectorBuilder<Self> {

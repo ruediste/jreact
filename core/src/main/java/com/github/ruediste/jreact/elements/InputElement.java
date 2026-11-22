@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.awt.Dimension;
 import java.util.Objects;
@@ -12,19 +12,20 @@ import javax.swing.event.DocumentListener;
 import com.antepod.taffy.geometry.Size;
 import com.antepod.taffy.style.AvailableSpace;
 import com.github.ruediste.jreact.JReactContext;
+import com.github.ruediste.jreact.Node;
 import com.github.ruediste.jreact.style.StyleProperties;
 
-public class InputNode extends ElementNode {
+public class InputElement extends ElementNode {
 
     public String value;
     public Consumer<String> onChange;
     private Handle handle;
 
-    public InputNode(String value, Consumer<String> onChange) {
+    public InputElement(String value, Consumer<String> onChange) {
         this(null, value, onChange);
     }
 
-    public InputNode(Object key, String value, Consumer<String> onChange) {
+    public InputElement(Object key, String value, Consumer<String> onChange) {
         super(key);
         this.value = Objects.requireNonNull(value);
         this.onChange = Objects.requireNonNull(onChange);
@@ -49,7 +50,7 @@ public class InputNode extends ElementNode {
     @Override
     public void reconcile(Node oldNode) {
         super.reconcile(oldNode);
-        handle = ((InputNode) oldNode).handle;
+        handle = ((InputElement) oldNode).handle;
         handle.node = this;
     }
 
@@ -66,11 +67,11 @@ public class InputNode extends ElementNode {
     }
 
     private static class Handle {
-        InputNode node;
+        InputElement node;
         final JTextField field;
         boolean syncing;
 
-        private Handle(InputNode node) {
+        private Handle(InputElement node) {
             this.node = node;
             field = new JTextField();
             field.getDocument().addDocumentListener(new DocumentListener() {

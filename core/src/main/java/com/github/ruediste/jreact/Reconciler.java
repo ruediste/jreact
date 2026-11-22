@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
-import com.github.ruediste.jreact.nodes.Node;
+import com.github.ruediste.jreact.elements.ComponentNode;
 
 final class Reconciler {
 

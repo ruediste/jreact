@@ -16,10 +16,9 @@ import java.util.function.Consumer;
 import com.antepod.taffy.style.CompactLength;
 import com.antepod.taffy.style.LengthPercentage;
 import com.github.ruediste.jreact.color.JColor;
-import com.github.ruediste.jreact.nodes.ElementNode;
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
-import com.github.ruediste.jreact.style.StyleProperties.BorderRadius;
 import com.github.ruediste.jreact.style.StyleProperties.BorderStyle;
 
 public final class PaintUtils {

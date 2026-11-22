@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
 
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;

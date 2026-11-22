@@ -8,7 +8,7 @@ import java.awt.Shape;
 import org.junit.jupiter.api.Test;
 
 import com.antepod.taffy.style.LengthPercentage;
-import com.github.ruediste.jreact.nodes.DivNode;
+import com.github.ruediste.jreact.elements.DivElement;
 import com.github.ruediste.jreact.style.StyleProperties;
 import com.github.ruediste.jreact.style.StyleProperties.BorderRadius;
 
@@ -21,7 +21,7 @@ class PaintUtilsTest {
      */
     @Test
     void percentageRadiiResolveAgainstBounds() {
-        DivNode node = new DivNode();
+        DivElement node = new DivElement();
         StyleProperties.BORDER_TOP_LEFT_RADIUS.set(node.style,
                 new BorderRadius(LengthPercentage.percent(0.5f), LengthPercentage.percent(0.5f)));
         node.bounds.setRect(0, 0, 100, 50);

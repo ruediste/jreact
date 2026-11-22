@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.awt.AlphaComposite;
 import java.awt.Composite;
@@ -20,6 +20,7 @@ import com.antepod.taffy.style.Display;
 import com.antepod.taffy.tree.Layout;
 import com.github.ruediste.jreact.EventListener;
 import com.github.ruediste.jreact.JReactEvent;
+import com.github.ruediste.jreact.Node;
 import com.github.ruediste.jreact.PaintUtils;
 import com.github.ruediste.jreact.color.JColor;
 import com.github.ruediste.jreact.style.Style;

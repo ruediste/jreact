@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.ruediste.jreact.JReactAgent;
 import com.github.ruediste.jreact.JReactRoot;
-import com.github.ruediste.jreact.nodes.ComponentNode;
-import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
+import com.github.ruediste.jreact.elements.TextElement;
 
 class MethodComponentTest {
 
@@ -28,6 +28,6 @@ class MethodComponentTest {
         root.refresh(100, 100);
         assertTrue(root.rootNode().children().get(0) instanceof ComponentNode);
         ComponentNode component = (ComponentNode) root.rootNode().children().get(0);
-        assertEquals("method component", ((TextNode) component.children().get(0)).text);
+        assertEquals("method component", ((TextElement) component.children().get(0)).text);
     }
 }

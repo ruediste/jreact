@@ -12,8 +12,7 @@ import com.antepod.taffy.style.Direction;
 import com.antepod.taffy.style.Display;
 import com.antepod.taffy.style.TextAlign;
 import com.antepod.taffy.tree.Layout;
-import com.github.ruediste.jreact.nodes.Node;
-import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.elements.TextElement;
 import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
 
@@ -26,7 +25,8 @@ import com.github.ruediste.jreact.style.StyleProperties;
  * width. For painted text, {@link #commit} records the final wrapped lines
  * after
  * layout has allocated a content width; those lines are consumed by
- * {@link TextNode} when painting. Nodes backed by Swing components use the same
+ * {@link TextElement} when painting. Nodes backed by Swing components use the
+ * same
  * measurement but do not consume the wrapped lines.
  */
 public final class TextLayout {
@@ -56,7 +56,7 @@ public final class TextLayout {
         return new Size<>(width, height);
     }
 
-    public static void commit(TextNode node) {
+    public static void commit(TextElement node) {
         node.lines.clear();
         if (StyleProperties.DISPLAY.get(node.style) == Display.NONE) {
             return;

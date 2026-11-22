@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
 
 public abstract class Component {
 

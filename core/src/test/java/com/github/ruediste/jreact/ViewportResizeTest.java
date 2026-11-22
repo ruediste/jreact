@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.ruediste.jreact.nodes.ElementNode;
+import com.github.ruediste.jreact.elements.ElementNode;
 
 class ViewportResizeTest {
 

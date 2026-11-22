@@ -9,11 +9,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import com.antepod.taffy.style.Display;
+import com.github.ruediste.jreact.elements.ComponentNode;
+import com.github.ruediste.jreact.elements.ElementNode;
 import com.github.ruediste.jreact.events.ClickEvent;
 import com.github.ruediste.jreact.events.KeyboardEvent;
-import com.github.ruediste.jreact.nodes.ComponentNode;
-import com.github.ruediste.jreact.nodes.ElementNode;
-import com.github.ruediste.jreact.nodes.Node;
 import com.github.ruediste.jreact.style.Style;
 import com.github.ruediste.jreact.style.StyleProperties;
 

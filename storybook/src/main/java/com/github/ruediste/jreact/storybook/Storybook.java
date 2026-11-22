@@ -5,7 +5,6 @@ import static com.github.ruediste.jreact.CoreElements.text;
 import static com.github.ruediste.jreact.CoreElements.viewportHeight;
 import static com.github.ruediste.jreact.CoreElements.viewportWidth;
 
-import java.awt.Color;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -19,6 +18,7 @@ import com.github.ruediste.jreact.Hooks;
 import com.github.ruediste.jreact.JReactAgent;
 import com.github.ruediste.jreact.JReactPanel;
 import com.github.ruediste.jreact.State;
+import com.github.ruediste.jreact.color.JColor;
 
 public final class Storybook {
     public static final List<String> STORIES = List.of("Overview", "Buttons", "Inputs", "Feedback", "Layout", "Dialog",
@@ -41,7 +41,7 @@ public final class Storybook {
         State<String> selected = Hooks.useState(initialStory);
         div().flexDirection(FlexDirection.ROW)
                 .width(viewportWidth()).height(viewportHeight())
-                .backgroundColor(new Color(244, 246, 250)).children(() -> {
+                .backgroundColor(JColor.rgb(244, 246, 250)).children(() -> {
                     sidebar(selected);
                     content(selected.get());
                 });
@@ -51,20 +51,20 @@ public final class Storybook {
         div().width(220).height(viewportHeight())
                 .padding(18)
                 .flexDirection(FlexDirection.COLUMN)
-                .backgroundColor(new Color(31, 41, 55)).children(() -> {
-                    text("JReact").fontSize(24).bold(true).color(Color.WHITE);
-                    text("Component Storybook").fontSize(12).color(new Color(156, 163, 175));
+                .backgroundColor(JColor.rgb(31, 41, 55)).children(() -> {
+                    text("JReact").fontSize(24).bold(true).color(JColor.rgb(255, 255, 255));
+                    text("Component Storybook").fontSize(12).color(JColor.rgb(156, 163, 175));
                     div().height(20);
                     for (String story : STORIES) {
                         boolean active = story.equals(selected.get());
                         div().padding(10)
-                                .radius(8)
+                                .borderRadius(8)
                                 .margin(0, 0, 6, 0)
-                                .backgroundColor(active ? new Color(59, 130, 246) : new Color(31, 41, 55))
+                                .backgroundColor(active ? JColor.rgb(59, 130, 246) : JColor.rgb(31, 41, 55))
                                 .onClick(e -> selected.set(story))
                                 .children(
                                         () -> text(story)
-                                                .color(active ? Color.WHITE : new Color(209, 213, 219)));
+                                                .color(active ? JColor.rgb(255, 255, 255) : JColor.rgb(209, 213, 219)));
                     }
                 });
     }
@@ -72,7 +72,7 @@ public final class Storybook {
     private static void content(String story) {
         div().flexGrow(1).height(viewportHeight()).padding(32)
                 .flexDirection(FlexDirection.COLUMN).children(() -> {
-                    text(story).fontSize(28).bold(true).color(new Color(17, 24, 39));
+                    text(story).fontSize(28).bold(true).color(JColor.rgb(17, 24, 39));
                     div().height(16);
                     StorybookStories.story(story);
                 });

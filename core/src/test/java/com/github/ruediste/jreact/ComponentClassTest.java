@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
-import com.github.ruediste.jreact.nodes.TextNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
+import com.github.ruediste.jreact.elements.TextElement;
 
 class ComponentClassTest {
 
@@ -30,10 +30,10 @@ class ComponentClassTest {
 
         root.refresh(100, 100);
         ComponentNode component = (ComponentNode) root.rootNode().children().get(0);
-        assertEquals("value=1", ((TextNode) component.children().get(0).children().get(0)).text);
+        assertEquals("value=1", ((TextElement) component.children().get(0).children().get(0)).text);
 
         root.refresh(100, 100);
         component = (ComponentNode) root.rootNode().children().get(0);
-        assertEquals("value=1", ((TextNode) component.children().get(0).children().get(0)).text);
+        assertEquals("value=1", ((TextElement) component.children().get(0).children().get(0)).text);
     }
 }

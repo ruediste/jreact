@@ -1,4 +1,4 @@
-package com.github.ruediste.jreact.nodes;
+package com.github.ruediste.jreact.elements;
 
 import java.awt.Graphics2D;
 import java.util.Objects;
@@ -9,15 +9,15 @@ import javax.swing.Icon;
 import com.antepod.taffy.geometry.Size;
 import com.antepod.taffy.style.AvailableSpace;
 
-public class IconNode extends ElementNode {
+public class IconElement extends ElementNode {
 
     public Icon icon;
 
-    public IconNode(Icon icon) {
+    public IconElement(Icon icon) {
         this(null, icon);
     }
 
-    public IconNode(Object key, Icon icon) {
+    public IconElement(Object key, Icon icon) {
         super(key);
         this.icon = Objects.requireNonNull(icon);
     }

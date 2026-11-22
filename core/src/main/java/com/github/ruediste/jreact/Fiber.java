@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.github.ruediste.jreact.nodes.ComponentNode;
+import com.github.ruediste.jreact.elements.ComponentNode;
 
 public final class Fiber {
 
